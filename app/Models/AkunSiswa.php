@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class AkunSiswa extends Model
+class AkunSiswa extends Authenticatable
 {
-    protected $table = 'akun_siswa';
+    use Notifiable;
 
+    protected $table = 'akun_siswa';
     protected $primaryKey = 'id_akunsiswa';
 
     protected $fillable = [
@@ -22,6 +24,11 @@ class AkunSiswa extends Model
         'email',
         'username',
         'password',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
     ];
 
     public function kelas(): BelongsTo

@@ -15,7 +15,7 @@ return [
 
     'defaults' => [
         'guard' => 'web',
-        'passwords' => 'users',
+        'passwords' => 'akun_siswa',
     ],
 
     /*
@@ -38,10 +38,29 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'akun_siswa', // atau default yang lo pake buat login
+        ],
+
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admin', // Provider untuk admin
+        ],
+
+        'guru' => [
+            'driver' => 'session',
+            'provider' => 'guru', // Provider untuk guru
+        ],
+
+        'siswa' => [
+            'driver' => 'session',
+            'provider' => 'akun_siswa', // Provider untuk siswa
+        ],
+
+        'kepsek' => [
+            'driver' => 'session',
+            'provider' => 'kepsek', // Provider untuk kepala sekolah
         ],
     ],
-
     /*
     |--------------------------------------------------------------------------
     | User Providers
@@ -60,15 +79,25 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'akun_siswa' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => App\Models\AkunSiswa::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'guru' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Guru::class,
+        ],
+
+        'admin' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
+
+        'kepsek' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\KepalaSekolah::class,
+        ],
     ],
 
     /*

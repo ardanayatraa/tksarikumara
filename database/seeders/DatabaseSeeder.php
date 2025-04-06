@@ -18,5 +18,10 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+        $this->call([
+            AccountSeeder::class,
+            // Tambahkan seeder lain yang ingin dijalankan
+        ]);
     }
 }

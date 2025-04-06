@@ -1,48 +1,54 @@
 <x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+    <div
+        class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-pink-100 via-yellow-100 to-blue-100 p-4">
+        <div class="mb-6">
+            <img src="{{ asset('images/tk-logo.png') }}" alt="Logo TK" class="w-24 h-24 rounded-full shadow-lg">
+        </div>
 
-        <x-validation-errors class="mb-4" />
+        <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 border-4 border-yellow-300">
+            <h2 class="text-3xl font-bold text-center text-pink-600 mb-6" style="font-family: 'Comic Sans MS', cursive;">
+                Selamat Datang di TK Ceria
+            </h2>
 
-        @if (session('status'))
-            <div class="mb-4 font-medium text-sm text-green-600">
-                {{ session('status') }}
-            </div>
-        @endif
+            <x-validation-errors class="mb-4 text-red-500" />
 
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
+            @if (session('status'))
+                <div class="mb-4 font-medium text-sm text-green-600">
+                    {{ session('status') }}
+                </div>
+            @endif
 
-            <div>
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            </div>
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
 
-            <div class="mt-4">
-                <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
-            </div>
+                <div>
+                    <x-label for="username" value="Nama Pengguna" class="text-pink-700" />
+                    <x-input id="username"
+                        class="block mt-1 w-full rounded-full px-4 py-2 border-pink-300 focus:ring-pink-400"
+                        type="text" name="username" :value="old('username')" required autofocus autocomplete="username" />
+                </div>
 
-            <div class="block mt-4">
-                <label for="remember_me" class="flex items-center">
-                    <x-checkbox id="remember_me" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-                </label>
-            </div>
+                <div class="mt-4">
+                    <x-label for="password" value="Kata Sandi" class="text-pink-700" />
+                    <x-input id="password"
+                        class="block mt-1 w-full rounded-full px-4 py-2 border-pink-300 focus:ring-pink-400"
+                        type="password" name="password" required autocomplete="current-password" />
+                </div>
 
-            <div class="flex items-center justify-end mt-4">
-                @if (Route::has('password.request'))
-                    <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
-                    </a>
-                @endif
+                <div class="block mt-4">
+                    <label for="remember_me" class="flex items-center text-sm text-pink-700">
+                        <x-checkbox id="remember_me" name="remember" />
+                        <span class="ms-2">Ingat saya</span>
+                    </label>
+                </div>
 
-                <x-button class="ms-4">
-                    {{ __('Log in') }}
-                </x-button>
-            </div>
-        </form>
-    </x-authentication-card>
+                <div class="flex items-center justify-between mt-6">
+                    <x-button
+                        class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded-full transition ease-in-out duration-300">
+                        Masuk
+                    </x-button>
+                </div>
+            </form>
+        </div>
+    </div>
 </x-guest-layout>

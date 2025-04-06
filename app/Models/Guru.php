@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Guru extends Model
+class Guru extends Authenticatable
 {
+    use Notifiable;
+
     protected $table = 'guru';
 
     protected $primaryKey = 'id_guru';
@@ -19,6 +22,11 @@ class Guru extends Model
         'email',
         'jenis_kelamin',
         'notlp',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
     ];
 
     public function penilaian(): HasMany
