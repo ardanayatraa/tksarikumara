@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('guru', function (Blueprint $table) {
-            $table->id('id_guru');
-            $table->string('namaGuru');
+        Schema::create('kepala_sekolah', function (Blueprint $table) {
+            $table->id('id_kepalasekolah');
+            $table->string('namaKepalaSekolah');
             $table->string('nip')->unique();
+            $table->string('email')->unique();
+            $table->string('notlp');
             $table->string('username')->unique();
             $table->string('password');
-            $table->string('email')->unique();
-            $table->enum('jenis_kelamin', ['L', 'P']);
-            $table->string('notlp');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('guru');
+        Schema::dropIfExists('kepala_sekolah');
     }
 };

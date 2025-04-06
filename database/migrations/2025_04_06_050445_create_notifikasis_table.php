@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('notifikasis', function (Blueprint $table) {
-            $table->id();
+        Schema::create('notifikasi', function (Blueprint $table) {
+            $table->id('id_notifikasi');
+            $table->unsignedBigInteger('id_akunsiswa');
+            $table->unsignedBigInteger('id_penilaian');
+            $table->unsignedBigInteger('id_guru');
+            $table->date('tgl_penilaian');
+            $table->boolean('status_pengiriman')->default(false);
             $table->timestamps();
         });
     }
@@ -22,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('notifikasis');
+        Schema::dropIfExists('notifikasi');
     }
 };
