@@ -28,7 +28,7 @@ class Add extends Component
 
         $this->reset(['open', 'id_akunsiswa', 'id_guru', 'tgl_penilaian']);
         $this->dispatchBrowserEvent('notify', 'Penilaian berhasil ditambahkan');
-        $this->emit('refreshDatatable');
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

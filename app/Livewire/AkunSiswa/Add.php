@@ -40,8 +40,8 @@ class Add extends Component
         ]);
 
         $this->reset(['open', 'id_kelas', 'nisn', 'namaSiswa', 'tgl_lahir', 'jenis_kelamin', 'alamat', 'email', 'username', 'password']);
-        $this->dispatchBrowserEvent('notify', 'Akun siswa berhasil ditambahkan');
-        $this->emit('refreshDatatable');
+
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

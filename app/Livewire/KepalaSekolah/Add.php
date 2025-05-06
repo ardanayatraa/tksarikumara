@@ -36,8 +36,8 @@ class Add extends Component
             'open', 'namaKepalaSekolah', 'nip', 'email', 'notlp', 'username', 'password'
         ]);
 
-        $this->dispatchBrowserEvent('notify', 'Kepala Sekolah berhasil ditambahkan');
-        $this->emit('refreshDatatable');
+
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

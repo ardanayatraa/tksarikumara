@@ -23,7 +23,7 @@ class Delete extends Component
         Kelas::where('id_kelas', $this->id_kelas)->delete();
         $this->reset(['open', 'id_kelas']);
         $this->dispatchBrowserEvent('notify', 'Data kelas berhasil dihapus');
-        $this->emit('refreshDatatable');
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

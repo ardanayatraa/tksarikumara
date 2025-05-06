@@ -10,7 +10,7 @@ class Update extends Component
     public $open = false;
     public $id_guru, $namaGuru, $nip, $username, $password, $email, $jenis_kelamin, $notlp;
 
-    protected $listeners = ['editGuruModal'];
+    protected $listeners = ['editGuru'];
 
     protected $rules = [
         'namaGuru' => 'required',
@@ -21,8 +21,9 @@ class Update extends Component
         'notlp' => 'required',
     ];
 
-    public function editGuruModal($id)
+    public function editGuru($id)
     {
+
         $guru = Guru::findOrFail($id);
         $this->id_guru = $guru->id_guru;
         $this->namaGuru = $guru->namaGuru;
@@ -48,8 +49,7 @@ class Update extends Component
         ]);
 
         $this->reset(['open', 'id_guru', 'namaGuru', 'nip', 'username', 'email', 'jenis_kelamin', 'notlp']);
-        $this->dispatchBrowserEvent('notify', 'Data guru berhasil diupdate');
-        $this->emit('refreshDatatable');
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

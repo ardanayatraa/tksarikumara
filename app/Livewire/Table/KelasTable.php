@@ -6,7 +6,7 @@ use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\Kelas;
 
-class KelasTable extends DatatableComponent
+class KelasTable extends DataTableComponent
 {
     protected $model = Kelas::class;
 
@@ -18,18 +18,35 @@ class KelasTable extends DatatableComponent
     public function columns(): array
     {
         return [
-            Column::make("Id kelas", "id_kelas")
+            Column::make('Id Kelas', 'id_kelas')
                 ->sortable(),
-            Column::make("NamaKelas", "namaKelas")
+            Column::make('Nama Kelas', 'namaKelas')
                 ->sortable(),
-            Column::make("TahunAjaran", "tahunAjaran")
+            Column::make('Tahun Ajaran', 'tahunAjaran')
                 ->sortable(),
-            Column::make("JumlahSiswa", "jumlahSiswa")
+            Column::make('Jumlah Siswa', 'jumlahSiswa')
                 ->sortable(),
-            Column::make("Created at", "created_at")
+            Column::make('Created At', 'created_at')
                 ->sortable(),
-            Column::make("Updated at", "updated_at")
+            Column::make('Updated At', 'updated_at')
                 ->sortable(),
+
+            Column::make('Actions')
+                ->label(fn($row) => view('components.table-action', [
+                    'id' => $row->id_kelas,
+
+                ]))
+                ->html(),
         ];
+    }
+
+    public function edit($id): void
+    {
+        $this->dispatch('editKelas', $id);
+    }
+
+    public function delete($id): void
+    {
+        $this->dispatch('deleteKelas', $id);
     }
 }

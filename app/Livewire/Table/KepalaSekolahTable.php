@@ -20,20 +20,33 @@ class KepalaSekolahTable extends DataTableComponent
         return [
             Column::make("Id kepalasekolah", "id_kepalasekolah")
                 ->sortable(),
-            Column::make("NamaKepalaSekolah", "namaKepalaSekolah")
+            Column::make("Nama Kepala Sekolah", "namaKepalaSekolah")
                 ->sortable(),
             Column::make("Nip", "nip")
                 ->sortable(),
             Column::make("Email", "email")
                 ->sortable(),
-            Column::make("Notlp", "notlp")
+            Column::make("No tlp", "notlp")
                 ->sortable(),
             Column::make("Username", "username")
                 ->sortable(),
-            Column::make("Created at", "created_at")
-                ->sortable(),
-            Column::make("Updated at", "updated_at")
-                ->sortable(),
+
+                Column::make('Actions')
+                ->label(fn($row) => view('components.table-action', [
+                    'id'          => $row->id_kepalasekolah,
+
+                ]))
+                ->html(),
         ];
+    }
+
+    public function edit($id): void
+    {
+        $this->dispatch('editKepsek', $id);
+    }
+
+    public function delete($id): void
+    {
+        $this->dispatch('deleteKepsek', $id);
     }
 }

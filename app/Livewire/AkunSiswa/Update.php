@@ -10,7 +10,7 @@ class Update extends Component
     public $open = false;
     public $id_akunsiswa, $id_kelas, $nisn, $namaSiswa, $tgl_lahir, $jenis_kelamin, $alamat, $email, $username, $password;
 
-    protected $listeners = ['editAkunSiswaModal'];
+    protected $listeners = ['editSiswa'];
 
     protected $rules = [
         'id_kelas' => 'required',
@@ -24,7 +24,7 @@ class Update extends Component
         'password' => 'nullable|min:6',
     ];
 
-    public function editAkunSiswaModal($id)
+    public function editSiswa($id)
     {
         $siswa = AkunSiswa::findOrFail($id);
         $this->id_akunsiswa = $siswa->id_akunsiswa;
@@ -64,7 +64,7 @@ class Update extends Component
 
         $this->reset(['open', 'id_akunsiswa', 'id_kelas', 'nisn', 'namaSiswa', 'tgl_lahir', 'jenis_kelamin', 'alamat', 'email', 'username', 'password']);
         $this->dispatchBrowserEvent('notify', 'Akun siswa berhasil diupdate');
-        $this->emit('refreshDatatable');
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

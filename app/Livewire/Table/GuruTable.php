@@ -18,24 +18,30 @@ class GuruTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make("Id guru", "id_guru")
-                ->sortable(),
-            Column::make("NamaGuru", "namaGuru")
-                ->sortable(),
-            Column::make("Nip", "nip")
-                ->sortable(),
-            Column::make("Username", "username")
-                ->sortable(),
-            Column::make("Email", "email")
-                ->sortable(),
-            Column::make("Jenis kelamin", "jenis_kelamin")
-                ->sortable(),
-            Column::make("Notlp", "notlp")
-                ->sortable(),
-            Column::make("Created at", "created_at")
-                ->sortable(),
-            Column::make("Updated at", "updated_at")
-                ->sortable(),
+            Column::make("Id guru", "id_guru")->sortable(),
+            Column::make("Nama",     "namaGuru")->sortable(),
+            Column::make("NIP",      "nip")->sortable(),
+            Column::make("Username", "username")->sortable(),
+            Column::make("Email",    "email")->sortable(),
+            Column::make("JK",       "jenis_kelamin")->sortable(),
+            Column::make("No. Tlp",  "notlp")->sortable(),
+
+            Column::make('Actions')
+                ->label(fn($row) => view('components.table-action', [
+                    'id' => $row->id_guru,
+                ]))
+                ->html(),
         ];
+    }
+
+    public function edit($id)
+    {
+
+        $this->dispatch('editGuru', $id);
+    }
+
+    public function delete($id)
+    {
+        $this->dispatch('deleteGuru',$id);
     }
 }

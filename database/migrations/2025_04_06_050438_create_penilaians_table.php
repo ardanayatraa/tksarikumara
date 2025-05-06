@@ -13,9 +13,12 @@ return new class extends Migration
     {
         Schema::create('penilaian', function (Blueprint $table) {
             $table->id('id_penilaian');
-            $table->unsignedBigInteger('id_akunsiswa');
-            $table->unsignedBigInteger('id_guru');
+            $table->unsignedInteger('id_akunsiswa');
+            $table->unsignedInteger('id_guru');
+            $table->unsignedInteger('id_kelas');
+            $table->unsignedInteger('id_semester');
             $table->date('tgl_penilaian');
+
             $table->timestamps();
         });
     }

@@ -21,8 +21,6 @@ class PenilaianSiswaTable extends DataTableComponent
         return [
             Column::make("Id akunsiswa", "id_akunsiswa")
                 ->sortable(),
-            Column::make("Id kelas", "id_kelas")
-                ->sortable(),
             Column::make("Nisn", "nisn")
                 ->sortable(),
             Column::make("NamaSiswa", "namaSiswa")
@@ -37,6 +35,10 @@ class PenilaianSiswaTable extends DataTableComponent
                 ->sortable(),
             Column::make("Username", "username")
                 ->sortable(),
+
+                Column::make("Kelas", "kelas.namaKelas")
+                ->sortable(),
+
 
                 LinkColumn::make('Action')
                 ->title(fn($row) => 'Lihat Nilai')

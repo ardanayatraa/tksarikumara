@@ -34,6 +34,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/data-akun', function () {
         return view('admin.data-account');
     })->name('admin.data-account');
+    Route::get('/admin/master-data', function () {
+        return view('admin.master-data');
+    })->name('admin.master-data');
 });
 
 // Guru

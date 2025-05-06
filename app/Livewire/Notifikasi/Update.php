@@ -46,7 +46,7 @@ class Update extends Component
 
         $this->reset(['open', 'id_notifikasi', 'id_akunsiswa', 'id_penilaian', 'id_guru', 'tgl_penilaian', 'status_pengiriman']);
         $this->dispatchBrowserEvent('notify', 'Notifikasi berhasil diupdate');
-        $this->emit('refreshDatatable');
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

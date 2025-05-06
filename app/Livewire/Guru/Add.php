@@ -16,7 +16,7 @@ class Add extends Component
         'username' => 'required|string|max:50',
         'password' => 'required|string|min:6',
         'email' => 'required|email',
-        'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+        'jenis_kelamin' => 'required|in:L,P',
         'notlp' => 'required|string|max:20',
     ];
 
@@ -35,8 +35,7 @@ class Add extends Component
         ]);
 
         $this->reset(['open', 'namaGuru', 'nip', 'username', 'password', 'email', 'jenis_kelamin', 'notlp']);
-        $this->dispatchBrowserEvent('notify', 'Guru berhasil ditambahkan');
-        $this->emit('refreshDatatable');
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

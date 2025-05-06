@@ -36,10 +36,24 @@ class AkunSiswaTable extends DataTableComponent
                 ->sortable(),
             Column::make("Username", "username")
                 ->sortable(),
-            Column::make("Created at", "created_at")
-                ->sortable(),
-            Column::make("Updated at", "updated_at")
-                ->sortable(),
+
+                Column::make('Actions')
+                ->label(fn($row) => view('components.table-action', [
+                    'id'          => $row->id_akunsiswa,
+
+                ]))
+                ->html(),
         ];
+    }
+
+
+    public function edit($id): void
+    {
+        $this->dispatch('editSiswa', $id);
+    }
+
+    public function delete($id): void
+    {
+        $this->dispatch('deleteSiswa', $id);
     }
 }

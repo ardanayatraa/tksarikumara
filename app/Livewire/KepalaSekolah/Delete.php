@@ -10,9 +10,9 @@ class Delete extends Component
     public $open = false;
     public $id_kepalasekolah;
 
-    protected $listeners = ['delete'];
+    protected $listeners = ['deleteKepsek'];
 
-    public function delete($id)
+    public function deleteKepsek($id)
     {
         $this->id_kepalasekolah = $id;
         $this->open = true;
@@ -22,8 +22,8 @@ class Delete extends Component
     {
         KepalaSekolah::where('id_kepalasekolah', $this->id_kepalasekolah)->delete();
         $this->reset(['open', 'id_kepalasekolah']);
-        $this->dispatchBrowserEvent('notify', 'Kepala sekolah berhasil dihapus');
-        $this->emit('refreshDatatable');
+
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

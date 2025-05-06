@@ -46,7 +46,7 @@ class Add extends Component
         ]);
 
         $this->dispatchBrowserEvent('notify', 'Notifikasi berhasil ditambahkan');
-        $this->emit('refreshDatatable');
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

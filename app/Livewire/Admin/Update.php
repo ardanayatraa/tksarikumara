@@ -10,7 +10,7 @@ class Update extends Component
     public $open = false;
     public $id_admin, $username, $email, $notlp;
 
-    protected $listeners = ['edit'];
+    protected $listeners = ['editAdmin'];
 
     protected $rules = [
         'username' => 'required',
@@ -18,7 +18,7 @@ class Update extends Component
         'notlp' => 'required',
     ];
 
-    public function edit($id)
+    public function editAdmin($id)
     {
         $admin = Admin::findOrFail($id);
         $this->id_admin = $admin->id_admin;
@@ -39,8 +39,8 @@ class Update extends Component
         ]);
 
         $this->reset(['open', 'id_admin', 'username', 'email', 'notlp']);
-        $this->dispatchBrowserEvent('notify', 'Admin berhasil diupdate');
-        $this->emit('refreshDatatable');
+
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

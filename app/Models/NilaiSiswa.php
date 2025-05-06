@@ -11,15 +11,29 @@ class NilaiSiswa extends Model
 
     protected $primaryKey = 'id_nilai';
 
+    // tidak pakai timestamps
+    public $timestamps = false;
+
     protected $fillable = [
         'id_penilaian',
-        'aspek_penilaian',
-        'kategori',
+        'id_aspek',
+        'nilai',
         'skor',
     ];
 
+    /**
+     * Relasi ke Penilaian (header).
+     */
     public function penilaian(): BelongsTo
     {
         return $this->belongsTo(Penilaian::class, 'id_penilaian');
+    }
+
+    /**
+     * Relasi ke AspekPenilaian (master aspek).
+     */
+    public function aspek(): BelongsTo
+    {
+        return $this->belongsTo(AspekPenilaian::class, 'id_aspek');
     }
 }

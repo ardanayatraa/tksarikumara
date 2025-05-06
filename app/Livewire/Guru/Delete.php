@@ -10,9 +10,9 @@ class Delete extends Component
     public $open = false;
     public $id_guru;
 
-    protected $listeners = ['delete'];
+    protected $listeners = ['deleteGuru'];
 
-    public function delete($id)
+    public function deleteGuru($id)
     {
         $this->id_guru = $id;
         $this->open = true;
@@ -22,8 +22,7 @@ class Delete extends Component
     {
         Guru::where('id_guru', $this->id_guru)->delete();
         $this->reset(['open', 'id_guru']);
-        $this->dispatchBrowserEvent('notify', 'Guru berhasil dihapus');
-        $this->emit('refreshDatatable');
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

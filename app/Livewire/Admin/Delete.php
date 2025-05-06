@@ -10,9 +10,9 @@ class Delete extends Component
     public $open = false;
     public $id_admin;
 
-    protected $listeners = ['delete'];
+    protected $listeners = ['deleteAdmin'];
 
-    public function delete($id)
+    public function deleteAdmin($id)
     {
         $this->id_admin = $id;
         $this->open = true;
@@ -22,8 +22,8 @@ class Delete extends Component
     {
         Admin::where('id_admin', $this->id_admin)->delete();
         $this->reset(['open', 'id_admin']);
-        $this->dispatchBrowserEvent('notify', 'Admin berhasil dihapus');
-        $this->emit('refreshDatatable');
+
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

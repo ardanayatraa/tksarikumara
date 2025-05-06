@@ -10,9 +10,9 @@ class Delete extends Component
     public $open = false;
     public $id_akunsiswa;
 
-    protected $listeners = ['delete'];
+    protected $listeners = ['deleteSiswa'];
 
-    public function delete($id)
+    public function deleteSiswa($id)
     {
         $this->id_akunsiswa = $id;
         $this->open = true;
@@ -23,7 +23,7 @@ class Delete extends Component
         AkunSiswa::where('id_akunsiswa', $this->id_akunsiswa)->delete();
         $this->reset(['open', 'id_akunsiswa']);
         $this->dispatchBrowserEvent('notify', 'Akun siswa berhasil dihapus');
-        $this->emit('refreshDatatable');
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

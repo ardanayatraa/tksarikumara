@@ -52,10 +52,11 @@
 
                 <div>
                     <x-label for="jenis_kelamin" value="Jenis Kelamin" />
-                    <select id="jenis_kelamin" wire:model.defer="jenis_kelamin" class="form-select block w-full mt-1">
+                    <select id="jenis_kelamin" wire:model.defer="jenis_kelamin"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                         <option value="">Pilih Jenis Kelamin</option>
-                        <option value="Laki-laki">Laki-laki</option>
-                        <option value="Perempuan">Perempuan</option>
+                        <option value="L">Laki-laki</option>
+                        <option value="P">Perempuan</option>
                     </select>
                     @error('jenis_kelamin')
                         <span class="text-sm text-red-600">{{ $message }}</span>

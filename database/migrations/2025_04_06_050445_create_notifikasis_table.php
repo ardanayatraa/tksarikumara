@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('notifikasi', function (Blueprint $table) {
             $table->id('id_notifikasi');
-            $table->unsignedBigInteger('id_akunsiswa');
-            $table->unsignedBigInteger('id_penilaian');
-            $table->unsignedBigInteger('id_guru');
-            $table->date('tgl_penilaian');
+            $table->unsignedInteger('id_akunsiswa');
+            $table->unsignedInteger('id_penilaian');
+            $table->unsignedInteger('id_guru');
+            $table->dateTime('tgl_pengiriman');
             $table->boolean('status_pengiriman')->default(false);
+
             $table->timestamps();
         });
     }

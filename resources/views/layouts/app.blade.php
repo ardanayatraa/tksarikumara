@@ -87,6 +87,15 @@
                     </svg>
                     Data Akun
                 </a>
+                <a href="{{ route('admin.master-data') }}"
+                    class="flex items-center px-4 py-3 text-gray-300 hover:bg-dark-blue/20 hover:text-white transition-colors {{ Request::is('admin/master-data') ? 'bg-primary/20 border-r-4 border-primary' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 7h18M3 12h18M3 17h18" />
+                    </svg>
+                    <span>Master Data</span>
+                </a>
             @elseif($role === 'guru')
                 <a href="{{ route('guru.dashboard') }}"
                     class="flex items-center px-4 py-3 text-white {{ Request::is('guru/dashboard') ? 'bg-primary/20 border-r-4 border-primary' : '' }}">
@@ -106,16 +115,6 @@
                             d="M9 17v-6h13v6m-13 0H4a1 1 0 01-1-1v-4a1 1 0 011-1h5m0 6v2m0-2v-2" />
                     </svg>
                     Aspek Penilaian
-                </a>
-
-                <a href="{{ route('guru.kategori') }}"
-                    class="flex items-center px-4 py-3 text-white {{ Request::is('guru/kategori') ? 'bg-primary/20 border-r-4 border-primary' : '' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                    </svg>
-                    Kategori
                 </a>
 
                 <a href="{{ route('guru.penilaian') }}"
@@ -176,32 +175,22 @@
                     </div>
                     <div class="hidden md:block ml-4">
                         <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </span>
-                            <input type="text"
-                                class="w-64 pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                                placeholder="Cari...">
+
+
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button class="text-gray-500 hover:text-gray-700 focus:outline-none relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                        </svg>
-                        <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
-                    </button>
+
                     <div class="relative">
                         <button class="flex items-center focus:outline-none" id="user-menu-button">
-                            <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="User Avatar"
-                                class="h-8 w-8 rounded-full object-cover">
+                            <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                <svg class="h-5 w-5 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z" />
+                                </svg>
+                            </div>
+
                             @if ($role === 'siswa')
                                 <span
                                     class="ml-2 text-sm font-medium text-gray-700 hidden md:block">{{ Auth::guard('siswa')->user()->namaSiswa }}</span>

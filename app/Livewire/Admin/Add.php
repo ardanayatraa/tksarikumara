@@ -29,8 +29,8 @@ class Add extends Component
         ]);
 
         $this->reset(['open', 'username', 'password', 'email', 'notlp']);
-        $this->dispatchBrowserEvent('notify', 'Admin berhasil ditambahkan');
-        $this->emit('refreshDatatable');
+
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

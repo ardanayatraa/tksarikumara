@@ -23,7 +23,7 @@ class Delete extends Component
         NilaiSiswa::where('id_nilai', $this->id_nilai)->delete();
         $this->reset(['open', 'id_nilai']);
         $this->dispatchBrowserEvent('notify', 'Nilai siswa berhasil dihapus');
-        $this->emit('refreshDatatable');
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

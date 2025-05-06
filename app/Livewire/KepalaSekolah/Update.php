@@ -10,7 +10,7 @@ class Update extends Component
     public $open = false;
     public $id_kepalasekolah, $namaKepalaSekolah, $nip, $email, $notlp, $username;
 
-    protected $listeners = ['editKepalaSekolahModal'];
+    protected $listeners = ['editKepsek'];
 
     protected $rules = [
         'namaKepalaSekolah' => 'required',
@@ -20,7 +20,7 @@ class Update extends Component
         'username' => 'required',
     ];
 
-    public function editKepalaSekolahModal($id)
+    public function editKepsek($id)
     {
         $kepsek = KepalaSekolah::findOrFail($id);
         $this->id_kepalasekolah = $kepsek->id_kepalasekolah;
@@ -45,8 +45,8 @@ class Update extends Component
         ]);
 
         $this->reset(['open', 'id_kepalasekolah', 'namaKepalaSekolah', 'nip', 'email', 'notlp', 'username']);
-        $this->dispatchBrowserEvent('notify', 'Data kepala sekolah berhasil diupdate');
-        $this->emit('refreshDatatable');
+
+        $this->dispatch('refreshDatatable');
     }
 
     public function render()

@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('nilai_siswa', function (Blueprint $table) {
             $table->id('id_nilai');
-            $table->unsignedBigInteger('id_penilaian');
-            $table->string('aspek_penilaian');
-            $table->string('kategori');
-            $table->integer('skor');
+            $table->unsignedInteger('id_penilaian');
+            $table->unsignedInteger('id_aspek');
+            $table->char('nilai',3);
+            $table->tinyInteger('skor');
+
             $table->timestamps();
         });
     }
