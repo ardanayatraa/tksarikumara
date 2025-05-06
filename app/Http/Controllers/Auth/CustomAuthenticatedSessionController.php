@@ -13,7 +13,12 @@ class CustomAuthenticatedSessionController extends FortifyController
 // di CustomAuthenticatedSessionController.php
 public function store(LoginRequest $request)
 {
+
     $response = parent::store($request);
+    if (!auth()->check()) {
+        // Ini fallback jaga-jaga kalau user masih null
+      return back();
+    }
 
     $user = auth()->user();
 
