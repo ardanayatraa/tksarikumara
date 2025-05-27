@@ -17,6 +17,7 @@ class Guru extends Authenticatable
     protected $fillable = [
         'namaGuru',
         'nip',
+        'foto',
         'username',
         'password',
         'email',

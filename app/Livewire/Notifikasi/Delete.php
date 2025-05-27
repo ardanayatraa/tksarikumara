@@ -22,7 +22,6 @@ class Delete extends Component
     {
         Notifikasi::where('id_notifikasi', $this->id_notifikasi)->delete();
         $this->reset(['open', 'id_notifikasi']);
-        $this->dispatchBrowserEvent('notify', 'Notifikasi berhasil dihapus');
         $this->dispatch('refreshDatatable');
     }
 

@@ -18,6 +18,8 @@ class AkunSiswa extends Authenticatable
         'id_kelas',
         'nisn',
         'namaSiswa',
+        'foto',
+        'namaOrangTua',
         'tgl_lahir',
         'jenis_kelamin',
         'alamat',

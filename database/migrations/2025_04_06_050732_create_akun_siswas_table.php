@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('id_kelas');
             $table->string('nisn')->unique();
             $table->string('namaSiswa');
+            $table->string('foto');
+            $table->string('namaOrangTua');
             $table->date('tgl_lahir');
             $table->enum('jenis_kelamin', ['L', 'P']);
             $table->text('alamat');

@@ -20,12 +20,6 @@
                     class="tab-button pb-2 px-4 text-lg font-semibold text-gray-500 hover:text-blue-600">
                     Aspek Penilaian
                 </button>
-
-                <!-- Semester Tab -->
-                <button id="tab-semester"
-                    class="tab-button pb-2 px-4 text-lg font-semibold text-gray-500 hover:text-blue-600">
-                    Semester
-                </button>
             </div>
         </div>
 
@@ -33,9 +27,9 @@
             <!-- Kelas Panel -->
             <div id="content-kelas" class="tab-panel hidden flex flex-col space-y-4">
                 <h3 class="text-xl font-semibold text-gray-800 p-4 border rounded-lg mb-4">Kelas Management</h3>
+
                 <div class="p-4 border rounded-lg mb-4">
                     @livewire('kelas.add')
-
                 </div>
                 <div class="p-4 border rounded-lg mb-4">
                     @livewire('table.kelasTable')
@@ -47,25 +41,11 @@
 
             <!-- Aspek Penilaian Panel -->
             <div id="content-aspek" class="tab-panel hidden flex flex-col space-y-4">
-                <h3 class="text-xl font-semibold text-gray-800 p-4 border rounded-lg mb-4">Semester Management</h3>
-                <div class="p-4 border rounded-lg mb-4">
-                    @livewire('semester.add')
+                <h3 class="text-xl font-semibold text-gray-800 p-4 border rounded-lg mb-4">Aspek Penilaian Management
+                </h3>
 
-                </div>
-                <div class="p-4 border rounded-lg mb-4">
-                    @livewire('table.semesterTable')
-                </div>
-
-                @livewire('semester.update')
-                @livewire('semester.delete')
-            </div>
-
-            <!-- Semester Panel -->
-            <div id="content-semester" class="tab-panel hidden flex flex-col space-y-4">
-                <h3 class="text-xl font-semibold text-gray-800 p-4 border rounded-lg mb-4">Semester Management</h3>
                 <div class="p-4 border rounded-lg mb-4">
                     @livewire('aspek-penilaian.add')
-
                 </div>
                 <div class="p-4 border rounded-lg mb-4">
                     @livewire('table.aspek-penilaian-table')
@@ -105,8 +85,6 @@
                 .addEventListener('click', () => activateTab('tab-kelas', 'content-kelas'));
             document.getElementById('tab-aspek')
                 .addEventListener('click', () => activateTab('tab-aspek', 'content-aspek'));
-            document.getElementById('tab-semester')
-                .addEventListener('click', () => activateTab('tab-semester', 'content-semester'));
         });
     </script>
 </x-app-layout>

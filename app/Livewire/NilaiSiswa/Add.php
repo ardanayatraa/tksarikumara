@@ -6,9 +6,9 @@ use Livewire\Component;
 use App\Models\NilaiSiswa;
 use App\Models\Penilaian;
 use App\Models\AspekPenilaian;
-use App\Models\Guru;
-use App\Models\Kelas;
-use App\Models\Semester;
+use App\Models\AkunSiswa;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class Add extends Component
 {
@@ -17,10 +17,10 @@ class Add extends Component
     // langsung terima dari parent
     public $id_akunsiswa;
 
-    // field Penilaian lain
+    // field Penilaian
     public $id_guru;
-    public $id_kelas;
-    public $id_semester;
+    public $id_kelas;       // di-set otomatis
+    public $kelasNama;      // untuk tampilan
     public $tgl_penilaian;
 
     // detail NilaiSiswa
@@ -28,11 +28,8 @@ class Add extends Component
     public $nilai;
     public $skor;
 
-    // data untuk dropdown
-    public $guruList = [];
-    public $kelasList = [];
-    public $semesterList = [];
-    public $aspeks = [];
+    // data untuk dropdown aspek
+    public $aspekGroups = [];
 
     public $nilaiOptions = [
         'BSB' => 4,
@@ -41,52 +38,58 @@ class Add extends Component
         'BB'  => 1,
     ];
 
-    protected function rules()
-    {
-        return [
-            'id_akunsiswa'  => 'required',
-            'id_guru'       => 'required',
-            'id_kelas'      => 'required',
-            'id_semester'   => 'required',
-            'tgl_penilaian' => 'required|date',
-            'id_aspek'      => 'required',
-            'nilai'         => 'required|string|min:0',
-            'skor'          => 'required|numeric|min:0|max:100',
-        ];
-    }
-
     public function updatedNilai($value)
-{
-    if (isset($this->nilaiOptions[$value])) {
-        $this->skor = $this->nilaiOptions[$value];
-    } else {
-        $this->skor = null;
+    {
+        $this->skor = $this->nilaiOptions[$value] ?? null;
     }
-}
 
-
-    // sekarang menerima $id_akunsiswa sebagai argumen
     public function mount($id_akunsiswa)
     {
-        $this->id_akunsiswa  = $id_akunsiswa;
-        $this->guruList      = Guru::all();
-        $this->kelasList     = Kelas::all();
-        $this->semesterList  = Semester::all();
-        $this->aspeks        = AspekPenilaian::all();
+        $this->id_akunsiswa = $id_akunsiswa;
+
+        // set id_guru dari guru yang login
+        $user = Auth::guard('guru')->user();
+        $this->id_guru = optional($user)->id_guru;
+
+        // ambil data siswa beserta kelas
+        $siswa = AkunSiswa::with('kelas')->findOrFail($id_akunsiswa);
+        $this->id_kelas  = $siswa->id_kelas;
+        $this->kelasNama = $siswa->kelas->namaKelas;
+
+        // hitung umur untuk filter aspek
+        $umur = Carbon::parse($siswa->tgl_lahir)->age;
+
+        // muat aspek sesuai umur, plus children
+        $this->aspekGroups = AspekPenilaian::whereNull('parent_id')
+            ->where('min_umur', '<=', $umur)
+            ->where('max_umur', '>=', $umur)
+            ->with(['children' => function($q) use ($umur) {
+                $q->where('min_umur', '<=', $umur)
+                  ->where('max_umur', '>=', $umur)
+                  ->orderBy('kode_aspek');
+            }])
+            ->orderBy('kode_aspek')
+            ->get();
     }
 
     public function save()
     {
-        $this->validate();
+        // validasi jika diperlukan
+        // $this->validate([
+        //     'tgl_penilaian' => 'required|date',
+        //     'id_aspek'      => 'required',
+        //     'nilai'         => 'required|in:BSB,BSH,MB,BB',
+        // ]);
 
+        // simpan header penilaian
         $penilaian = Penilaian::create([
             'id_akunsiswa'  => $this->id_akunsiswa,
             'id_guru'       => $this->id_guru,
             'id_kelas'      => $this->id_kelas,
-            'id_semester'   => $this->id_semester,
             'tgl_penilaian' => $this->tgl_penilaian,
         ]);
 
+        // simpan detail nilai
         NilaiSiswa::create([
             'id_penilaian' => $penilaian->id_penilaian,
             'id_aspek'     => $this->id_aspek,
@@ -94,11 +97,8 @@ class Add extends Component
             'skor'         => $this->skor,
         ]);
 
-        $this->reset([
-            'open',
-            'id_guru','id_kelas','id_semester','tgl_penilaian',
-            'id_aspek','nilai','skor'
-        ]);
+        // reset form
+        $this->reset(['open','tgl_penilaian','id_aspek','nilai','skor']);
         $this->dispatch('refreshDatatable');
     }
 

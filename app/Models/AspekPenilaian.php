@@ -22,6 +22,9 @@ class AspekPenilaian extends Model
         'kode_aspek',
         'nama_aspek',
         'kategori',
+        'parent_id',
+        'min_umur',
+        'max_umur',
     ];
 
     /**
@@ -30,5 +33,22 @@ class AspekPenilaian extends Model
     public function nilaiSiswa()
     {
         return $this->hasMany(NilaiSiswa::class, 'id_aspek', 'id_aspek');
+    }
+
+
+        /**
+     * Relasi ke sub-aspek (children).
+     */
+    public function children()
+    {
+        return $this->hasMany(self::class, 'parent_id', 'id_aspek');
+    }
+
+    /**
+     * Relasi ke parent-aspek (jika ini child).
+     */
+    public function parent()
+    {
+        return $this->belongsTo(self::class, 'parent_id', 'id_aspek');
     }
 }

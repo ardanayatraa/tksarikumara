@@ -39,7 +39,6 @@ class Update extends Component
         ]);
 
         $this->reset(['open', 'id_kelas', 'namaKelas', 'tahunAjaran', 'jumlahSiswa']);
-        $this->dispatchBrowserEvent('notify', 'Data kelas berhasil diupdate');
         $this->dispatch('refreshDatatable');
     }
 

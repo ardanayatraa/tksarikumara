@@ -17,6 +17,7 @@ class KepalaSekolah extends Authenticatable
         'namaKepalaSekolah',
         'nip',
         'email',
+        'foto',
         'notlp',
         'username',
         'password',

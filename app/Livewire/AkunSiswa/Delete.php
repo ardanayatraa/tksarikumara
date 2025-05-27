@@ -22,7 +22,6 @@ class Delete extends Component
     {
         AkunSiswa::where('id_akunsiswa', $this->id_akunsiswa)->delete();
         $this->reset(['open', 'id_akunsiswa']);
-        $this->dispatchBrowserEvent('notify', 'Akun siswa berhasil dihapus');
         $this->dispatch('refreshDatatable');
     }
 

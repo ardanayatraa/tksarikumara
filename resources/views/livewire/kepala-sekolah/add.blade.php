@@ -4,71 +4,90 @@
     </x-button>
 
     <x-dialog-modal wire:model="open">
-        <x-slot name="title">
-            Tambah Kepala Sekolah
-        </x-slot>
+        <x-slot name="title">Tambah Kepala Sekolah</x-slot>
 
         <x-slot name="content">
             <div class="space-y-4">
+
+                {{-- Nama --}}
                 <div>
                     <x-label for="namaKepalaSekolah" value="Nama Kepala Sekolah" />
-                    <x-input id="namaKepalaSekolah" type="text" class="mt-1 block w-full"
-                        wire:model.defer="namaKepalaSekolah" />
+                    <x-input id="namaKepalaSekolah" type="text" wire:model.defer="namaKepalaSekolah"
+                        class="mt-1 block w-full" />
                     @error('namaKepalaSekolah')
-                        <span class="text-sm text-red-600">{{ $message }}</span>
+                        <span class="text-red-600 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
 
+                {{-- NIP --}}
                 <div>
                     <x-label for="nip" value="NIP" />
-                    <x-input id="nip" type="text" class="mt-1 block w-full" wire:model.defer="nip" />
+                    <x-input id="nip" type="text" wire:model.defer="nip" class="mt-1 block w-full" />
                     @error('nip')
-                        <span class="text-sm text-red-600">{{ $message }}</span>
+                        <span class="text-red-600 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
 
+                {{-- Email --}}
                 <div>
                     <x-label for="email" value="Email" />
-                    <x-input id="email" type="email" class="mt-1 block w-full" wire:model.defer="email" />
+                    <x-input id="email" type="email" wire:model.defer="email" class="mt-1 block w-full" />
                     @error('email')
-                        <span class="text-sm text-red-600">{{ $message }}</span>
+                        <span class="text-red-600 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
 
+                {{-- No. Telepon --}}
                 <div>
                     <x-label for="notlp" value="Nomor Telepon" />
-                    <x-input id="notlp" type="text" class="mt-1 block w-full" wire:model.defer="notlp" />
+                    <x-input id="notlp" type="text" wire:model.defer="notlp" class="mt-1 block w-full" />
                     @error('notlp')
-                        <span class="text-sm text-red-600">{{ $message }}</span>
+                        <span class="text-red-600 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
 
+                {{-- Username --}}
                 <div>
                     <x-label for="username" value="Username" />
-                    <x-input id="username" type="text" class="mt-1 block w-full" wire:model.defer="username" />
+                    <x-input id="username" type="text" wire:model.defer="username" class="mt-1 block w-full" />
                     @error('username')
-                        <span class="text-sm text-red-600">{{ $message }}</span>
+                        <span class="text-red-600 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
 
+                {{-- Password --}}
                 <div>
                     <x-label for="password" value="Password" />
-                    <x-input id="password" type="password" class="mt-1 block w-full" wire:model.defer="password" />
+                    <x-input id="password" type="password" wire:model.defer="password" class="mt-1 block w-full" />
                     @error('password')
-                        <span class="text-sm text-red-600">{{ $message }}</span>
+                        <span class="text-red-600 text-sm">{{ $message }}</span>
                     @enderror
                 </div>
+
+                {{-- Foto --}}
+                <div>
+                    <x-label for="foto" value="Foto Kepala Sekolah (opsional)" />
+                    <x-input id="foto" type="file" wire:model="foto" accept="image/*"
+                        class="mt-1 block w-full" />
+                    @error('foto')
+                        <span class="text-red-600 text-sm">{{ $message }}</span>
+                    @enderror
+
+                    {{-- Preview --}}
+                    @if ($fotoPreviewUrl)
+                        <div class="mt-2">
+                            <span class="block text-sm">Preview Foto:</span>
+                            <img src="{{ $fotoPreviewUrl }}" class="mt-1 h-24 w-24 rounded-full object-cover" />
+                        </div>
+                    @endif
+                </div>
+
             </div>
         </x-slot>
 
         <x-slot name="footer">
-            <x-button wire:click="save">
-                Simpan
-            </x-button>
-
-            <x-secondary-button wire:click="$set('open', false)" class="ml-2">
-                Batal
-            </x-secondary-button>
+            <x-button wire:click="save">Simpan</x-button>
+            <x-secondary-button wire:click="$set('open', false)" class="ml-2">Batal</x-secondary-button>
         </x-slot>
     </x-dialog-modal>
 </div>

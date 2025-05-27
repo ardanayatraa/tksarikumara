@@ -45,7 +45,6 @@ class Add extends Component
             'open', 'id_akunsiswa', 'id_penilaian', 'id_guru', 'tgl_penilaian', 'status_pengiriman'
         ]);
 
-        $this->dispatchBrowserEvent('notify', 'Notifikasi berhasil ditambahkan');
         $this->dispatch('refreshDatatable');
     }
 

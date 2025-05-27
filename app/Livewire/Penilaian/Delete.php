@@ -22,7 +22,6 @@ class Delete extends Component
     {
         Penilaian::where('id_penilaian', $this->id_penilaian)->delete();
         $this->reset(['open', 'id_penilaian']);
-        $this->dispatchBrowserEvent('notify', 'Data penilaian berhasil dihapus');
         $this->dispatch('refreshDatatable');
     }
 

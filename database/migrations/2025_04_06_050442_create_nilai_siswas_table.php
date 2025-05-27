@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedInteger('id_aspek');
             $table->char('nilai',3);
             $table->tinyInteger('skor');
-
+            $table->string('catatan')->nullable();
             $table->timestamps();
         });
     }

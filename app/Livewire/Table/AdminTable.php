@@ -28,7 +28,6 @@ class AdminTable extends DataTableComponent
             Column::make('Email', 'email')
                 ->sortable()
                 ->searchable(),
-
             Column::make('No. Tlp', 'notlp')
                 ->sortable(),
 

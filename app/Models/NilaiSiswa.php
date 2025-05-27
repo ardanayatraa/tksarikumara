@@ -19,6 +19,7 @@ class NilaiSiswa extends Model
         'id_aspek',
         'nilai',
         'skor',
+        'catatan',
     ];
 
     /**

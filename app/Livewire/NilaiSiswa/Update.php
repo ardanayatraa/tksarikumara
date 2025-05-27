@@ -3,38 +3,36 @@
 namespace App\Livewire\NilaiSiswa;
 
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 use App\Models\NilaiSiswa;
 use App\Models\Penilaian;
 use App\Models\AspekPenilaian;
-use App\Models\Guru;
 use App\Models\Kelas;
-use App\Models\Semester;
+use App\Models\AkunSiswa;
+use Carbon\Carbon;
 
 class Update extends Component
 {
     public $open = false;
 
-    // key
+    // keys
     public $id_nilai;
     public $id_penilaian;
 
-    // untuk Penilaian
+    // header Penilaian
     public $id_akunsiswa;
     public $id_guru;
     public $id_kelas;
-    public $id_semester;
     public $tgl_penilaian;
 
-    // untuk detail NilaiSiswa
+    // detail NilaiSiswa
     public $id_aspek;
     public $nilai;
     public $skor;
 
     // dropdown data
-    public $guruList    = [];
     public $kelasList   = [];
-    public $semesterList= [];
-    public $aspeks      = [];
+    public $aspekGroups = []; // parent + children
 
     public $nilaiOptions = [
         'BSB' => 4,
@@ -48,84 +46,89 @@ class Update extends Component
     protected function rules()
     {
         return [
-            'id_akunsiswa'  => 'required',
-            'id_guru'       => 'required',
-            'id_kelas'      => 'required',
-            'id_semester'   => 'required',
+            'id_kelas'      => 'required|exists:kelas,id_kelas',
             'tgl_penilaian' => 'required|date',
-            'id_aspek'      => 'required',
-            'nilai'         => 'required|string|min:0',
-            'skor'          => 'required|numeric|min:0|max:100',
+            'id_aspek'      => 'required|exists:aspek_penilaian,id_aspek',
+            'nilai'         => 'required|in:BSB,BSH,MB,BB',
+            'skor'          => 'required|numeric|min:1|max:4',
         ];
     }
 
     public function mount($id_akunsiswa)
     {
-        // terima dari parent
-        $this->id_akunsiswa   = $id_akunsiswa;
-        $this->guruList       = Guru::all();
-        $this->kelasList      = Kelas::all();
-        $this->semesterList   = Semester::all();
-        $this->aspeks         = AspekPenilaian::all();
+
+        $this->id_akunsiswa = $id_akunsiswa;
+        // auto-set guru yg login
+        $this->id_guru   = optional(Auth::guard('guru')->user())->id_guru;
+        $this->kelasList = Kelas::all();
+
+        // hitung umur & muat aspek sesuai umur
+        $siswa = AkunSiswa::findOrFail($id_akunsiswa);
+        $umur   = Carbon::parse($siswa->tgl_lahir)->age;
+
+        $this->aspekGroups = AspekPenilaian::whereNull('parent_id')
+            ->where('min_umur', '<=', $umur)
+            ->where('max_umur', '>=', $umur)
+            ->with(['children' => function($q) use ($umur) {
+                $q->where('min_umur', '<=', $umur)
+                  ->where('max_umur', '>=', $umur)
+                  ->orderBy('kode_aspek');
+            }])
+            ->orderBy('kode_aspek')
+            ->get();
     }
 
     public function editModal($id_nilai)
     {
-        $item = NilaiSiswa::findOrFail($id_nilai);
-        $pen  = Penilaian::findOrFail($item->id_penilaian);
+        $detail = NilaiSiswa::findOrFail($id_nilai);
+        $pen    = Penilaian::findOrFail($detail->id_penilaian);
 
-        $this->id_nilai      = $item->id_nilai;
+        $this->id_nilai      = $detail->id_nilai;
         $this->id_penilaian  = $pen->id_penilaian;
         $this->id_akunsiswa  = $pen->id_akunsiswa;
-        $this->id_guru       = $pen->id_guru;
+        // guru tidak bisa diubah
         $this->id_kelas      = $pen->id_kelas;
-        $this->id_semester   = $pen->id_semester;
         $this->tgl_penilaian = $pen->tgl_penilaian;
 
-        $this->id_aspek      = $item->id_aspek;
-        $this->nilai         = $item->nilai;
-        $this->skor          = $item->skor;
+        $this->id_aspek = $detail->id_aspek;
+        $this->nilai    = $detail->nilai;
+        $this->skor     = $detail->skor;
 
         $this->open = true;
     }
 
-        public function updatedNilai($value)
+    public function updatedNilai($value)
     {
-        if (isset($this->nilaiOptions[$value])) {
-            $this->skor = $this->nilaiOptions[$value];
-        } else {
-            $this->skor = null;
-        }
+        $this->skor = $this->nilaiOptions[$value] ?? null;
     }
-
 
     public function update()
     {
         $this->validate();
 
-        // update Penilaian
-        Penilaian::where('id_penilaian', $this->id_penilaian)->update([
-            'id_akunsiswa'  => $this->id_akunsiswa,
-            'id_guru'       => $this->id_guru,
-            'id_kelas'      => $this->id_kelas,
-            'id_semester'   => $this->id_semester,
-            'tgl_penilaian' => $this->tgl_penilaian,
-        ]);
+        // update header penilaian
+        Penilaian::where('id_penilaian', $this->id_penilaian)
+            ->update([
+                'id_akunsiswa'  => $this->id_akunsiswa,
+                'id_guru'       => $this->id_guru,
+                'id_kelas'      => $this->id_kelas,
+                'tgl_penilaian' => $this->tgl_penilaian,
+            ]);
 
-        // update NilaiSiswa
-        NilaiSiswa::where('id_nilai', $this->id_nilai)->update([
-            'id_aspek' => $this->id_aspek,
-            'nilai'    => $this->nilai,
-            'skor'     => $this->skor,
-        ]);
+        // update detail nilai
+        NilaiSiswa::where('id_nilai', $this->id_nilai)
+            ->update([
+                'id_aspek' => $this->id_aspek,
+                'nilai'    => $this->nilai,
+                'skor'     => $this->skor,
+            ]);
 
         $this->reset([
-            'open',
-            'id_nilai','id_penilaian',
-            'id_guru','id_kelas','id_semester','tgl_penilaian',
+            'open','id_nilai','id_penilaian',
+            'id_kelas','tgl_penilaian',
             'id_aspek','nilai','skor'
         ]);
-        $this->dispatchBrowserEvent('notify', 'Nilai siswa berhasil diupdate');
+
         $this->dispatch('refreshDatatable');
     }
 

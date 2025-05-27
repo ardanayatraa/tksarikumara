@@ -27,7 +27,6 @@ class Add extends Component
         ]);
 
         $this->reset(['open', 'namaKelas', 'tahunAjaran', 'jumlahSiswa']);
-        $this->dispatchBrowserEvent('notify', 'Kelas berhasil ditambahkan');
         $this->dispatch('refreshDatatable');
     }
 

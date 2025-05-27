@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string('kode_aspek')->unique();
             $table->string('nama_aspek');
             $table->string('kategori');
+            $table->unsignedBigInteger('parent_id')->nullable();
+            $table->unsignedBigInteger('min_umur')->nullable();
+            $table->unsignedBigInteger('max_umur')->nullable();
             $table->timestamps();
         });
     }

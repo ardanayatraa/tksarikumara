@@ -55,6 +55,6 @@ class NilaiSiswaTable extends DataTableComponent
 
     public function delete($id): void
     {
-        $this->dispatch('deleteNilaiSiswa', $id);
+        $this->dispatch('delete', $id);
     }
 }

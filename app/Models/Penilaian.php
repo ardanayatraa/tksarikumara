@@ -17,53 +17,44 @@ class Penilaian extends Model
         'id_akunsiswa',
         'id_guru',
         'id_kelas',
-        'id_semester',
         'tgl_penilaian',
     ];
 
     /**
-     * Relasi ke AkunSiswa.
-     */
+    * Relasi ke AkunSiswa.
+    */
     public function akunSiswa(): BelongsTo
     {
         return $this->belongsTo(AkunSiswa::class, 'id_akunsiswa');
     }
 
     /**
-     * Relasi ke Guru.
-     */
+    * Relasi ke Guru.
+    */
     public function guru(): BelongsTo
     {
         return $this->belongsTo(Guru::class, 'id_guru');
     }
 
     /**
-     * Relasi ke Kelas.
-     */
+    * Relasi ke Kelas.
+    */
     public function kelas(): BelongsTo
     {
         return $this->belongsTo(Kelas::class, 'id_kelas');
     }
 
     /**
-     * Relasi ke Semester.
-     */
-    public function semester(): BelongsTo
-    {
-        return $this->belongsTo(Semester::class, 'id_semester');
-    }
-
-    /**
-     * Relasi ke detail NilaiSiswa.
-     */
+    * Relasi ke detail NilaiSiswa.
+    */
     public function nilaiSiswa(): HasMany
     {
         return $this->hasMany(NilaiSiswa::class, 'id_penilaian');
     }
 
     /**
-     * Relasi ke Notifikasi.
-     */
+    * Relasi ke Notifikasi.
+    */
     public function notifikasi(): HasMany
     {
         return $this->hasMany(Notifikasi::class, 'id_penilaian');

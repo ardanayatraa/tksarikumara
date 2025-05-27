@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('kepala_sekolah', function (Blueprint $table) {
             $table->id('id_kepalasekolah');
+            $table->string('foto');
             $table->string('namaKepalaSekolah');
             $table->string('nip')->unique();
             $table->string('email')->unique();
