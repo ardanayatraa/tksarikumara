@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\AspekPenilaian;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -21,6 +23,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             AccountSeeder::class,
+            AspekPenilaianSeeder::class,
             // Tambahkan seeder lain yang ingin dijalankan
         ]);
     }
