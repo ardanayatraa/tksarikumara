@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('aspek_penilaian', function (Blueprint $table) {
             $table->id('id_aspek');
-            $table->string('kode_aspek')->unique();
+            $table->string('kode_aspek');
             $table->string('nama_aspek');
             $table->string('kategori');
             $table->unsignedBigInteger('parent_id')->nullable();
