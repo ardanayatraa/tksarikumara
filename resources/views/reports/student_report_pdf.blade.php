@@ -32,17 +32,31 @@
 </head>
 
 <body>
-    <h3 style="text-align: center;">Format Penilaian Perkembangan Anak</h3>
+    <h3 style="text-align: center;">Penilaian Perkembangan Anak</h3>
 
     <table>
         <tr>
             <td class="no-border">
                 <strong>Nama Anak:</strong> {{ $student->namaSiswa }}<br>
-                <strong>Usia:</strong> {{ $student->usia ?? now()->diffInYears($student->tgl_lahir) . ' tahun' }}<br>
+                <strong>Usia:</strong>
+                {{-- Fallback: hitung umur jika tidak ada field usia --}}
+                @php
+                    $usia = isset($student->usia)
+                        ? $student->usia
+                        : \Carbon\Carbon::parse($student->tgl_lahir)->age . ' tahun';
+                @endphp
+                {{ $usia }}<br>
                 <strong>Periode Penilaian:</strong> {{ \Carbon\Carbon::parse($start)->format('d M Y') }} s/d
                 {{ \Carbon\Carbon::parse($end)->format('d M Y') }}<br>
                 <strong>Tanggal Cetak:</strong> {{ now()->format('d M Y') }}<br>
-                <strong>Nama Guru:</strong> {{ $student->guru ?? '-' }}
+                <strong>Nama Guru:</strong>
+                @if (isset($student->guru))
+                    {{ $student->guru }}
+                @elseif (isset($student->kelas) && isset($student->kelas->guru))
+                    {{ $student->kelas->guru->namaGuru }}
+                @else
+                    -
+                @endif
             </td>
         </tr>
     </table>
@@ -77,10 +91,10 @@
 
     <h4>Kesimpulan Penilaian</h4>
     <ul>
-        <li>BSB (Berkembang Sangat Baik): 4</li>
-        <li>BSH (Berkembang Sesuai Harapan): 3</li>
-        <li>MB (Mulai Berkembang):2</li>
-        <li>BB (Belum Berkembang): 1</li>
+        <li>BSB (Berkembang Sangat Baik): <strong>{{ $summary['BSB'] }}</strong></li>
+        <li>BSH (Berkembang Sesuai Harapan): <strong>{{ $summary['BSH'] }}</strong></li>
+        <li>MB (Mulai Berkembang): <strong>{{ $summary['MB'] }}</strong></li>
+        <li>BB (Belum Berkembang): <strong>{{ $summary['BB'] }}</strong></li>
     </ul>
 
     <strong>Rekomendasi Guru:</strong><br>

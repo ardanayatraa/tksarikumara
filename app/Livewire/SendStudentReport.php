@@ -67,20 +67,18 @@ class SendStudentReport extends Component
         $this->open = false;
     }
 
-    // Method download laporan PDF
-    public function downloadReport()
+public function downloadReport()
 {
     $student = AkunSiswa::findOrFail($this->id_akunsiswa);
 
-    // Hitung summary sesuai kategori skor yang digunakan
+    // Summary, cocokkan field dengan yang ada di records (biasanya 'nilai', bukan 'skor'!)
     $summary = [
-        'BSB' => collect($this->records)->where('skor', 'BSB')->count(),
-        'BSH' => collect($this->records)->where('skor', 'BSH')->count(),
-        'MB'  => collect($this->records)->where('skor', 'MB')->count(),
-        'BB'  => collect($this->records)->where('skor', 'BB')->count(),
+        'BSB' => collect($this->records)->where('nilai', 'BSB')->count(),
+        'BSH' => collect($this->records)->where('nilai', 'BSH')->count(),
+        'MB'  => collect($this->records)->where('nilai', 'MB')->count(),
+        'BB'  => collect($this->records)->where('nilai', 'BB')->count(),
     ];
 
-    // Load tampilan Blade yang telah disesuaikan
     $pdf = Pdf::loadView('reports.student_report_pdf', [
         'student' => $student,
         'records' => $this->records,
@@ -91,9 +89,10 @@ class SendStudentReport extends Component
 
     return response()->streamDownload(
         fn () => print($pdf->output()),
-        'laporan-perkembangan-'.$student->namaSiswa.'.pdf'
+        'laporan-perkembangan-' . $student->namaSiswa . '.pdf'
     );
 }
+
 
 
     public function render()
