@@ -58,7 +58,7 @@
         </x-slot>
 
         <x-slot name="footer">
-            @if (!Route::currentRouteName() == 'dashboard.siswa')
+            @if (Route::currentRouteName() !== 'dashboard.siswa')
                 <x-button wire:click="sendEmail">Kirim Email</x-button>
             @endif
 
