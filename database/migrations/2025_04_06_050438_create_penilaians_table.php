@@ -16,7 +16,6 @@ return new class extends Migration
             $table->unsignedInteger('id_akunsiswa');
             $table->unsignedInteger('id_guru');
             $table->unsignedInteger('id_kelas');
-            $table->unsignedInteger('id_semester');
             $table->date('tgl_penilaian');
 
             $table->timestamps();
