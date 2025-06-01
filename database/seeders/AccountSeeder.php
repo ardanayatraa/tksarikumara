@@ -8,6 +8,7 @@ use App\Models\Admin;
 use App\Models\Guru;
 use App\Models\KepalaSekolah;
 use App\Models\AkunSiswa;
+use App\Models\Kelas;
 
 class AccountSeeder extends Seeder
 {
@@ -42,11 +43,17 @@ class AccountSeeder extends Seeder
             'password' => Hash::make('password'),
         ]);
 
+            $kelas=Kelas::create([
+            'namaKelas'=>'A',
+            'tahunAjaran'=>'2025',
+            'jumlahSiswa'=>'10',
+            ]);
         // Akun Siswa
         AkunSiswa::create([
-            'id_kelas' => 1, // Pastikan kelas id 1 udah ada ya
+            'id_kelas' => $kelas->id_kelas, // Pastikan kelas id 1 udah ada ya
             'nisn' => '0067890123',
             'namaSiswa' => 'Siswa Ganteng',
+            'namaOrangTua' => 'Orang Tua Siswa Ganteng',
             'tgl_lahir' => '2007-05-12',
             'jenis_kelamin' => 'L',
             'alamat' => 'Jl. Pendidikan No. 7',

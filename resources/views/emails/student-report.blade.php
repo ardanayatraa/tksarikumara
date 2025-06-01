@@ -19,6 +19,7 @@
         <thead>
             <tr style="background-color: #f0f0f0;">
                 <th style="border: 1px solid #ccc; padding: 8px; text-align:left;">Tanggal</th>
+                <th style="border: 1px solid #ccc; padding: 8px; text-align:left;">Kode Aspek</th>
                 <th style="border: 1px solid #ccc; padding: 8px; text-align:left;">Aspek</th>
                 <th style="border: 1px solid #ccc; padding: 8px; text-align:center;">Nilai</th>
                 <th style="border: 1px solid #ccc; padding: 8px; text-align:right;">Skor</th>
@@ -29,6 +30,9 @@
                 <tr>
                     <td style="border: 1px solid #ccc; padding: 8px;">
                         {{ \Carbon\Carbon::parse($r['tgl_penilaian'])->format('d M Y') }}
+                    </td>
+                    <td style="border: 1px solid #ccc; padding: 8px;">
+                        {{ $r['kode_aspek'] }}
                     </td>
                     <td style="border: 1px solid #ccc; padding: 8px;">
                         {{ $r['nama_aspek'] }}
@@ -42,13 +46,17 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" style="border: 1px solid #ccc; padding: 8px; text-align:center; color:#888;">
+                    <td colspan="5" style="border: 1px solid #ccc; padding: 8px; text-align:center; color:#888;">
                         Tidak ada data ditemukan.
                     </td>
                 </tr>
             @endforelse
         </tbody>
     </table>
+
+    <p style="margin-top: 20px;">
+        Laporan lengkap bisa dilihat pada file PDF terlampir.
+    </p>
 
     <p style="margin-top: 20px;">Terima kasih,<br>{{ config('app.name') }}</p>
 </body>

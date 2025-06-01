@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\CustomAuthenticatedSessionController;
+use App\Http\Livewire\AkunSiswa\Profil;
 use App\Mail\MailToParent;
 use Illuminate\Support\Facades\Mail;
 
@@ -37,6 +38,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/master-data', function () {
         return view('admin.master-data');
     })->name('admin.master-data');
+
+      Route::get('/profil-admin', function () {
+        return view('admin.profil');
+    })->name('profil.admin');
+
 });
 
 // Guru
@@ -56,6 +62,11 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
     Route::get('/guru/penilaian/{id}', function ($id) {
         return view('guru.penilaian-detail', ['id' => $id]);
     })->name('guru.penilaian.detail');
+
+     Route::get('/profil-guru', function () {
+        return view('guru.profil');
+    })->name('profil.guru');
+
 });
 
 // Siswa
@@ -63,6 +74,10 @@ Route::middleware(['auth', 'role:siswa'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard.siswa');
+    Route::get('/profil-siswa', function () {
+        return view('siswa.profil');
+    })->name('profil.siswa');
+
 });
 
 // Kepala Sekolah
@@ -70,6 +85,18 @@ Route::middleware(['auth', 'role:kepsek'])->group(function () {
     Route::get('/kepsek/dashboard', function () {
         return view('kepsek.dashboard');
     })->name('dashboard.kepsek');
+    Route::get('/kepsek/penilaian', function () {
+        return view('kepsek.penilaian');
+    })->name('penilaian.kepsek');
+
+       Route::get('kepsek/profil-kepala-sekolah', function () {
+        return view('kepsek.profil');
+    })->name('profil.kepala-sekolah');
+
+        Route::get('/kepsek/penilaian/{id}', function ($id) {
+        return view('kepsek.penilaian-detail', ['id' => $id]);
+    })->name('kepsek.penilaian.detail');
+
 });
 
 

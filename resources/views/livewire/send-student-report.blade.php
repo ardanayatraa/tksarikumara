@@ -1,5 +1,9 @@
 <div>
-    <x-button wire:click="$set('open',true)">Kirim Email Laporan</x-button>
+    @if (!Route::currentRouteName() == 'dashboard.siswa')
+        <x-button wire:click="$set('open',true)">Kirim Email Laporan</x-button>
+    @else
+        <x-button wire:click="$set('open',true)">Print</x-button>
+    @endif
 
     <x-dialog-modal wire:model="open" max-width="2xl">
         <x-slot name="title">Filter Rentang Tanggal</x-slot>
@@ -54,7 +58,10 @@
         </x-slot>
 
         <x-slot name="footer">
-            <x-button wire:click="sendEmail">Kirim Email</x-button>
+            @if (!Route::currentRouteName() == 'dashboard.siswa')
+                <x-button wire:click="sendEmail">Kirim Email</x-button>
+            @endif
+
             <x-secondary-button wire:click="downloadReport" class="ml-2">Download PDF</x-secondary-button>
             <x-secondary-button wire:click="$set('open',false)" class="ml-2">Batal</x-secondary-button>
         </x-slot>

@@ -14,17 +14,18 @@ export default {
     theme: {
         extend: {
 
-            colors: {
-                primary: '#3498DB',
-                secondary: '#2ECC71',
-                accent: '#FF9800',
-                yellow: '#FFC312',
-                teal: '#1ABC9C',
-                orange: '#E67E22',
-                dark: '#2C3E50',
-                'dark-blue': '#1e3a8a',
-                'light-blue': '#e0f2fe',
-            },
+          colors: {
+                        primary: '#10B981', // Emerald-500 - Light green primary
+                        secondary: '#34D399', // Emerald-400 - Lighter green
+                        accent: '#059669', // Emerald-600 - Darker green accent
+                        yellow: '#FCD34D', // Amber-300
+                        teal: '#14B8A6', // Teal-500
+                        orange: '#F59E0B', // Amber-500
+                        dark: '#064E3B', // Emerald-900 - Dark green instead of blue
+                        'dark-green': '#065F46', // Emerald-800
+                        'light-green': '#D1FAE5', // Emerald-100
+                        'soft-green': '#A7F3D0', // Emerald-200
+                    },
             fontFamily: {
                 sans: ['Nunito', 'sans-serif'],
                 display: ['Fredoka One', 'cursive'],

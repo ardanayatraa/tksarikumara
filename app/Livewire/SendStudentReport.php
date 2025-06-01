@@ -39,11 +39,19 @@ class SendStudentReport extends Component
             ->whereBetween('tgl_penilaian', [$this->start, $this->end])
             ->join('nilai_siswa', 'penilaian.id_penilaian', '=', 'nilai_siswa.id_penilaian')
             ->join('aspek_penilaian', 'nilai_siswa.id_aspek', '=', 'aspek_penilaian.id_aspek')
-            ->select('penilaian.tgl_penilaian', 'aspek_penilaian.nama_aspek', 'aspek_penilaian.kategori', 'nilai_siswa.nilai', 'nilai_siswa.skor')
+            ->select(
+                'penilaian.tgl_penilaian',
+                'aspek_penilaian.kode_aspek',
+                'aspek_penilaian.nama_aspek',
+                'aspek_penilaian.kategori',
+                'nilai_siswa.nilai',
+                'nilai_siswa.skor'
+            )
             ->orderBy('tgl_penilaian')
             ->get()
             ->toArray();
     }
+
 
     public function sendEmail()
     {
@@ -61,27 +69,32 @@ class SendStudentReport extends Component
 
     // Method download laporan PDF
     public function downloadReport()
-    {
-        $student = AkunSiswa::findOrFail($this->id_akunsiswa);
+{
+    $student = AkunSiswa::findOrFail($this->id_akunsiswa);
 
-        $summary = [
-            'BSB' => collect($this->records)->where('skor', 'BSB')->count(),
-            'BSH' => collect($this->records)->where('skor', 'BSH')->count(),
-            'MB'  => collect($this->records)->where('skor', 'MB')->count(),
-            'BB'  => collect($this->records)->where('skor', 'BB')->count(),
-        ];
+    // Hitung summary sesuai kategori skor yang digunakan
+    $summary = [
+        'BSB' => collect($this->records)->where('skor', 'BSB')->count(),
+        'BSH' => collect($this->records)->where('skor', 'BSH')->count(),
+        'MB'  => collect($this->records)->where('skor', 'MB')->count(),
+        'BB'  => collect($this->records)->where('skor', 'BB')->count(),
+    ];
 
-        $pdf = Pdf::loadView('reports.student_report_pdf', [
-            'student' => $student,
-            'records' => $this->records,
-            'summary' => $summary,
-        ]);
+    // Load tampilan Blade yang telah disesuaikan
+    $pdf = Pdf::loadView('reports.student_report_pdf', [
+        'student' => $student,
+        'records' => $this->records,
+        'summary' => $summary,
+        'start' => $this->start,
+        'end' => $this->end,
+    ]);
 
-        return response()->streamDownload(
-            fn () => print($pdf->output()),
-            'laporan-perkembangan-'.$student->namaSiswa.'.pdf'
-        );
-    }
+    return response()->streamDownload(
+        fn () => print($pdf->output()),
+        'laporan-perkembangan-'.$student->namaSiswa.'.pdf'
+    );
+}
+
 
     public function render()
     {

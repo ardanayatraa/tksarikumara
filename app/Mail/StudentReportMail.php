@@ -34,6 +34,8 @@ class StudentReportMail extends Mailable
             'student' => $this->student,
             'records' => $this->records,
             'summary' => $summary,
+            'start' => $this->start,
+            'end' => $this->end,
         ]);
 
         return $this->subject('Laporan Perkembangan Anak')

@@ -5,6 +5,7 @@ namespace App\Livewire\Table;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\AkunSiswa;
+use Illuminate\Support\Facades\Auth;
 use Rappasoft\LaravelLivewireTables\Views\Columns\LinkColumn;
 
 class PenilaianSiswaTable extends DataTableComponent
@@ -40,9 +41,15 @@ class PenilaianSiswaTable extends DataTableComponent
                 ->sortable(),
 
 
-                LinkColumn::make('Action')
+              LinkColumn::make('Action')
                 ->title(fn($row) => 'Lihat Nilai')
-                ->location(fn($row) => route('guru.penilaian.detail', $row))
+                ->location(function($row) {
+                    if (Auth::guard('kepsek')->check()) {
+                        return route('kepsek.penilaian.detail', $row);
+                    }
+                    // Default guru
+                    return route('guru.penilaian.detail', $row);
+                })
                 ->attributes(fn($row) => [
                     'class' => 'text-blue-600 hover:underline font-semibold',
                 ]),

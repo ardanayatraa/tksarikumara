@@ -3,26 +3,19 @@
         <div class="bg-white overflow-hidden shadow sm:rounded-lg">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
 
-                <!-- Add Nilai Siswa, Send Student Report, & Tombol Grafik (3 kolom) -->
-                <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-8 bg-gray-50 p-4 rounded-md shadow-sm">
-                    <!-- Kolom 1: Add Nilai Siswa (Rata Tengah) -->
-                    <div class="w-full flex justify-center">
-                        @livewire('nilai-siswa.add', ['id_akunsiswa' => $id])
-                    </div>
-
-                    <!-- Kolom 2: Send Student Report (Rata Tengah) -->
-                    <div class="w-full flex justify-center">
+                <div class="md:col-span-2 flex flex-col md:flex-row gap-6 bg-gray-50 p-4 rounded-md shadow-sm">
+                    <div class="flex-1 flex justify-center items-center">
                         @livewire('send-student-report', ['id_akunsiswa' => $id])
                     </div>
-
-                    <!-- Kolom 3: Tombol Buka Modal Grafik (Rata Tengah) -->
-                    <div class="w-full flex justify-center">
+                    <div class="flex-1 flex justify-center items-center">
                         <button id="openChartModal"
                             class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             Tampilkan Grafik
                         </button>
                     </div>
+
                 </div>
+
 
                 @livewire('nilai-siswa.update', ['id_akunsiswa' => $id])
                 @livewire('nilai-siswa.delete')
