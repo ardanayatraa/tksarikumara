@@ -53,7 +53,7 @@
                 @if (isset($student->guru))
                     {{ $student->guru }}
                 @elseif (isset($student->kelas) && isset($student->kelas->guru))
-                    {{ $student->kelas->guru->namaGuru }}
+                    {{ $student->penilaian->guru->namaGuru }}
                 @else
                     -
                 @endif
