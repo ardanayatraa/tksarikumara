@@ -139,9 +139,47 @@
                             class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
                     </a>
                     <a href="#kontak"
-                        class="bg-primary hover:bg-secondary text-white px-6 py-2 rounded-full transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
+                        class="text-gray-700 hover:text-primary transition-all duration-300 font-medium relative group">
                         Kontak
+                        <span
+                            class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
                     </a>
+                    @php
+                        // Cek semua guard sesuai projectmu
+                        $isAdmin = Auth::guard('admin')->check();
+                        $isGuru = Auth::guard('guru')->check();
+                        $isKepsek = Auth::guard('kepsek')->check();
+                        $isSiswa = Auth::guard('siswa')->check();
+                    @endphp
+
+                    @if ($isAdmin)
+                        <a href="{{ route('admin.dashboard') }}"
+                            class="bg-primary hover:bg-secondary text-white px-6 py-2 rounded-full transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
+                            Dashboard Admin
+                        </a>
+                    @elseif ($isGuru)
+                        <a href="{{ route('guru.dashboard') }}"
+                            class="bg-primary hover:bg-secondary text-white px-6 py-2 rounded-full transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
+                            Dashboard Guru
+                        </a>
+                    @elseif ($isKepsek)
+                        <a href="{{ route('kepsek.dashboard') }}"
+                            class="bg-primary hover:bg-secondary text-white px-6 py-2 rounded-full transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
+                            Dashboard Kepsek
+                        </a>
+                    @elseif ($isSiswa)
+                        <a href="{{ route('siswa.dashboard') }}"
+                            class="bg-primary hover:bg-secondary text-white px-6 py-2 rounded-full transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
+                            Dashboard Siswa
+                        </a>
+                    @else
+                        {{-- Belum login, tampilkan Login --}}
+                        <a href="{{ route('login') }}"
+                            class="bg-primary hover:bg-secondary text-white px-6 py-2 rounded-full transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
+                            Login
+                        </a>
+                    @endif
+
                 </div>
                 <div class="lg:hidden">
                     <button id="menu-toggle" class="focus:outline-none">
