@@ -54,7 +54,7 @@ class AccountSeeder extends Seeder
             'nisn' => '0067890123',
             'namaSiswa' => 'Siswa Ganteng',
             'namaOrangTua' => 'Orang Tua Siswa Ganteng',
-            'tgl_lahir' => '2007-05-12',
+            'tgl_lahir' => '2022-02-06',
             'jenis_kelamin' => 'L',
             'alamat' => 'Jl. Pendidikan No. 7',
             'email' => 'siswa@example.com',
