@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\CustomAuthenticatedSessionController;
 use App\Http\Livewire\AkunSiswa\Profil;
 use App\Mail\MailToParent;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\Auth\RegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,12 @@ Route::post('/login', [CustomAuthenticatedSessionController::class, 'store'])->n
 
 Route::post('/logout', [CustomAuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
+
+
+Route::middleware('guest')->group(function () {
+    Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('register', [RegisterController::class, 'register']);
+});
 
 // Admin
 Route::middleware(['auth', 'role:admin'])->group(function () {

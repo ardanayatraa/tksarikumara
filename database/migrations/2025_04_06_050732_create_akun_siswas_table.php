@@ -13,14 +13,16 @@ return new class extends Migration
     {
         Schema::create('akun_siswa', function (Blueprint $table) {
             $table->id('id_akunsiswa');
-            $table->unsignedBigInteger('id_kelas');
+            $table->unsignedBigInteger('id_kelas')->nullable();
             $table->string('nisn')->unique();
-            $table->string('namaSiswa');
+            $table->string('namaSiswa')->nullable();
             $table->string('foto')->nullable();
-            $table->string('namaOrangTua')->nullable();
-            $table->date('tgl_lahir');
+            $table->string('namaOrangTua')->nullable(
+
+            );
+            $table->date('tgl_lahir')->nullable();
             $table->enum('jenis_kelamin', ['L', 'P']);
-            $table->text('alamat');
+            $table->text('alamat')->nullable();
             $table->string('email')->unique();
             $table->string('username')->unique();
             $table->string('password');

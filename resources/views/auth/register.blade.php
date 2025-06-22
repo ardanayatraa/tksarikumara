@@ -122,31 +122,7 @@
                     </div>
                 </div>
 
-                <!-- Terms and Conditions -->
-                @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
-                    <div class="mt-4">
-                        <div class="flex items-start">
-                            <input name="terms" id="terms" type="checkbox" required
-                                class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded mt-1">
-                            <div class="ml-3 text-sm">
-                                {!! __('I agree to the :terms_of_service and :privacy_policy', [
-                                    'terms_of_service' =>
-                                        '<a target="_blank" href="' .
-                                        route('terms.show') .
-                                        '" class="underline text-primary-dark hover:text-primary transition-colors duration-300">' .
-                                        __('Terms of Service') .
-                                        '</a>',
-                                    'privacy_policy' =>
-                                        '<a target="_blank" href="' .
-                                        route('policy.show') .
-                                        '" class="underline text-primary-dark hover:text-primary transition-colors duration-300">' .
-                                        __('Privacy Policy') .
-                                        '</a>',
-                                ]) !!}
-                            </div>
-                        </div>
-                    </div>
-                @endif
+
 
                 <div class="flex flex-col md:flex-row items-center justify-between gap-4 pt-4">
                     <a href="{{ route('login') }}"
