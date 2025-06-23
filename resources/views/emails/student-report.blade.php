@@ -37,7 +37,7 @@
         <strong>Nama:</strong> {{ $student->namaSiswa }}<br>
         <strong>Periode:</strong>
         {{ \Carbon\Carbon::parse($start)->format('d M Y') }}
-        s/d
+        sampai
         {{ \Carbon\Carbon::parse($end)->format('d M Y') }}
     </p>
 
@@ -50,8 +50,8 @@
                 <th>Kode Indikator</th>
                 <th>Indikator</th>
                 <th>Kategori</th>
-                <th>Nilai</th>
-                <th>Skor</th>
+                <th style="text-align:center;">Nilai</th>
+                <th style="text-align:right;">Skor</th>
             </tr>
         </thead>
         <tbody>
@@ -68,7 +68,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" style="text-align:center;color:#888;">
+                    <td colspan="8" style="text-align:center; color:#888;">
                         Tidak ada data ditemukan.
                     </td>
                 </tr>
@@ -78,14 +78,13 @@
 
     <h4>Kesimpulan Penilaian</h4>
     <ul>
-        <li>BSB (Berkembang Sangat Baik): <strong>{{ $summary['BSB'] }}</strong></li>
-        <li>BSH (Berkembang Sesuai Harapan): <strong>{{ $summary['BSH'] }}</strong></li>
+        <li>BSB (Sangat Baik): <strong>{{ $summary['BSB'] }}</strong></li>
+        <li>BSH (Sesuai Harapan): <strong>{{ $summary['BSH'] }}</strong></li>
         <li>MB (Mulai Berkembang): <strong>{{ $summary['MB'] }}</strong></li>
         <li>BB (Belum Berkembang): <strong>{{ $summary['BB'] }}</strong></li>
     </ul>
 
-    <p>Laporan lengkap terlampir pada file PDF.</p>
-
+    <p>Silakan lihat lampiran PDF untuk detail lengkap.</p>
     <p>Terima kasih,<br>{{ config('app.name') }}</p>
 </body>
 
