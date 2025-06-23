@@ -17,25 +17,26 @@ class StudentReportMail extends Mailable
     {
         $this->student = $student;
         $this->records = $records;
-        $this->start = $start;
-        $this->end = $end;
+        $this->start   = $start;
+        $this->end     = $end;
     }
 
     public function build()
     {
+        // Summary berdasarkan nilai (BSB, BSH, MB, BB)
         $summary = [
-            'BSB' => collect($this->records)->where('skor', 'BSB')->count(),
-            'BSH' => collect($this->records)->where('skor', 'BSH')->count(),
-            'MB'  => collect($this->records)->where('skor', 'MB')->count(),
-            'BB'  => collect($this->records)->where('skor', 'BB')->count(),
+            'BSB' => collect($this->records)->where('nilai', 'BSB')->count(),
+            'BSH' => collect($this->records)->where('nilai', 'BSH')->count(),
+            'MB'  => collect($this->records)->where('nilai', 'MB')->count(),
+            'BB'  => collect($this->records)->where('nilai', 'BB')->count(),
         ];
 
         $pdf = Pdf::loadView('reports.student_report_pdf', [
             'student' => $this->student,
             'records' => $this->records,
             'summary' => $summary,
-            'start' => $this->start,
-            'end' => $this->end,
+            'start'   => $this->start,
+            'end'     => $this->end,
         ]);
 
         return $this->subject('Laporan Perkembangan Anak')
