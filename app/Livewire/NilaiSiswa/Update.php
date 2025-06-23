@@ -26,13 +26,14 @@ class Update extends Component
     public $tgl_penilaian;
 
     // detail NilaiSiswa
-    public $id_aspek;
+    public $indikator_aspek_id;
     public $nilai;
     public $skor;
+    public $catatan;
 
     // dropdown data
     public $kelasList   = [];
-    public $aspekGroups = []; // parent + children
+    public $aspekGroups = [];
 
     public $nilaiOptions = [
         'BSB' => 4,
@@ -46,36 +47,34 @@ class Update extends Component
     protected function rules()
     {
         return [
-            'id_kelas'      => 'required|exists:kelas,id_kelas',
-            'tgl_penilaian' => 'required|date',
-            'id_aspek'      => 'required|exists:aspek_penilaian,id_aspek',
-            'nilai'         => 'required|in:BSB,BSH,MB,BB',
-            'skor'          => 'required|numeric|min:1|max:4',
+            'id_kelas'             => 'required|exists:kelas,id_kelas',
+            'tgl_penilaian'        => 'required|date',
+            'indikator_aspek_id'   => 'required|exists:indikator_aspek,id',
+            'nilai'                => 'required|in:BSB,BSH,MB,BB',
+            'skor'                 => 'required|numeric|min:1|max:4',
+            'catatan'              => 'nullable|string',
         ];
     }
 
     public function mount($id_akunsiswa)
     {
-
         $this->id_akunsiswa = $id_akunsiswa;
-        // auto-set guru yg login
         $this->id_guru   = optional(Auth::guard('guru')->user())->id_guru;
         $this->kelasList = Kelas::all();
 
-        // hitung umur & muat aspek sesuai umur
         $siswa = AkunSiswa::findOrFail($id_akunsiswa);
         $umur   = Carbon::parse($siswa->tgl_lahir)->age;
 
-        $this->aspekGroups = AspekPenilaian::whereNull('parent_id')
-            ->where('min_umur', '<=', $umur)
-            ->where('max_umur', '>=', $umur)
-            ->with(['children' => function($q) use ($umur) {
+        // muat semua aspek + indikator sesuai umur
+        $this->aspekGroups = AspekPenilaian::with(['indikator' => function($q) use ($umur) {
                 $q->where('min_umur', '<=', $umur)
                   ->where('max_umur', '>=', $umur)
-                  ->orderBy('kode_aspek');
+                  ->orderBy('kode_indikator');
             }])
             ->orderBy('kode_aspek')
-            ->get();
+            ->get()
+            ->filter(fn($asp) => $asp->indikator->isNotEmpty())
+            ->values();
     }
 
     public function editModal($id_nilai)
@@ -83,16 +82,16 @@ class Update extends Component
         $detail = NilaiSiswa::findOrFail($id_nilai);
         $pen    = Penilaian::findOrFail($detail->id_penilaian);
 
-        $this->id_nilai      = $detail->id_nilai;
-        $this->id_penilaian  = $pen->id_penilaian;
-        $this->id_akunsiswa  = $pen->id_akunsiswa;
-        // guru tidak bisa diubah
-        $this->id_kelas      = $pen->id_kelas;
-        $this->tgl_penilaian = $pen->tgl_penilaian;
+        $this->id_nilai            = $detail->id_nilai;
+        $this->id_penilaian        = $pen->id_penilaian;
+        $this->id_akunsiswa        = $pen->id_akunsiswa;
+        $this->id_kelas            = $pen->id_kelas;
+        $this->tgl_penilaian       = $pen->tgl_penilaian;
 
-        $this->id_aspek = $detail->id_aspek;
-        $this->nilai    = $detail->nilai;
-        $this->skor     = $detail->skor;
+        $this->indikator_aspek_id  = $detail->indikator_aspek_id;
+        $this->nilai               = $detail->nilai;
+        $this->skor                = $detail->skor;
+        $this->catatan             = $detail->catatan;
 
         $this->open = true;
     }
@@ -109,8 +108,6 @@ class Update extends Component
         // update header penilaian
         Penilaian::where('id_penilaian', $this->id_penilaian)
             ->update([
-                'id_akunsiswa'  => $this->id_akunsiswa,
-                'id_guru'       => $this->id_guru,
                 'id_kelas'      => $this->id_kelas,
                 'tgl_penilaian' => $this->tgl_penilaian,
             ]);
@@ -118,15 +115,17 @@ class Update extends Component
         // update detail nilai
         NilaiSiswa::where('id_nilai', $this->id_nilai)
             ->update([
-                'id_aspek' => $this->id_aspek,
-                'nilai'    => $this->nilai,
-                'skor'     => $this->skor,
+                'indikator_aspek_id' => $this->indikator_aspek_id,
+                'nilai'              => $this->nilai,
+                'skor'               => $this->skor,
+                'catatan'            => $this->catatan,
             ]);
 
+        // reset state
         $this->reset([
             'open','id_nilai','id_penilaian',
             'id_kelas','tgl_penilaian',
-            'id_aspek','nilai','skor'
+            'indikator_aspek_id','nilai','skor','catatan'
         ]);
 
         $this->dispatch('refreshDatatable');

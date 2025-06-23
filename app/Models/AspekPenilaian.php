@@ -18,14 +18,8 @@ class AspekPenilaian extends Model
 
     public $timestamps = false;
 
-    protected $fillable = [
-        'kode_aspek',
-        'nama_aspek',
-        'kategori',
-        'parent_id',
-        'min_umur',
-        'max_umur',
-    ];
+    protected $fillable = ['kode_aspek','nama_aspek','kategori'];
+
 
     /**
      * Relasi ke detail nilai siswa.
@@ -36,19 +30,8 @@ class AspekPenilaian extends Model
     }
 
 
-        /**
-     * Relasi ke sub-aspek (children).
-     */
-    public function children()
+     public function indikator()
     {
-        return $this->hasMany(self::class, 'parent_id', 'id_aspek');
-    }
-
-    /**
-     * Relasi ke parent-aspek (jika ini child).
-     */
-    public function parent()
-    {
-        return $this->belongsTo(self::class, 'parent_id', 'id_aspek');
+        return $this->hasMany(IndikatorAspek::class, 'aspek_id', 'id_aspek');
     }
 }

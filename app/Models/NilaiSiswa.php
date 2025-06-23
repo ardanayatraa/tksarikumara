@@ -16,7 +16,7 @@ class NilaiSiswa extends Model
 
     protected $fillable = [
         'id_penilaian',
-        'id_aspek',
+        'indikator_aspek_id',
         'nilai',
         'skor',
         'catatan',
@@ -30,11 +30,9 @@ class NilaiSiswa extends Model
         return $this->belongsTo(Penilaian::class, 'id_penilaian');
     }
 
-    /**
-     * Relasi ke AspekPenilaian (master aspek).
-     */
-    public function aspek(): BelongsTo
+     // relasi ke IndikatorAspek (child)
+    public function indikator(): BelongsTo
     {
-        return $this->belongsTo(AspekPenilaian::class, 'id_aspek');
+        return $this->belongsTo(IndikatorAspek::class, 'indikator_aspek_id');
     }
 }

@@ -3,25 +3,27 @@
 namespace App\Livewire\AspekPenilaian;
 
 use Livewire\Component;
-use App\Models\AspekPenilaian;
+use App\Models\IndikatorAspek;
 
 class Delete extends Component
 {
     public $open = false;
-    public $id_aspek;
+    public $id;
 
-    protected $listeners = ['deleteAspekPenilaian'];
+    protected $listeners = [
+        'deleteIndikatorAspek' // dari table
+    ];
 
-    public function deleteAspekPenilaian($id)
+    public function deleteIndikatorAspek($id)
     {
-        $this->id_aspek = $id;
-        $this->open     = true;
+        $this->id   = $id;
+        $this->open = true;
     }
 
-    public function destroy()
+    public function confirm()
     {
-        AspekPenilaian::where('id_aspek', $this->id_aspek)->delete();
-        $this->reset(['open', 'id_aspek']);
+        IndikatorAspek::destroy($this->id);
+        $this->open = false;
         $this->dispatch('refreshDatatable');
     }
 

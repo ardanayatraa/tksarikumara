@@ -5,8 +5,8 @@ namespace App\Livewire\NilaiSiswa;
 use Livewire\Component;
 use App\Models\NilaiSiswa;
 use App\Models\Penilaian;
-use App\Models\AspekPenilaian;
 use App\Models\AkunSiswa;
+use App\Models\IndikatorAspek;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -14,23 +14,23 @@ class Add extends Component
 {
     public $open = false;
 
-    // langsung terima dari parent
+    // Props from parent
     public $id_akunsiswa;
 
-    // field Penilaian
+    // Header penilaian
     public $id_guru;
-    public $id_kelas;       // di-set otomatis
-    public $kelasNama;      // untuk tampilan
+    public $id_kelas;
+    public $kelasNama;
     public $tgl_penilaian;
 
-    // detail NilaiSiswa
-    public $id_aspek;
+    // Detail nilai
+    public $indikator_aspek_id;
     public $nilai;
     public $skor;
+    public $catatan;
 
-    // data untuk dropdown aspek
-    public $aspekGroups = [];
-
+    // Data dropdown
+    public $indikatorGroups = [];   // grouped by aspek
     public $nilaiOptions = [
         'BSB' => 4,
         'BSH' => 3,
@@ -46,59 +46,48 @@ class Add extends Component
     public function mount($id_akunsiswa)
     {
         $this->id_akunsiswa = $id_akunsiswa;
+        $this->id_guru     = optional(Auth::guard('guru')->user())->id_guru;
 
-        // set id_guru dari guru yang login
-        $user = Auth::guard('guru')->user();
-        $this->id_guru = optional($user)->id_guru;
-
-        // ambil data siswa beserta kelas
         $siswa = AkunSiswa::with('kelas')->findOrFail($id_akunsiswa);
         $this->id_kelas  = $siswa->id_kelas;
         $this->kelasNama = $siswa->kelas->namaKelas;
 
-        // hitung umur untuk filter aspek
-        $umur = Carbon::parse($siswa->tgl_lahir)->age;
 
-        // muat aspek sesuai umur, plus children
-        $this->aspekGroups = AspekPenilaian::whereNull('parent_id')
-            ->where('min_umur', '<=', $umur)
-            ->where('max_umur', '>=', $umur)
-            ->with(['children' => function($q) use ($umur) {
-                $q->where('min_umur', '<=', $umur)
-                  ->where('max_umur', '>=', $umur)
-                  ->orderBy('kode_aspek');
-            }])
-            ->orderBy('kode_aspek')
-            ->get();
+        // Ambil indikator langsung dari IndikatorAspek, filter umur, eager aspek
+        $indicators = IndikatorAspek::with('aspek')
+          ->get();
+
+
+        // Group by aspek kode & nama
+        $this->indikatorGroups = $indicators
+            ->groupBy(fn($i) => "{$i->aspek->kode_aspek}. {$i->aspek->nama_aspek}")
+            ->all();
     }
 
     public function save()
     {
-        // validasi jika diperlukan
-        // $this->validate([
-        //     'tgl_penilaian' => 'required|date',
-        //     'id_aspek'      => 'required',
-        //     'nilai'         => 'required|in:BSB,BSH,MB,BB',
-        // ]);
+        $this->validate([
+            'tgl_penilaian'       => 'required|date',
+            'indikator_aspek_id'  => 'required|exists:indikator_aspek,id',
+            'nilai'               => 'required|in:BSB,BSH,MB,BB',
+        ]);
 
-        // simpan header penilaian
-        $penilaian = Penilaian::create([
+        $pen = Penilaian::create([
             'id_akunsiswa'  => $this->id_akunsiswa,
             'id_guru'       => $this->id_guru,
             'id_kelas'      => $this->id_kelas,
             'tgl_penilaian' => $this->tgl_penilaian,
         ]);
 
-        // simpan detail nilai
         NilaiSiswa::create([
-            'id_penilaian' => $penilaian->id_penilaian,
-            'id_aspek'     => $this->id_aspek,
-            'nilai'        => $this->nilai,
-            'skor'         => $this->skor,
+            'id_penilaian'        => $pen->id_penilaian,
+            'indikator_aspek_id'  => $this->indikator_aspek_id,
+            'nilai'               => $this->nilai,
+            'skor'                => $this->skor,
+            'catatan'             => $this->catatan,
         ]);
 
-        // reset form
-        $this->reset(['open','tgl_penilaian','id_aspek','nilai','skor']);
+        $this->reset(['open','tgl_penilaian','indikator_aspek_id','nilai','skor','catatan']);
         $this->dispatch('refreshDatatable');
     }
 

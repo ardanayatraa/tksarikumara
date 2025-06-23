@@ -1,9 +1,8 @@
+{{-- resources/views/livewire/send-student-report.blade.php --}}
 <div>
-    @if (!Route::currentRouteName() == 'dashboard.siswa')
-        <x-button wire:click="$set('open',true)">Kirim Email Laporan</x-button>
-    @else
-        <x-button wire:click="$set('open',true)">Print</x-button>
-    @endif
+    <x-button wire:click="$set('open', true)">
+        {{ auth()->guard('guru')->check() ? 'Kirim Email Laporan' : 'Print' }}
+    </x-button>
 
     <x-dialog-modal wire:model="open" max-width="2xl">
         <x-slot name="title">Filter Rentang Tanggal</x-slot>
@@ -32,6 +31,7 @@
                         <tr class="bg-gray-100">
                             <th class="p-2 border">Tanggal</th>
                             <th class="p-2 border">Aspek</th>
+                            <th class="p-2 border">Indikator</th>
                             <th class="p-2 border">Kategori</th>
                             <th class="p-2 border">Nilai</th>
                             <th class="p-2 border">Skor</th>
@@ -40,30 +40,32 @@
                     <tbody>
                         @forelse($records as $r)
                             <tr>
-                                <td class="p-2 border">{{ \Carbon\Carbon::parse($r['tgl_penilaian'])->format('d M Y') }}
+                                <td class="p-2 border">
+                                    {{ \Carbon\Carbon::parse($r['tgl_penilaian'])->format('d M Y') }}
                                 </td>
-                                <td class="p-2 border">{{ $r['nama_aspek'] }}</td>
+                                <td class="p-2 border">{{ $r['kode_aspek'] }}. {{ $r['nama_aspek'] }}</td>
+                                <td class="p-2 border">{{ $r['kode_indikator'] }}. {{ $r['nama_indikator'] }}</td>
                                 <td class="p-2 border">{{ $r['kategori'] }}</td>
                                 <td class="p-2 border">{{ $r['nilai'] }}</td>
                                 <td class="p-2 border">{{ $r['skor'] }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="p-2 border text-center text-gray-500">Tidak ada data</td>
+                                <td colspan="6" class="p-2 border text-center text-gray-500">
+                                    Tidak ada data
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </x-slot>
-
         <x-slot name="footer">
             @if (auth()->guard('guru')->check())
                 <x-button wire:click="sendEmail">Kirim Email</x-button>
             @endif
-
             <x-secondary-button wire:click="downloadReport" class="ml-2">Download PDF</x-secondary-button>
-            <x-secondary-button wire:click="$set('open',false)" class="ml-2">Batal</x-secondary-button>
+            <x-secondary-button wire:click="$set('open', false)" class="ml-2">Batal</x-secondary-button>
         </x-slot>
     </x-dialog-modal>
 

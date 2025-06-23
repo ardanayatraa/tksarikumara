@@ -2,41 +2,51 @@
 
 namespace App\Livewire\Table;
 
+use App\Models\IndikatorAspek;
+use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
-use App\Models\AspekPenilaian;
 
 class AspekPenilaianTable extends DataTableComponent
 {
-    protected $model = AspekPenilaian::class;
+    protected $model = IndikatorAspek::class;
 
     public function configure(): void
     {
-        // gunakan primary key yang sesuai dengan model
-        $this->setPrimaryKey('id_aspek');
+        // primary key sesuai migration: $table->id()
+        $this->setPrimaryKey('id');
+    }
+
+    public function builder(): Builder
+    {
+        // eager-load relasi ke aspek utama
+        return IndikatorAspek::query()
+            ->with('aspek');
     }
 
     public function columns(): array
     {
         return [
-            Column::make('Id Aspek', 'id_aspek')
+            Column::make('ID', 'id')
                 ->sortable(),
 
-            Column::make('Kode Aspek', 'kode_aspek')
+            Column::make('Kode Aspek', 'aspek.kode_aspek')
+                ->sortable(),
+            Column::make('Aspek Penilaian', 'aspek.nama_aspek')
                 ->sortable(),
 
-            Column::make('Nama Aspek', 'nama_aspek')
+            Column::make('Kode Indikator', 'kode_indikator')
                 ->sortable(),
 
-            Column::make('Kategori', 'kategori')
+            Column::make('Nama Indikator', 'nama_indikator')
                 ->sortable(),
 
-
+            Column::make('Min Umur (Tahun)', 'min_umur'),
+            Column::make('Max Umur (Tahun)', 'max_umur'),
 
             Column::make('Actions')
                 ->label(fn($row) => view('components.table-action', [
-                    'id'          => $row->id_aspek,
-
+                    'id' => $row->id,
                 ]))
                 ->html(),
         ];
@@ -44,11 +54,11 @@ class AspekPenilaianTable extends DataTableComponent
 
     public function edit($id): void
     {
-        $this->dispatch('editAspekPenilaian', $id);
+        $this->dispatch('editIndikatorAspek', $id);
     }
 
     public function delete($id): void
     {
-        $this->dispatch('deleteAspekPenilaian', $id);
+        $this->dispatch('deleteIndikatorAspek', $id);
     }
 }

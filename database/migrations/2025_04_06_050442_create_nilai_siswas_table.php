@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('nilai_siswa', function (Blueprint $table) {
             $table->id('id_nilai');
             $table->unsignedInteger('id_penilaian');
-            $table->unsignedInteger('id_aspek');
+            $table->unsignedInteger('indikator_aspek_id');
             $table->char('nilai',3);
             $table->tinyInteger('skor');
             $table->string('catatan')->nullable();

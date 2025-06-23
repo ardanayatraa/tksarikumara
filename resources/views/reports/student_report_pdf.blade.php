@@ -19,6 +19,7 @@
         td {
             border: 1px solid #000;
             padding: 6px;
+            text-align: left;
         }
 
         th {
@@ -34,26 +35,23 @@
 <body>
     <h3 style="text-align: center;">Penilaian Perkembangan Anak</h3>
 
-    <table>
+    <table class="no-border mb-4">
         <tr>
             <td class="no-border">
                 <strong>Nama Anak:</strong> {{ $student->namaSiswa }}<br>
                 <strong>Usia:</strong>
-                {{-- Fallback: hitung umur jika tidak ada field usia --}}
                 @php
-                    $usia = isset($student->usia)
-                        ? $student->usia
-                        : \Carbon\Carbon::parse($student->tgl_lahir)->age . ' tahun';
+                    $usia = \Carbon\Carbon::parse($student->tgl_lahir)->age . ' tahun';
                 @endphp
                 {{ $usia }}<br>
-                <strong>Periode Penilaian:</strong> {{ \Carbon\Carbon::parse($start)->format('d M Y') }} s/d
+                <strong>Periode Penilaian:</strong>
+                {{ \Carbon\Carbon::parse($start)->format('d M Y') }}
+                s/d
                 {{ \Carbon\Carbon::parse($end)->format('d M Y') }}<br>
                 <strong>Tanggal Cetak:</strong> {{ now()->format('d M Y') }}<br>
                 <strong>Nama Guru:</strong>
-                @if (isset($student->guru))
-                    {{ $student->guru }}
-                @elseif (isset($student->kelas) && isset($student->kelas->guru))
-                    {{ $student->penilaian->guru->namaGuru }}
+                @if (isset($student->penilaian[0]->guru->namaGuru))
+                    {{ $student->penilaian[0]->guru->namaGuru }}
                 @else
                     -
                 @endif
@@ -66,21 +64,25 @@
         <thead>
             <tr>
                 <th>No</th>
-                <th>Tanggal Penilaian</th>
+                <th>Tanggal</th>
                 <th>Kode Aspek</th>
                 <th>Aspek Perkembangan</th>
+                <th>Kode Indikator</th>
+                <th>Indikator</th>
                 <th>Kategori</th>
                 <th>Nilai</th>
                 <th>Skor</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($records as $index => $r)
+            @foreach ($records as $idx => $r)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $idx + 1 }}</td>
                     <td>{{ \Carbon\Carbon::parse($r['tgl_penilaian'])->format('d M Y') }}</td>
                     <td>{{ $r['kode_aspek'] }}</td>
                     <td>{{ $r['nama_aspek'] }}</td>
+                    <td>{{ $r['kode_indikator'] }}</td>
+                    <td>{{ $r['nama_indikator'] }}</td>
                     <td>{{ $r['kategori'] }}</td>
                     <td>{{ $r['nilai'] }}</td>
                     <td>{{ $r['skor'] }}</td>
@@ -97,9 +99,11 @@
         <li>BB (Belum Berkembang): <strong>{{ $summary['BB'] }}</strong></li>
     </ul>
 
-    <strong>Rekomendasi Guru:</strong><br>
-    Anak menunjukkan perkembangan yang baik secara keseluruhan. Perlu pengayaan dalam eksplorasi fungsi benda dan
-    keterampilan berbagi secara konsisten.
+    <strong>Rekomendasi Guru:</strong>
+    <p>
+        Anak menunjukkan perkembangan yang baik secara keseluruhan.
+        Perlu pengayaan dalam eksplorasi fungsi benda dan keterampilan berbagi secara konsisten.
+    </p>
 </body>
 
 </html>

@@ -1,14 +1,31 @@
+{{-- resources/views/livewire/aspek-penilaian/add.blade.php --}}
 <div>
-    <x-button wire:click="$set('open', true)">Tambah Aspek Penilaian</x-button>
+    <x-button wire:click="$set('open', true)">Tambah Indikator Aspek</x-button>
 
     <x-dialog-modal wire:model="open">
-        <x-slot name="title">Tambah Aspek Penilaian</x-slot>
+        <x-slot name="title">Tambah Indikator Aspek</x-slot>
 
         <x-slot name="content">
+            {{-- Aspek Utama --}}
+            <div class="mb-4">
+                <x-label for="aspek_id" value="Aspek Utama" />
+                <select id="aspek_id" wire:model.live="aspek_id" class="mt-1 block w-full border-gray-300 rounded-md">
+                    <option value="">-- Pilih aspek --</option>
+                    @foreach ($aspeks as $asp)
+                        <option value="{{ $asp->id_aspek }}">
+                            {{ $asp->kode_aspek }}. {{ $asp->nama_aspek }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('aspek_id')
+                    <span class="text-red-600">{{ $message }}</span>
+                @enderror
+            </div>
+
             {{-- Rentang Umur --}}
             <div class="mb-4">
                 <x-label for="rentang" value="Rentang Umur" />
-                <select id="rentang" wire:model.live="rentang" class="mt-1 block w-full border-gray-300 rounded-md">
+                <select id="rentang" wire:model="rentang" class="mt-1 block w-full border-gray-300 rounded-md">
                     <option value="">-- Pilih rentang --</option>
                     @foreach ($ranges as $key => $label)
                         <option value="{{ $key }}">{{ $label }}</option>
@@ -19,57 +36,31 @@
                 @enderror
             </div>
 
-            {{-- Parent (root) --}}
+            {{-- Kode Indikator --}}
             <div class="mb-4">
-                <x-label for="parent_id" value="Parent (opsional)" />
-                <select id="parent_id" wire:model.live="parent_id" class="mt-1 block w-full border-gray-300 rounded-md">
-                    <option value="">-- Root --</option>
-                    @foreach ($parents as $p)
-                        <option value="{{ $p->id_aspek }}">
-                            {{ $p->kode_aspek }}. {{ $p->nama_aspek }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('parent_id')
-                    <span class="text-red-600">{{ $message }}</span>
-                @enderror
-            </div>
-
-            {{-- Kode Aspek --}}
-            <div class="mb-4">
-                <x-label for="kode_aspek" value="Kode Aspek" />
+                <x-label for="kode_indikator" value="Kode Indikator" />
                 @if (count($suggestedCodes))
-                    {{-- jika ada parent, pakai dropdown saran --}}
-                    <select id="kode_aspek" wire:model.defer="kode_aspek"
+                    <select id="kode_indikator" wire:model.defer="kode_indikator"
                         class="mt-1 block w-full border-gray-300 rounded-md">
-                        <option value="">-- Pilih kode child --</option>
+                        <option value="">-- Pilih kode --</option>
                         @foreach ($suggestedCodes as $code)
                             <option value="{{ $code }}">{{ $code }}</option>
                         @endforeach
                     </select>
                 @else
-                    {{-- default input bebas --}}
-                    <x-input id="kode_aspek" wire:model.defer="kode_aspek" class="mt-1 block w-full" />
+                    <x-input id="kode_indikator" wire:model.defer="kode_indikator" class="mt-1 block w-full"
+                        placeholder="Masukkan kode manual" />
                 @endif
-                @error('kode_aspek')
+                @error('kode_indikator')
                     <span class="text-red-600">{{ $message }}</span>
                 @enderror
             </div>
 
-            {{-- Nama Aspek --}}
+            {{-- Nama Indikator --}}
             <div class="mb-4">
-                <x-label for="nama_aspek" value="Nama Aspek" />
-                <x-input id="nama_aspek" wire:model.defer="nama_aspek" class="mt-1 block w-full" />
-                @error('nama_aspek')
-                    <span class="text-red-600">{{ $message }}</span>
-                @enderror
-            </div>
-
-            {{-- Kategori --}}
-            <div class="mb-4">
-                <x-label for="kategori" value="Kategori" />
-                <x-input id="kategori" wire:model.defer="kategori" class="mt-1 block w-full" />
-                @error('kategori')
+                <x-label for="nama_indikator" value="Nama Indikator" />
+                <x-input id="nama_indikator" wire:model.defer="nama_indikator" class="mt-1 block w-full" />
+                @error('nama_indikator')
                     <span class="text-red-600">{{ $message }}</span>
                 @enderror
             </div>

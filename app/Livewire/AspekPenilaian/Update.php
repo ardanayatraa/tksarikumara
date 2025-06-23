@@ -4,17 +4,20 @@ namespace App\Livewire\AspekPenilaian;
 
 use Livewire\Component;
 use App\Models\AspekPenilaian;
+use App\Models\IndikatorAspek;
+use Illuminate\Support\Str;
 
 class Update extends Component
 {
     public $open = false;
-    public $id_aspek;
+    public $id;
+    public $aspek_id;
     public $rentang;
-    public $parent_id;
-    public $kode_aspek;
-    public $nama_aspek;
-    public $kategori;
+    public $kode_indikator;
+    public $nama_indikator;
 
+    public $aspeks = [];
+    public $suggestedCodes = [];
     public $ranges = [
         '2-3' => '2–3 Tahun',
         '3-4' => '3–4 Tahun',
@@ -22,80 +25,71 @@ class Update extends Component
         '5-6' => '5–6 Tahun',
     ];
 
-    public $parents = [];
-
-    protected $listeners = ['editAspekPenilaian'];
+    protected $listeners = [
+        'editIndikatorAspek'  // dipanggil dari table
+    ];
 
     protected function rules()
     {
         return [
-            'rentang'    => 'required|in:2-3,3-4,4-5,5-6',
-            'parent_id'  => 'nullable|exists:aspek_penilaian,id_aspek',
-            'kode_aspek' => 'required|string|unique:aspek_penilaian,kode_aspek,'.$this->id_aspek.',id_aspek',
-            'nama_aspek' => 'required|string',
-            'kategori'   => 'required|string',
+            'aspek_id'        => 'required|exists:aspek_penilaian,id_aspek',
+            'rentang'         => 'required|in:2-3,3-4,4-5,5-6',
+            'kode_indikator'  => 'required|string|unique:indikator_aspek,kode_indikator,'.$this->id,
+            'nama_indikator'  => 'required|string',
         ];
     }
 
     public function mount()
     {
-        $this->parents = [];
+        $this->aspeks = AspekPenilaian::orderBy('kode_aspek')->get();
     }
 
-    public function editAspekPenilaian($id)
+    public function editIndikatorAspek($id)
     {
-        $asp = AspekPenilaian::findOrFail($id);
-        $this->id_aspek   = $asp->id_aspek;
-        $this->rentang    = $asp->min_umur.'-'.$asp->max_umur;
-        $this->parent_id  = $asp->parent_id;
-        $this->kode_aspek = $asp->kode_aspek;
-        $this->nama_aspek = $asp->nama_aspek;
-        $this->kategori   = $asp->kategori;
+        $i = IndikatorAspek::findOrFail($id);
+        $this->id             = $i->id;
+        $this->aspek_id       = $i->aspek_id;
+        $this->rentang        = $i->min_umur.'-'.$i->max_umur;
+        $this->kode_indikator = $i->kode_indikator;
+        $this->nama_indikator = $i->nama_indikator;
 
-        $this->loadParents();
+        // generate suggested codes
+        $this->updatedAspekId($this->aspek_id);
+
         $this->open = true;
     }
 
-    public function updatedRentang($value)
+    public function updatedAspekId($value)
     {
-        [$min, $max] = explode('-', $value);
-        $this->parent_id = null;
-        $this->parents = AspekPenilaian::whereNull('parent_id')
-            ->where('min_umur', $min)
-            ->where('max_umur', $max)
-            ->orderBy('kode_aspek')
-            ->get();
-    }
+        $this->kode_indikator = null;
+        $this->suggestedCodes = [];
 
-    protected function loadParents()
-    {
-        if ($this->rentang) {
-            [$min, $max] = explode('-', $this->rentang);
-            $this->parents = AspekPenilaian::whereNull('parent_id')
-                ->where('min_umur', $min)
-                ->where('max_umur', $max)
-                ->orderBy('kode_aspek')
-                ->get();
-        } else {
-            $this->parents = [];
+        if ($value) {
+            $prefix = AspekPenilaian::find($value)->kode_aspek.'.';
+            $existing = IndikatorAspek::where('aspek_id', $value)
+                ->pluck('kode_indikator')
+                ->map(fn($c) => Str::after($c, $prefix))
+                ->toArray();
+            $letters   = range('A','Z');
+            $avail     = array_diff($letters, $existing);
+            $this->suggestedCodes = array_map(fn($l)=> $prefix.$l, $avail);
         }
     }
 
     public function update()
     {
         $this->validate();
-        [$min, $max] = explode('-', $this->rentang);
+        [$min,$max] = explode('-',$this->rentang);
 
-        AspekPenilaian::where('id_aspek', $this->id_aspek)->update([
-            'parent_id'  => $this->parent_id,
-            'kode_aspek' => $this->kode_aspek,
-            'nama_aspek' => $this->nama_aspek,
-            'kategori'   => $this->kategori,
-            'min_umur'   => $min,
-            'max_umur'   => $max,
+        IndikatorAspek::where('id',$this->id)->update([
+            'aspek_id'       => $this->aspek_id,
+            'kode_indikator' => $this->kode_indikator,
+            'nama_indikator' => $this->nama_indikator,
+            'min_umur'       => $min,
+            'max_umur'       => $max,
         ]);
 
-        $this->reset(['open','id_aspek','rentang','parent_id','kode_aspek','nama_aspek','kategori','parents']);
+        $this->reset(['open','id','aspek_id','rentang','kode_indikator','nama_indikator','suggestedCodes']);
         $this->dispatch('refreshDatatable');
     }
 

@@ -23,12 +23,19 @@ class NilaiSiswaTable extends DataTableComponent
                 ->sortable(),
 
             Column::make('Penilaian', 'penilaian.tgl_penilaian')
-
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Aspek', 'aspek.nama_aspek')
-
+            Column::make('Kode Aspek', 'indikator.aspek.kode_aspek')
+                ->sortable()
+                ->searchable(),
+            Column::make('Aspek Penilaian', 'indikator.aspek.nama_aspek')
+                ->sortable()
+                ->searchable(),
+            Column::make('Kode Indikator', 'indikator.kode_indikator')
+                ->sortable()
+                ->searchable(),
+            Column::make('Indikator', 'indikator.nama_indikator')
                 ->sortable()
                 ->searchable(),
 
