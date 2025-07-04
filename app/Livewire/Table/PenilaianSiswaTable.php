@@ -9,6 +9,7 @@ use App\Models\AkunSiswa;
 use App\Models\Kelas;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Rappasoft\LaravelLivewireTables\Views\Columns\LinkColumn;
 
 class PenilaianSiswaTable extends DataTableComponent
 {
