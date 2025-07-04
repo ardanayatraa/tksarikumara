@@ -6,10 +6,8 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\NilaiSiswa;
 use App\Models\Penilaian;
-use App\Models\AspekPenilaian;
-use App\Models\Kelas;
 use App\Models\AkunSiswa;
-use Carbon\Carbon;
+use App\Models\IndikatorAspek;
 
 class Update extends Component
 {
@@ -23,6 +21,7 @@ class Update extends Component
     public $id_akunsiswa;
     public $id_guru;
     public $id_kelas;
+    public $kelasNama;
     public $tgl_penilaian;
 
     // detail NilaiSiswa
@@ -30,10 +29,6 @@ class Update extends Component
     public $nilai;
     public $skor;
     public $catatan;
-
-    // dropdown data
-    public $kelasList   = [];
-    public $aspekGroups = [];
 
     public $nilaiOptions = [
         'BSB' => 4,
@@ -47,34 +42,21 @@ class Update extends Component
     protected function rules()
     {
         return [
-            'id_kelas'             => 'required|exists:kelas,id_kelas',
-            'tgl_penilaian'        => 'required|date',
-            'indikator_aspek_id'   => 'required|exists:indikator_aspek,id',
-            'nilai'                => 'required|in:BSB,BSH,MB,BB',
-            'skor'                 => 'required|numeric|min:1|max:4',
-            'catatan'              => 'nullable|string',
+            'tgl_penilaian'      => 'required|date',
+            'nilai'              => 'required|in:BSB,BSH,MB,BB',
+            'skor'               => 'required|numeric|min:1|max:4',
+            'catatan'            => 'nullable|string',
         ];
     }
 
     public function mount($id_akunsiswa)
     {
         $this->id_akunsiswa = $id_akunsiswa;
-        $this->id_guru   = optional(Auth::guard('guru')->user())->id_guru;
-        $this->kelasList = Kelas::all();
+        $this->id_guru      = optional(Auth::guard('guru')->user())->id_guru;
 
-        $siswa = AkunSiswa::findOrFail($id_akunsiswa);
-        $umur   = Carbon::parse($siswa->tgl_lahir)->age;
-
-        // muat semua aspek + indikator sesuai umur
-        $this->aspekGroups = AspekPenilaian::with(['indikator' => function($q) use ($umur) {
-                $q->where('min_umur', '<=', $umur)
-                  ->where('max_umur', '>=', $umur)
-                  ->orderBy('kode_indikator');
-            }])
-            ->orderBy('kode_aspek')
-            ->get()
-            ->filter(fn($asp) => $asp->indikator->isNotEmpty())
-            ->values();
+        $siswa = AkunSiswa::with('kelas')->findOrFail($id_akunsiswa);
+        $this->id_kelas  = $siswa->id_kelas;
+        $this->kelasNama = $siswa->kelas->namaKelas;
     }
 
     public function editModal($id_nilai)
@@ -82,16 +64,19 @@ class Update extends Component
         $detail = NilaiSiswa::findOrFail($id_nilai);
         $pen    = Penilaian::findOrFail($detail->id_penilaian);
 
-        $this->id_nilai            = $detail->id_nilai;
-        $this->id_penilaian        = $pen->id_penilaian;
-        $this->id_akunsiswa        = $pen->id_akunsiswa;
-        $this->id_kelas            = $pen->id_kelas;
-        $this->tgl_penilaian       = $pen->tgl_penilaian;
+        $this->id_nilai           = $detail->id_nilai;
+        $this->id_penilaian       = $pen->id_penilaian;
+        $this->id_akunsiswa       = $pen->id_akunsiswa;
+        $this->tgl_penilaian      = $pen->tgl_penilaian;
 
-        $this->indikator_aspek_id  = $detail->indikator_aspek_id;
-        $this->nilai               = $detail->nilai;
-        $this->skor                = $detail->skor;
-        $this->catatan             = $detail->catatan;
+        $this->indikator_aspek_id = $detail->indikator_aspek_id;
+        $this->nilai              = $detail->nilai;
+        $this->skor               = $detail->skor;
+        $this->catatan            = $detail->catatan;
+
+        // juga (re)load nama kelas
+        $siswa = AkunSiswa::with('kelas')->findOrFail($this->id_akunsiswa);
+        $this->kelasNama = $siswa->kelas->namaKelas;
 
         $this->open = true;
     }
@@ -105,34 +90,27 @@ class Update extends Component
     {
         $this->validate();
 
-        // update header penilaian
+        // update tanggal di header Penilaian
         Penilaian::where('id_penilaian', $this->id_penilaian)
             ->update([
-                'id_kelas'      => $this->id_kelas,
                 'tgl_penilaian' => $this->tgl_penilaian,
             ]);
 
         // update detail nilai
         NilaiSiswa::where('id_nilai', $this->id_nilai)
             ->update([
-                'indikator_aspek_id' => $this->indikator_aspek_id,
-                'nilai'              => $this->nilai,
-                'skor'               => $this->skor,
-                'catatan'            => $this->catatan,
+                'nilai'   => $this->nilai,
+                'skor'    => $this->skor,
+                'catatan' => $this->catatan,
             ]);
 
-        // reset state
-        $this->reset([
-            'open','id_nilai','id_penilaian',
-            'id_kelas','tgl_penilaian',
-            'indikator_aspek_id','nilai','skor','catatan'
-        ]);
-
-        $this->dispatch('refreshDatatable');
+        $this->reset(['open','id_nilai','id_penilaian','tgl_penilaian','nilai','skor','catatan']);
+        $this->dispatchBrowserEvent('refreshDatatable');
     }
 
     public function render()
     {
-        return view('livewire.nilai-siswa.update');
+        $indikator = IndikatorAspek::find($this->indikator_aspek_id);
+        return view('livewire.nilai-siswa.update', compact('indikator'));
     }
 }

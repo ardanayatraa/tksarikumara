@@ -23,8 +23,8 @@ class Add extends Component
     public $email;
     public $username;
     public $password;
-    public $foto;            // untuk upload
-    public $fotoPreviewUrl;  // preview
+    public $foto;
+    public $fotoPreviewUrl;
 
     protected $rules = [
         'id_kelas'      => 'required|exists:kelas,id_kelas',
@@ -37,17 +37,14 @@ class Add extends Component
         'email'         => 'required|email',
         'username'      => 'required|string',
         'password'      => 'required|string|min:6',
-        'foto'          => 'nullable|image|max:1024', // max 1MB
+        'foto'          => 'nullable|image|max:1024',
     ];
 
     public function save()
     {
         $this->validate();
 
-        $path = null;
-        if ($this->foto) {
-            $path = $this->foto->store('siswa','public');
-        }
+        $path = $this->foto ? $this->foto->store('siswa','public') : null;
 
         AkunSiswa::create([
             'id_kelas'      => $this->id_kelas,
@@ -69,7 +66,7 @@ class Add extends Component
             'username','password','foto','fotoPreviewUrl'
         ]);
 
-        $this->dispatch('refreshDatatable');
+        $this->dispatchBrowserEvent('refreshDatatable');
     }
 
     public function updatedFoto()

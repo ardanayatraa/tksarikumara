@@ -2,24 +2,28 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\AkunSiswa;
 use Livewire\Component;
-use App\Models\Siswa;
+use Illuminate\Support\Facades\Auth;
+use App\Models\AkunSiswa;
 use App\Models\Guru;
 use App\Models\Kelas;
 
 class Dashboard extends Component
 {
+    public $adminLogin;
     public $jumlahSiswa;
     public $jumlahGuru;
     public $jumlahKelas;
 
     public function mount()
     {
-        // Ambil jumlah siswa, guru, dan kelas
-        $this->jumlahSiswa = AkunSiswa::count();
-        $this->jumlahGuru = Guru::count();
-        $this->jumlahKelas = Kelas::count();
+        // Ambil admin yang sedang login
+        $this->adminLogin   = Auth::guard('admin')->user();
+
+        // Ambil statistik
+        $this->jumlahSiswa  = AkunSiswa::count();
+        $this->jumlahGuru   = Guru::count();
+        $this->jumlahKelas  = Kelas::count();
     }
 
     public function render()

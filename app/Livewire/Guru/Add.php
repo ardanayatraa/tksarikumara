@@ -28,7 +28,8 @@ class Add extends Component
         'email'         => 'required|email',
         'jenis_kelamin' => 'required|in:L,P',
         'notlp'         => 'required|string|max:20',
-        'foto'          => 'nullable|image|max:1024', // max 1MB
+        'foto'          => 'nullable|image|max:1024',
+        'id_kelas'     => 'nullable|exists:kelas,id_kelas',
     ];
 
     public function save()
@@ -50,17 +51,21 @@ class Add extends Component
             'jenis_kelamin' => $this->jenis_kelamin,
             'notlp'         => $this->notlp,
             'foto'          => $path,
+            'id_kelas'      => null,
         ]);
 
         $this->reset([
             'open', 'namaGuru', 'nip', 'username', 'password',
-            'email', 'jenis_kelamin', 'notlp', 'foto'
+            'email', 'jenis_kelamin', 'notlp', 'foto','id_kelas'
         ]);
         $this->dispatch('refreshDatatable');
     }
 
     public function render()
     {
-        return view('livewire.guru.add');
+        $kelas= \App\Models\Kelas::all();
+        return view('livewire.guru.add', [
+            'kelas' => $kelas,
+        ]);
     }
 }

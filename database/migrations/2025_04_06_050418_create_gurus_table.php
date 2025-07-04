@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('nip')->unique();
             $table->string('username')->unique();
             $table->string('password');
+            $table->unsignedBigInteger('id_kelas')->nullable();
             $table->string('email')->unique();
             $table->enum('jenis_kelamin', ['L', 'P']);
             $table->string('notlp');

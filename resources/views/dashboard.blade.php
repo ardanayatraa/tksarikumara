@@ -18,7 +18,7 @@
 
             <div class="flex flex-col md:flex-row gap-6">
                 <div class="flex-1">
-                    @livewire('nilai-siswa.update', ['id_akunsiswa' => $id])
+                    {{-- @livewire('nilai-siswa.update', ['id_akunsiswa' => $id]) --}}
                 </div>
                 <div class="flex-1">
                     @livewire('nilai-siswa.delete')

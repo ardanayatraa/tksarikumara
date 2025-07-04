@@ -19,6 +19,7 @@ class Update extends Component
     public $email;
     public $jenis_kelamin;
     public $notlp;
+    public $id_kelas;
 
     // foto baru (UploadedFile) dan preview foto lama
     public $foto;
@@ -36,6 +37,7 @@ class Update extends Component
             'jenis_kelamin' => 'required|in:L,P',
             'notlp'         => 'required|string|max:20',
             'foto'          => 'nullable|image|max:1024',
+            'id_kelas'     => 'nullable|exists:kelas,id_kelas', // jika ada relasi kelas
         ];
     }
 
@@ -50,6 +52,7 @@ class Update extends Component
         $this->email         = $guru->email;
         $this->jenis_kelamin = $guru->jenis_kelamin;
         $this->notlp         = $guru->notlp;
+        $this->id_kelas      = $guru->id_kelas;
 
         // simpan path lama untuk preview
         $this->fotoPreview = $guru->foto;
@@ -68,6 +71,7 @@ class Update extends Component
             'email'         => $this->email,
             'jenis_kelamin' => $this->jenis_kelamin,
             'notlp'         => $this->notlp,
+            'id_kelas'      => $this->id_kelas,
         ];
 
         // jika ada upload baru, simpan dan hapus lama
@@ -91,6 +95,9 @@ class Update extends Component
 
     public function render()
     {
-        return view('livewire.guru.update');
+        $kelas= \App\Models\Kelas::all();
+        return view('livewire.guru.update', [
+            'kelas' => $kelas,
+        ]);
     }
 }

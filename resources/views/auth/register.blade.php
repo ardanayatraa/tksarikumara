@@ -105,6 +105,15 @@
                         class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300">
                 </div>
 
+                {{-- tanggal lahir --}}
+                <div>
+                    <label for="tgl_lahir" class="block text-sm font-medium text-gray-700 mb-2">Tanggal
+                        Lahir</label>
+                    <input id="tgl_lahir" type="date" name="tgl_lahir" value="{{ old('tgl_lahir') }}" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300">
+                </div>
+
+
                 <!-- Password Fields -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>

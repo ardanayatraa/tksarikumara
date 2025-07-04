@@ -3,6 +3,7 @@
 namespace App\Livewire\KepalaSekolah;
 
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 use App\Models\AkunSiswa;
 use App\Models\Guru;
 use App\Models\Kelas;
@@ -10,6 +11,7 @@ use App\Models\AspekPenilaian;
 
 class Dashboard extends Component
 {
+    public $kepsekLogin;
     public $totalSiswaPerKelas = [];
     public $totalGuru;
     public $totalKelas;
@@ -17,22 +19,19 @@ class Dashboard extends Component
 
     public function mount()
     {
-        // Total siswa per kelas (group by namaKelas)
+        // ambil kepala sekolah yang sedang login
+        $this->kepsekLogin = Auth::guard('kepsek')->user();
+
+        // total siswa per kelas
         $kelasList = Kelas::withCount('akunSiswa')->get();
-        $this->totalSiswaPerKelas = $kelasList->map(function ($kelas) {
-            return [
-                'namaKelas' => $kelas->namaKelas,
-                'jumlahSiswa' => $kelas->akun_siswa_count,
-            ];
-        });
+        $this->totalSiswaPerKelas = $kelasList->map(fn($kelas) => [
+            'namaKelas'    => $kelas->namaKelas,
+            'jumlahSiswa'  => $kelas->akun_siswa_count,
+        ])->toArray();
 
-        // Total guru
-        $this->totalGuru = Guru::count();
-
-        // Total kelas
-        $this->totalKelas = Kelas::count();
-
-        // Total aspek penilaian
+        // statistik lainnya
+        $this->totalGuru           = Guru::count();
+        $this->totalKelas          = Kelas::count();
         $this->totalAspekPenilaian = AspekPenilaian::count();
     }
 

@@ -45,13 +45,13 @@ class NilaiSiswaTable extends DataTableComponent
             Column::make('Skor', 'skor')
                 ->sortable(),
 
-            Column::make('Actions')
-                ->label(fn($row) => view('components.table-action', [
-                    'id'          => $row->id_nilai,
-                    'editEvent'   => 'editNilaiSiswa',
-                    'deleteEvent' => 'deleteNilaiSiswa',
-                ]))
-                ->html(),
+            // Column::make('Actions')
+            //     ->label(fn($row) => view('components.table-action', [
+            //         'id'          => $row->id_nilai,
+            //         'editEvent'   => 'editNilaiSiswa',
+            //         'deleteEvent' => 'deleteNilaiSiswa',
+            //     ]))
+            //     ->html(),
         ];
     }
 

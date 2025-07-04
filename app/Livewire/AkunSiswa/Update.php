@@ -26,6 +26,7 @@ class Update extends Component
     public $password;      // optional
     public $foto;          // upload file baru
     public $fotoPreview;   // path foto lama
+    public $status;        // ★ tambah properti
 
     protected $listeners = ['editSiswa'];
 
@@ -43,6 +44,7 @@ class Update extends Component
             'username'      => 'required|string',
             'password'      => 'nullable|string|min:6',
             'foto'          => 'nullable|image|max:1024',
+            'status'        => 'required|in:active,inactive', // ★
         ];
     }
 
@@ -61,7 +63,8 @@ class Update extends Component
         $this->email         = $s->email;
         $this->username      = $s->username;
         $this->password      = '';
-        $this->fotoPreview   = $s->foto;  // simpan path lama
+        $this->fotoPreview   = $s->foto;
+        $this->status        = $s->status;    // ★
 
         $this->open = true;
     }
@@ -85,6 +88,7 @@ class Update extends Component
             'alamat'        => $this->alamat,
             'email'         => $this->email,
             'username'      => $this->username,
+            'status'        => $this->status,    // ★
         ];
 
         if ($this->password) {
@@ -92,7 +96,6 @@ class Update extends Component
         }
 
         if ($this->foto) {
-            // hapus file lama jika ada
             if ($this->fotoPreview && Storage::disk('public')->exists($this->fotoPreview)) {
                 Storage::disk('public')->delete($this->fotoPreview);
             }
@@ -104,9 +107,9 @@ class Update extends Component
         $this->reset([
             'open','id_akunsiswa','id_kelas','nisn','namaSiswa',
             'namaOrangTua','tgl_lahir','jenis_kelamin','alamat',
-            'email','username','password','foto','fotoPreview'
+            'email','username','password','foto','fotoPreview','status'
         ]);
-        $this->dispatch('refreshDatatable');
+        $this->dispatchBrowserEvent('refreshDatatable');
     }
 
     public function render()

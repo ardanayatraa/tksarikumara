@@ -5,10 +5,7 @@
 
                 <!-- Add Nilai Siswa, Send Student Report, & Tombol Grafik (3 kolom) -->
                 <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-8 bg-gray-50 p-4 rounded-md shadow-sm">
-                    <!-- Kolom 1: Add Nilai Siswa (Rata Tengah) -->
-                    <div class="w-full flex justify-center">
-                        @livewire('nilai-siswa.add', ['id_akunsiswa' => $id])
-                    </div>
+
 
                     <!-- Kolom 2: Send Student Report (Rata Tengah) -->
                     <div class="w-full flex justify-center">

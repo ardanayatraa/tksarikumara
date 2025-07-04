@@ -23,6 +23,7 @@ class Guru extends Authenticatable
         'email',
         'jenis_kelamin',
         'notlp',
+        'id_kelas',
     ];
 
     protected $hidden = [
@@ -38,5 +39,10 @@ class Guru extends Authenticatable
     public function notifikasi(): HasMany
     {
         return $this->hasMany(Notifikasi::class, 'id_guru');
+    }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'id_kelas');
     }
 }

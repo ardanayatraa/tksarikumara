@@ -1,21 +1,62 @@
-<div class="p-4">
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<div class="p-6 bg-gray-100 min-h-screen space-y-6">
+
+    {{-- Card Admin Login --}}
+    <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 shadow-xl rounded-xl p-6 text-white">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-semibold">Informasi Admin</h3>
+                @if ($adminLogin)
+                    <p class="mt-1 font-medium">{{ $adminLogin->username }}</p>
+                    <p class="text-sm opacity-90">Email: {{ $adminLogin->email }}</p>
+                    <p class="text-sm opacity-90">Telepon: {{ $adminLogin->notlp }}</p>
+                @else
+                    <p class="text-sm opacity-90">Belum login</p>
+                @endif
+            </div>
+            <div class="text-4xl opacity-30">
+                <i class="fas fa-user-shield"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Jumlah Siswa -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-lg font-semibold">Jumlah Siswa</h3>
-            <p class="text-2xl font-bold">{{ $jumlahSiswa }}</p>
+        <div class="bg-gradient-to-r from-purple-500 to-purple-600 shadow-xl rounded-xl p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold">Jumlah Siswa</h3>
+                    <p class="text-4xl font-bold mt-2">{{ $jumlahSiswa }}</p>
+                </div>
+                <div class="text-4xl opacity-30">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+            </div>
         </div>
 
         <!-- Jumlah Guru -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-lg font-semibold">Jumlah Guru</h3>
-            <p class="text-2xl font-bold">{{ $jumlahGuru }}</p>
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 shadow-xl rounded-xl p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold">Jumlah Guru</h3>
+                    <p class="text-4xl font-bold mt-2">{{ $jumlahGuru }}</p>
+                </div>
+                <div class="text-4xl opacity-30">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+            </div>
         </div>
 
         <!-- Jumlah Kelas -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h3 class="text-lg font-semibold">Jumlah Kelas</h3>
-            <p class="text-2xl font-bold">{{ $jumlahKelas }}</p>
+        <div class="bg-gradient-to-r from-green-500 to-green-600 shadow-xl rounded-xl p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold">Jumlah Kelas</h3>
+                    <p class="text-4xl font-bold mt-2">{{ $jumlahKelas }}</p>
+                </div>
+                <div class="text-4xl opacity-30">
+                    <i class="fas fa-school"></i>
+                </div>
+            </div>
         </div>
     </div>
 </div>

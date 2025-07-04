@@ -17,9 +17,7 @@ return new class extends Migration
             $table->string('nisn')->unique()->nullable();
             $table->string('namaSiswa')->nullable();
             $table->string('foto')->nullable();
-            $table->string('namaOrangTua')->nullable(
-
-            );
+            $table->string('namaOrangTua')->nullable();
             $table->date('tgl_lahir')->nullable();
             $table->enum('jenis_kelamin', ['L', 'P'])->nullable();
             $table->text('alamat')->nullable();

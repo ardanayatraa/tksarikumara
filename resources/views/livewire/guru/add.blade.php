@@ -37,6 +37,21 @@
                     @enderror
                 </div>
 
+                <!-- Kelas -->
+                <div>
+                    <x-label for="id_kelas" value="Kelas" />
+                    <select id="id_kelas" wire:model.defer="id_kelas"
+                        class="mt-1 block w-full border-gray-300 rounded-md">
+                        <option value="">Pilih Kelas</option>
+                        @foreach ($kelas as $k)
+                            <option value="{{ $k->id_kelas }}">{{ $k->namaKelas }}</option>
+                        @endforeach
+                    </select>
+                    @error('id_kelas')
+                        <span class="text-red-600 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
                 <!-- Email -->
                 <div>
                     <x-label for="email" value="Email" />
