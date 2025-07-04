@@ -93,11 +93,20 @@ class PenilaianSiswaTable extends DataTableComponent
                     default            => $value,
                 }),
 
-            Column::make('Actions')
-                ->label(fn($row) => view('components.table-action', [
-                    'id' => $row->id_akunsiswa,
-                ]))
-                ->html(),
+
+              LinkColumn::make('Action')
+                ->title(fn($row) => 'Lihat Nilai')
+                ->location(function($row) {
+                    if (Auth::guard('kepsek')->check()) {
+                        return route('kepsek.penilaian.detail', $row);
+                    }
+                    // Default guru
+                    return route('guru.penilaian.detail', $row);
+                })
+                ->attributes(fn($row) => [
+                    'class' => 'text-blue-600 hover:underline font-semibold',
+                ]),
+
         ];
     }
 
