@@ -97,20 +97,33 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <div class="flex justify-center space-x-4">
-                                        @foreach (['BSB', 'BSH', 'MB', 'BB'] as $opt)
-                                            <label class="inline-flex items-center">
-                                                <input type="radio" name="nilai_{{ $siswa->id_akunsiswa }}"
-                                                    value="{{ $opt }}"
-                                                    wire:click="setNilai({{ $siswa->id_akunsiswa }}, '{{ $opt }}')"
-                                                    @if (
-                                                        \App\Models\NilaiSiswa::whereHas(
-                                                            'penilaian',
-                                                            fn($q) => $q->where('id_akunsiswa', $siswa->id_akunsiswa)->where('tgl_penilaian', today()->toDateString()))->where('indikator_aspek_id', $indikator->id)->value('nilai') === $opt) checked @endif
-                                                    class="form-radio h-4 w-4 text-purple-600">
-                                            </label>
+                                    @php
+                                        // Ambil nilai existing untuk hari ini & indikator ini
+                                        $existing = \App\Models\NilaiSiswa::whereHas(
+                                            'penilaian',
+                                            fn($q) => $q
+                                                ->where('id_akunsiswa', $siswa->id_akunsiswa)
+                                                ->where('tgl_penilaian', today()->toDateString()),
+                                        )
+                                            ->where('indikator_aspek_id', $indikator->id)
+                                            ->value('nilai');
+                                    @endphp
+
+                                    <select wire:change="setNilai({{ $siswa->id_akunsiswa }}, $event.target.value)"
+                                        class="border border-gray-300 rounded-lg px-2 py-1 text-sm">
+                                        <option value="">— Pilih Nilai —</option>
+                                        @foreach ([
+        'BSB' => 'Berkembang Sangat Baik',
+        'BSH' => 'Berkembang Sesuai Harapan',
+        'MB' => 'Mulai Berkembang',
+        'BB' => 'Belum Berkembang',
+    ] as $key => $label)
+                                            <option value="{{ $key }}"
+                                                @if ($existing === $key) selected @endif>
+                                                {{ $key }} — {{ $label }}
+                                            </option>
                                         @endforeach
-                                    </div>
+                                    </select>
                                 </td>
                             </tr>
                         @empty
