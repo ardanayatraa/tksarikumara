@@ -21,8 +21,7 @@
                     </div>
                 </div>
 
-                @livewire('nilai-siswa.update', ['id_akunsiswa' => $id])
-                @livewire('nilai-siswa.delete')
+
 
                 <!-- Table Nilai Siswa -->
                 <div class="md:col-span-2 bg-gray-50 p-4 rounded-md shadow-sm">

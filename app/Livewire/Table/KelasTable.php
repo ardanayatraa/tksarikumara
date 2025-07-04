@@ -42,11 +42,11 @@ class KelasTable extends DataTableComponent
 
     public function edit($id): void
     {
-        $this->dispatch('editKelas', $id);
+        $this->dispatch('editKelasModal', $id);
     }
 
     public function delete($id): void
     {
-        $this->dispatch('deleteKelas', $id);
+        $this->dispatch('delete', $id);
     }
 }
