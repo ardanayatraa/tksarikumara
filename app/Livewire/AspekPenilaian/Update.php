@@ -15,6 +15,7 @@ class Update extends Component
     public $rentang;
     public $kode_indikator;
     public $nama_indikator;
+    public $bobot;
 
     public $aspeks = [];
     public $suggestedCodes = [];
@@ -34,8 +35,9 @@ class Update extends Component
         return [
             'aspek_id'        => 'required|exists:aspek_penilaian,id_aspek',
             'rentang'         => 'required|in:2-3,3-4,4-5,5-6',
-            'kode_indikator'  => 'required|string|unique:indikator_aspek,kode_indikator,'.$this->id,
+            'kode_indikator'  => 'required|string|unique:indikator_aspek,kode_indikator,' . $this->id,
             'nama_indikator'  => 'required|string',
+            'bobot'           => 'required|integer|min:1|max:10',
         ];
     }
 
@@ -49,11 +51,11 @@ class Update extends Component
         $i = IndikatorAspek::findOrFail($id);
         $this->id             = $i->id;
         $this->aspek_id       = $i->aspek_id;
-        $this->rentang        = $i->min_umur.'-'.$i->max_umur;
+        $this->rentang        = $i->min_umur . '-' . $i->max_umur;
         $this->kode_indikator = $i->kode_indikator;
         $this->nama_indikator = $i->nama_indikator;
+        $this->bobot          = $i->bobot;
 
-        // generate suggested codes
         $this->updatedAspekId($this->aspek_id);
 
         $this->open = true;
@@ -65,31 +67,37 @@ class Update extends Component
         $this->suggestedCodes = [];
 
         if ($value) {
-            $prefix = AspekPenilaian::find($value)->kode_aspek.'.';
+            $prefix = AspekPenilaian::find($value)->kode_aspek . '.';
             $existing = IndikatorAspek::where('aspek_id', $value)
                 ->pluck('kode_indikator')
                 ->map(fn($c) => Str::after($c, $prefix))
                 ->toArray();
-            $letters   = range('A','Z');
-            $avail     = array_diff($letters, $existing);
-            $this->suggestedCodes = array_map(fn($l)=> $prefix.$l, $avail);
+            $letters = range('A', 'Z');
+            $avail = array_diff($letters, $existing);
+            $this->suggestedCodes = array_map(fn($l) => $prefix . $l, $avail);
         }
     }
 
     public function update()
     {
         $this->validate();
-        [$min,$max] = explode('-',$this->rentang);
+        [$min, $max] = explode('-', $this->rentang);
 
-        IndikatorAspek::where('id',$this->id)->update([
+        IndikatorAspek::where('id', $this->id)->update([
             'aspek_id'       => $this->aspek_id,
             'kode_indikator' => $this->kode_indikator,
             'nama_indikator' => $this->nama_indikator,
             'min_umur'       => $min,
             'max_umur'       => $max,
+            'bobot'          => $this->bobot,
         ]);
 
-        $this->reset(['open','id','aspek_id','rentang','kode_indikator','nama_indikator','suggestedCodes']);
+        $this->reset([
+            'open', 'id', 'aspek_id', 'rentang',
+            'kode_indikator', 'nama_indikator',
+            'bobot', 'suggestedCodes'
+        ]);
+
         $this->dispatch('refreshDatatable');
     }
 

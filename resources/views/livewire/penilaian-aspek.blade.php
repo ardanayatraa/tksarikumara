@@ -1,4 +1,7 @@
 <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50">
+    {{-- Font Awesome CDN --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     {{-- Alert Messages --}}
     @if ($showAlert)
         <div x-data="{ show: @entangle('showAlert') }" x-show="show" x-init="setTimeout(() => show = false, 3000)"
@@ -12,15 +15,9 @@
                 class="rounded-lg shadow-lg p-4 {{ $alertType == 'success' ? 'bg-gradient-to-r from-green-400 to-green-600 text-white' : 'bg-gradient-to-r from-red-400 to-red-600 text-white' }}">
                 <div class="flex items-center">
                     @if ($alertType == 'success')
-                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
+                        <i class="fas fa-check-circle text-xl mr-2"></i>
                     @else
-                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
+                        <i class="fas fa-exclamation-circle text-xl mr-2"></i>
                     @endif
                     <span class="font-medium">{{ $alertMessage }}</span>
                 </div>
@@ -32,28 +29,18 @@
     <div class="container mx-auto px-4 py-6">
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
             <div class="bg-gradient-to-r from-teal-500 to-blue-600 p-6 text-white">
-                <h2 class="text-2xl font-bold text-black flex items-center">
-                    <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
-                        </path>
-                    </svg>
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    <i class="fas fa-clipboard-list text-3xl mr-3"></i>
                     Penilaian Perkelas Per Minggu - Semester {{ $semester }}
                 </h2>
             </div>
-
             <div class="p-6">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {{-- Kolom Kiri --}}
                     <div class="space-y-4">
                         <div class="group">
                             <label class="flex items-center text-gray-700 font-semibold mb-2">
-                                <svg class="w-5 h-5 mr-2 text-teal-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
-                                    </path>
-                                </svg>
+                                <i class="fas fa-school text-teal-500 mr-2"></i>
                                 Kelas
                             </label>
                             <select wire:model.live="selectedKelas"
@@ -64,45 +51,28 @@
                                 @endforeach
                             </select>
                         </div>
-
                         <div class="group">
                             <label class="flex items-center text-gray-700 font-semibold mb-2">
-                                <svg class="w-5 h-5 mr-2 text-teal-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                    </path>
-                                </svg>
+                                <i class="fas fa-calendar-alt text-teal-500 mr-2"></i>
                                 Tahun Ajaran
                             </label>
                             <input type="text" value="{{ $tahunAjaran }}"
                                 class="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg" readonly>
                         </div>
-
                         <div class="group">
                             <label class="flex items-center text-gray-700 font-semibold mb-2">
-                                <svg class="w-5 h-5 mr-2 text-teal-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                </svg>
+                                <i class="fas fa-user-tie text-teal-500 mr-2"></i>
                                 Nama Guru
                             </label>
                             <input type="text" value="{{ Auth::user()->name ?? 'Guru Kelas' }}"
                                 class="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg" readonly>
                         </div>
                     </div>
-
                     {{-- Kolom Kanan --}}
                     <div class="space-y-4">
                         <div class="group">
                             <label class="flex items-center text-gray-700 font-semibold mb-2">
-                                <svg class="w-5 h-5 mr-2 text-teal-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-                                    </path>
-                                </svg>
+                                <i class="fas fa-tasks text-teal-500 mr-2"></i>
                                 Aspek Penilaian
                             </label>
                             <select wire:model.live="selectedAspek"
@@ -113,7 +83,6 @@
                                 @endforeach
                             </select>
                         </div>
-
                         @if ($selectedAspek && $aspekList->where('id_aspek', $selectedAspek)->first())
                             <div class="bg-gradient-to-r from-blue-50 to-teal-50 rounded-lg p-4 border border-blue-200">
                                 <div class="space-y-2">
@@ -129,15 +98,18 @@
                                             <span class="font-semibold text-gray-700">Indikator:</span>
                                             <div class="mt-2 space-y-1">
                                                 @foreach ($indikatorList as $ind)
-                                                    <div class="flex items-center text-sm text-gray-600">
-                                                        <svg class="w-4 h-4 mr-2 text-teal-500" fill="currentColor"
-                                                            viewBox="0 0 20 20">
-                                                            <path fill-rule="evenodd"
-                                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                                clip-rule="evenodd"></path>
-                                                        </svg>
-                                                        {{ $ind->nama_indikator }} <span
-                                                            class="ml-1 text-teal-600">[{{ $ind->kode_indikator }}]</span>
+                                                    <div
+                                                        class="flex items-center justify-between text-sm text-gray-600 bg-white rounded p-2">
+                                                        <div class="flex items-center">
+                                                            <i class="fas fa-check-circle text-teal-500 mr-2"></i>
+                                                            <span>{{ $ind->nama_indikator }} <span
+                                                                    class="ml-1 text-teal-600">[{{ $ind->kode_indikator }}]</span></span>
+                                                        </div>
+                                                        <span
+                                                            class="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs font-semibold">
+                                                            <i
+                                                                class="fas fa-weight-hanging mr-1"></i>{{ $ind->bobot }}
+                                                        </span>
                                                     </div>
                                                 @endforeach
                                             </div>
@@ -157,36 +129,18 @@
                 <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-bold text-gray-800 flex items-center">
-                            <svg class="w-6 h-6 mr-2 text-teal-500" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                </path>
-                            </svg>
-                            Hasil Penilaian
+                            <i class="fas fa-chart-line text-teal-500 mr-2"></i>
+                            Hasil Penilaian (Sistem Checkbox)
                         </h3>
                         <button wire:click="simpanNilai" wire:loading.attr="disabled"
                             class="px-4 py-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white rounded-lg hover:from-teal-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-200 flex items-center disabled:opacity-50">
-                            <svg wire:loading.remove wire:target="simpanNilai" class="w-5 h-5 mr-2" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4">
-                                </path>
-                            </svg>
-                            <svg wire:loading wire:target="simpanNilai" class="animate-spin h-5 w-5 mr-2"
-                                fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10"
-                                    stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                            <span wire:loading.remove wire:target="simpanNilai">Simpan Semua</span>
-                            <span wire:loading wire:target="simpanNilai">Menyimpan...</span>
+                            <i wire:loading.remove wire:target="simpanNilai" class="fas fa-save mr-2"></i>
+                            <i wire:loading wire:target="simpanNilai" class="fas fa-spinner fa-spin mr-2"></i>
+                            {{-- <span wire:loading.remove wire:target="simpanNilai">Simpan Semua</span>
+                            <span wire:loading wire:target="simpanNilai">Menyimpan...</span> --}}
                         </button>
                     </div>
                 </div>
-
                 <div class="overflow-x-auto">
                     <table class="min-w-full">
                         <thead>
@@ -200,8 +154,8 @@
                                     Nama<br>Siswa
                                 </th>
                                 <th rowspan="2"
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-r-2 border-gray-300 min-w-[200px]">
-                                    Indikator
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-r-2 border-gray-300 min-w-[250px]">
+                                    Indikator (Bobot)
                                 </th>
                                 <th colspan="20"
                                     class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider border-r-2 border-gray-300">
@@ -233,50 +187,43 @@
                                             </td>
                                             <td rowspan="{{ $indikatorList->count() }}"
                                                 class="sticky left-12 z-10 bg-white px-4 py-3 text-sm font-semibold text-gray-900 border-r-2 border-gray-300">
+                                                <i class="fas fa-user-graduate text-teal-500 mr-2"></i>
                                                 {{ $siswa->namaSiswa }}
                                             </td>
                                         @endif
-
                                         <td class="px-4 py-3 text-sm text-gray-700 border-r-2 border-gray-300">
-                                            {{ $indikator->nama_indikator }}
+                                            <div class="flex items-center justify-between">
+                                                <span>{{ $indikator->nama_indikator }}</span>
+                                                <span
+                                                    class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold ml-2">
+                                                    <i class="fas fa-weight-hanging mr-1"></i>{{ $indikator->bobot }}
+                                                </span>
+                                            </div>
                                         </td>
-
                                         @for ($minggu = 1; $minggu <= 20; $minggu++)
                                             <td class="px-1 py-1 border-r border-gray-300">
-                                                <div class="relative group">
-                                                    <select
+                                                <div class="relative group flex justify-center">
+                                                    <input type="checkbox"
                                                         wire:model="nilaiData.{{ $siswa->id_akunsiswa }}.{{ $indikator->id }}.{{ $minggu }}"
-                                                        wire:change="updateNilai({{ $siswa->id_akunsiswa }}, {{ $indikator->id }}, {{ $minggu }}, $event.target.value)"
-                                                        class="w-full px-1 py-1 text-sm text-center border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-200
-                                            {{ isset($nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu])
-                                                ? ($nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] == '4'
-                                                    ? 'bg-green-100 text-green-800 font-semibold'
-                                                    : ($nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] == '3'
-                                                        ? 'bg-blue-100 text-blue-800 font-semibold'
-                                                        : ($nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] == '2'
-                                                            ? 'bg-yellow-100 text-yellow-800 font-semibold'
-                                                            : ($nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] == '1'
-                                                                ? 'bg-red-100 text-red-800 font-semibold'
-                                                                : 'bg-white'))))
-                                                : 'bg-white hover:bg-gray-50' }}">
-                                                        <option value="">-</option>
-                                                        <option value="1">1</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                        <option value="4">4</option>
-                                                    </select>
+                                                        wire:change="updateNilai({{ $siswa->id_akunsiswa }}, {{ $indikator->id }}, {{ $minggu }}, $event.target.checked)"
+                                                        class="w-5 h-5 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 focus:ring-2 transition duration-200 cursor-pointer
+                                                        {{ isset($nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu]) &&
+                                                        $nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu]
+                                                            ? 'bg-teal-100 border-teal-500'
+                                                            : 'hover:bg-gray-50' }}">
 
                                                     @if (session()->has('saved_' . $siswa->id_akunsiswa . '_' . $indikator->id . '_' . $minggu))
                                                         <div
                                                             class="absolute -top-6 left-1/2 transform -translate-x-1/2 z-20">
                                                             <span
-                                                                class="text-xs text-green-600 bg-white px-1 rounded shadow animate-fade-in-out">✓</span>
+                                                                class="text-xs text-green-600 bg-white px-1 rounded shadow animate-fade-in-out">
+                                                                <i class="fas fa-check"></i>
+                                                            </span>
                                                         </div>
                                                     @endif
                                                 </div>
                                             </td>
                                         @endfor
-
                                         @if ($indIndex == 0)
                                             <td rowspan="{{ $indikatorList->count() }}"
                                                 class="px-4 py-3 text-center text-sm font-bold">
@@ -287,10 +234,14 @@
                                                         for ($m = 1; $m <= 20; $m++) {
                                                             if (
                                                                 isset($nilaiData[$siswa->id_akunsiswa][$ind->id][$m]) &&
-                                                                !empty($nilaiData[$siswa->id_akunsiswa][$ind->id][$m])
+                                                                $nilaiData[$siswa->id_akunsiswa][$ind->id][$m] === true
                                                             ) {
-                                                                $nilai = $nilaiData[$siswa->id_akunsiswa][$ind->id][$m];
-                                                                $totalNilai += (int) $nilai;
+                                                                $totalNilai += $ind->bobot;
+                                                                $countNilai++;
+                                                            } elseif (
+                                                                isset($nilaiData[$siswa->id_akunsiswa][$ind->id][$m])
+                                                            ) {
+                                                                // Hitung juga yang tidak dicentang untuk pembagi
                                                                 $countNilai++;
                                                             }
                                                         }
@@ -300,17 +251,20 @@
                                                 @if ($rataRata > 0)
                                                     <span
                                                         class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                                            {{ $rataRata >= 3.5
-                                                ? 'bg-green-100 text-green-800'
-                                                : ($rataRata >= 2.5
-                                                    ? 'bg-blue-100 text-blue-800'
-                                                    : ($rataRata >= 1.5
-                                                        ? 'bg-yellow-100 text-yellow-800'
-                                                        : 'bg-red-100 text-red-800')) }}">
+                                                        {{ $rataRata >= 3.5
+                                                            ? 'bg-green-100 text-green-800'
+                                                            : ($rataRata >= 2.5
+                                                                ? 'bg-blue-100 text-blue-800'
+                                                                : ($rataRata >= 1.5
+                                                                    ? 'bg-yellow-100 text-yellow-800'
+                                                                    : 'bg-red-100 text-red-800')) }}">
+                                                        <i class="fas fa-calculator mr-1"></i>
                                                         {{ number_format($rataRata, 2) }}
                                                     </span>
                                                 @else
-                                                    <span class="text-gray-400">-</span>
+                                                    <span class="text-gray-400">
+                                                        <i class="fas fa-minus"></i>
+                                                    </span>
                                                 @endif
                                             </td>
                                         @endif
@@ -320,22 +274,27 @@
                         </tbody>
                     </table>
                 </div>
-
                 {{-- Footer Keterangan --}}
                 <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-t border-gray-200">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                        <div class="flex items-end">
-                            <div class="text-sm text-gray-500">
-                                <p class="flex items-center">
-                                    <svg class="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                    Nilai otomatis tersimpan saat diubah
+                        <div class="flex items-center">
+                            <div class="text-sm text-gray-600">
+                                <p class="flex items-center mb-2">
+                                    <i class="fas fa-check-square text-green-500 mr-2"></i>
+                                    Centang checkbox jika indikator tercapai
                                 </p>
-
+                                <p class="flex items-center">
+                                    <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                                    Nilai otomatis tersimpan berdasarkan bobot indikator
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end">
+                            <div class="text-sm text-gray-500">
+                                <p><i class="fas fa-users mr-1"></i>Total Siswa: <span
+                                        class="font-semibold">{{ $siswaList->count() }}</span></p>
+                                <p><i class="fas fa-list-ul mr-1"></i>Total Indikator: <span
+                                        class="font-semibold">{{ $indikatorList->count() }}</span></p>
                             </div>
                         </div>
                     </div>
@@ -343,17 +302,12 @@
             </div>
         @elseif($selectedKelas && $selectedAspek)
             <div class="bg-white rounded-2xl shadow-xl p-8 text-center">
-                <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                    </path>
-                </svg>
+                <i class="fas fa-file-alt text-gray-300 text-8xl mb-4"></i>
                 <p class="text-gray-500 text-lg">
                     @if ($siswaList->count() == 0)
-                        Tidak ada siswa di kelas ini.
+                        <i class="fas fa-user-times mr-2"></i>Tidak ada siswa di kelas ini.
                     @elseif($indikatorList->count() == 0)
-                        Tidak ada indikator untuk aspek ini.
+                        <i class="fas fa-list-alt mr-2"></i>Tidak ada indikator untuk aspek ini.
                     @else
                         Silakan pilih kelas dan aspek penilaian.
                     @endif
@@ -362,15 +316,12 @@
         @else
             <div class="bg-white rounded-2xl shadow-xl p-12">
                 <div class="max-w-md mx-auto text-center">
-                    <svg class="w-32 h-32 mx-auto text-gray-300 mb-6" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
-                        </path>
-                    </svg>
-                    <h3 class="text-xl font-semibold text-gray-700 mb-2">Mulai Penilaian</h3>
+                    <i class="fas fa-clipboard-check text-gray-300 text-8xl mb-6"></i>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-play-circle mr-2"></i>Mulai Penilaian
+                    </h3>
                     <p class="text-gray-500">Silakan pilih kelas dan aspek penilaian untuk memulai input nilai siswa
-                    </p>
+                        dengan sistem checkbox</p>
                 </div>
             </div>
         @endif
@@ -381,14 +332,7 @@
         class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 items-center justify-center">
         <div class="bg-white p-6 rounded-xl shadow-2xl">
             <div class="flex items-center">
-                <svg class="animate-spin h-8 w-8 text-teal-600 mr-3" xmlns="http://www.w3.org/2000/svg"
-                    fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                        stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                    </path>
-                </svg>
+                <i class="fas fa-spinner fa-spin text-teal-600 text-2xl mr-3"></i>
                 <span class="text-gray-700 font-medium">Memuat data penilaian...</span>
             </div>
         </div>
@@ -431,5 +375,22 @@
         tbody tr:hover .sticky {
             background-color: #f9fafb;
         }
+
+        /* Checkbox hover effects */
+        input[type="checkbox"]:hover {
+            transform: scale(1.1);
+        }
+
+        input[type="checkbox"]:checked {
+            background-color: #0d9488;
+            border-color: #0d9488;
+        }
+
+        /* Font Awesome icon hover effects */
+        .fa-check-square:hover,
+        .fa-info-circle:hover {
+            transform: scale(1.1);
+            transition: transform 0.2s ease;
+        }
     </style>
-</div
+</div>

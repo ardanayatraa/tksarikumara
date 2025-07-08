@@ -1,4 +1,3 @@
-{{-- resources/views/livewire/aspek-penilaian/add.blade.php --}}
 <div>
     <x-button wire:click="$set('open', true)">Tambah Indikator Aspek</x-button>
 
@@ -61,6 +60,16 @@
                 <x-label for="nama_indikator" value="Nama Indikator" />
                 <x-input id="nama_indikator" wire:model.defer="nama_indikator" class="mt-1 block w-full" />
                 @error('nama_indikator')
+                    <span class="text-red-600">{{ $message }}</span>
+                @enderror
+            </div>
+
+            {{-- Bobot --}}
+            <div class="mb-4">
+                <x-label for="bobot" value="Bobot (1-10)" />
+                <x-input type="number" id="bobot" min="1" max="10" wire:model.defer="bobot"
+                    class="mt-1 block w-full" />
+                @error('bobot')
                     <span class="text-red-600">{{ $message }}</span>
                 @enderror
             </div>

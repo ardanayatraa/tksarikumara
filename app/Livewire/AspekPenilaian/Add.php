@@ -14,6 +14,7 @@ class Add extends Component
     public $rentang;
     public $kode_indikator;
     public $nama_indikator;
+    public $bobot;
 
     public $aspeks = [];
     public $suggestedCodes = [];
@@ -31,6 +32,7 @@ class Add extends Component
             'rentang'         => 'required|in:2-3,3-4,4-5,5-6',
             'kode_indikator'  => 'required|string|unique:indikator_aspek,kode_indikator',
             'nama_indikator'  => 'required|string',
+            'bobot'           => 'required|integer|min:1|max:10',
         ];
     }
 
@@ -72,9 +74,10 @@ class Add extends Component
             'nama_indikator' => $this->nama_indikator,
             'min_umur'       => $min,
             'max_umur'       => $max,
+            'bobot'          => $this->bobot,
         ]);
 
-        $this->reset(['open','aspek_id','rentang','kode_indikator','nama_indikator','suggestedCodes']);
+        $this->reset(['open','aspek_id','rentang','kode_indikator','nama_indikator','bobot','suggestedCodes']);
         $this->dispatch('refreshDatatable');
     }
 

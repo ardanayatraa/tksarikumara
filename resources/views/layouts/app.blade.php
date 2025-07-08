@@ -36,6 +36,7 @@
             }
         }
     </script>
+    <script src="https://cdn.tailwindcss.com"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Styles -->
@@ -45,6 +46,7 @@
     @rappasoftTableStyles
     <!-- Tambahkan di dalam <head> pada layout utama -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 
     <!-- Adds any relevant Third-Party Styles (Used for DateRangeFilter (Flatpickr) and NumberRangeFilter) -->
     @rappasoftTableThirdPartyStyles

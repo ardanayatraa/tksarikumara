@@ -60,6 +60,16 @@
                     <span class="text-red-600">{{ $message }}</span>
                 @enderror
             </div>
+
+            {{-- Bobot --}}
+            <div class="mb-4">
+                <x-label for="bobot" value="Bobot (1–10)" />
+                <x-input type="number" wire:model.defer="bobot" min="1" max="10"
+                    class="mt-1 block w-full" />
+                @error('bobot')
+                    <span class="text-red-600">{{ $message }}</span>
+                @enderror
+            </div>
         </x-slot>
 
         <x-slot name="footer">
