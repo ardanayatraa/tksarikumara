@@ -21,7 +21,7 @@
 
                 <!-- Table Nilai Siswa -->
                 <div class="md:col-span-2 bg-gray-50 p-4 rounded-md shadow-sm">
-                    @livewire('table.nilai-siswa-table')
+                    @livewire('table.nilai-siswa-table', ['siswaId' => $id])
                 </div>
 
             </div>

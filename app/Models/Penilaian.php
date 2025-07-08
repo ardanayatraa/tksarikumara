@@ -12,51 +12,38 @@ class Penilaian extends Model
 
     protected $primaryKey = 'id_penilaian';
 
-
     protected $fillable = [
         'id_akunsiswa',
         'id_guru',
         'id_kelas',
         'tgl_penilaian',
+        'minggu_ke',
+        'semester',
+        'tahun_ajaran',
     ];
 
-    /**
-    * Relasi ke AkunSiswa.
-    */
     public function akunSiswa(): BelongsTo
     {
-        return $this->belongsTo(AkunSiswa::class, 'id_akunsiswa');
+        return $this->belongsTo(AkunSiswa::class, 'id_akunsiswa', 'id_akunsiswa');
     }
 
-    /**
-    * Relasi ke Guru.
-    */
     public function guru(): BelongsTo
     {
-        return $this->belongsTo(Guru::class, 'id_guru');
+        return $this->belongsTo(Guru::class, 'id_guru', 'id_guru');
     }
 
-    /**
-    * Relasi ke Kelas.
-    */
     public function kelas(): BelongsTo
     {
-        return $this->belongsTo(Kelas::class, 'id_kelas');
+        return $this->belongsTo(Kelas::class, 'id_kelas', 'id_kelas');
     }
 
-    /**
-    * Relasi ke detail NilaiSiswa.
-    */
     public function nilaiSiswa(): HasMany
     {
-        return $this->hasMany(NilaiSiswa::class, 'id_penilaian');
+        return $this->hasMany(NilaiSiswa::class, 'id_penilaian', 'id_penilaian');
     }
 
-    /**
-    * Relasi ke Notifikasi.
-    */
     public function notifikasi(): HasMany
     {
-        return $this->hasMany(Notifikasi::class, 'id_penilaian');
+        return $this->hasMany(Notifikasi::class, 'id_penilaian', 'id_penilaian');
     }
 }

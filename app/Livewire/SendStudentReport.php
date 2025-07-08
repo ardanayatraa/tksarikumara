@@ -17,6 +17,7 @@ class SendStudentReport extends Component
     public $start;
     public $end;
     public $records = [];
+    public $rekap = [];
 
     protected $rules = [
         'start' => 'required|date',
@@ -39,7 +40,6 @@ class SendStudentReport extends Component
 
     protected function loadRecords()
     {
-        // join via indikator_aspek
         $this->records = Penilaian::query()
             ->where('penilaian.id_akunsiswa', $this->id_akunsiswa)
             ->whereBetween('penilaian.tgl_penilaian', [$this->start, $this->end])
@@ -59,6 +59,38 @@ class SendStudentReport extends Component
             ->orderBy('penilaian.tgl_penilaian')
             ->get()
             ->toArray();
+
+        $this->rekap = $this->generateRekap($this->records);
+    }
+
+    protected function generateRekap(array $records): array
+    {
+        $grouped = [];
+
+        foreach ($records as $r) {
+            $kode = $r['kode_aspek'];
+            $nama = $r['nama_aspek'];
+
+            if (!isset($grouped[$kode])) {
+                $grouped[$kode] = [
+                    'kode_aspek' => $kode,
+                    'nama_aspek' => $nama,
+                    'indikator' => [],
+                    'skor_total' => 0,
+                    'count' => 0,
+                ];
+            }
+
+            $grouped[$kode]['indikator'][] = $r['nama_indikator'];
+            $grouped[$kode]['skor_total'] += $r['skor'];
+            $grouped[$kode]['count']++;
+        }
+
+        return collect($grouped)->map(function ($item) {
+            $item['skor'] = round($item['skor_total'] / $item['count'], 2);
+            unset($item['skor_total'], $item['count']);
+            return $item;
+        })->values()->toArray();
     }
 
     public function sendEmail()
@@ -72,7 +104,8 @@ class SendStudentReport extends Component
                 $student,
                 $this->records,
                 $this->start,
-                $this->end
+                $this->end,
+                $this->rekap
             ));
 
         session()->flash('success', 'Email laporan berhasil dikirim.');
@@ -94,13 +127,14 @@ class SendStudentReport extends Component
             'student' => $student,
             'records' => $this->records,
             'summary' => $summary,
+            'rekap'   => $this->rekap,
             'start'   => $this->start,
             'end'     => $this->end,
         ]);
 
         return response()->streamDownload(
             fn() => print($pdf->output()),
-            'laporan-perkembangan-' . Str::slug($student->namaSiswa) . '.pdf'  // ← pakai Str::slug
+            'laporan-perkembangan-' . Str::slug($student->namaSiswa) . '.pdf'
         );
     }
 

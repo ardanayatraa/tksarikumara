@@ -41,7 +41,7 @@ class TopAspectThisWeek extends Component
         $labels = $rows->pluck('nama_aspek')->toArray();
         $data   = $rows->pluck('avg_skor')->toArray();
 
-        $barChart = $chart->barChart()
+        $lineChart = $chart->lineChart()
             ->setTitle($this->title)
             ->setSubtitle("Minggu: {$start} s.d. {$end}")
             ->setXAxis($labels)
@@ -49,7 +49,7 @@ class TopAspectThisWeek extends Component
             ->setHeight(350);
 
         return view('livewire.top-aspect-this-week', [
-            'chart' => $barChart,
+            'chart' => $lineChart,
             'title' => $this->title,
         ]);
     }

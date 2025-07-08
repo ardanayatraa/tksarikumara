@@ -8,27 +8,26 @@ use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use App\Models\NilaiSiswa;
 use Illuminate\Database\Eloquent\Builder;
+
 class NilaiSiswaTable extends DataTableComponent
 {
     protected $model = NilaiSiswa::class;
+
+    // Opsional: ID siswa bisa dikirim sebagai properti dari luar (misalnya lewat blade: @livewire('table.nilai-siswa-table', ['siswaId' => 1]))
+    public ?int $siswaId = null;
 
     public function configure(): void
     {
         $this->setPrimaryKey('id_nilai');
     }
 
-    /**
-     * Override builder agar hanya menampilkan nilai siswa
-     * yang sedang login (guard 'siswa').
-     */
     public function builder(): Builder
     {
-        $siswaId = Auth::guard('siswa')->id();
+        // Jika siswaId tidak di-set, ambil dari Auth (guard siswa)
+        $id = $this->siswaId ?? Auth::guard('siswa')->id();
 
         return NilaiSiswa::query()
-            ->whereHas('penilaian', fn($q) =>
-                $q->where('id_akunsiswa', $siswaId)
-            )
+            ->whereHas('penilaian', fn($query) => $query->where('id_akunsiswa', $id))
             ->with(['penilaian', 'indikator.aspek']);
     }
 

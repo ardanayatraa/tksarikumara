@@ -25,7 +25,7 @@ class WeeklyProgress extends Component
     public function render(LarapexChart $chart)
     {
         // initial build
-        $chartObj = $chart->barChart()
+        $chartObj = $chart->lineChart()
             ->setTitle($this->title)
             ->setSubtitle('Skor rata-rata per hari')
             ->setXAxis($this->getLabels())

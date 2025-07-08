@@ -27,7 +27,7 @@
 
                 <!-- Penilaian -->
                 <div x-show="activeTab === 'penilaian'" x-cloak>
-                    @livewire('nilai-siswa.penilaian-manager')
+                    @livewire('penilaian-aspek')
 
                 </div>
             </div>

@@ -11,7 +11,6 @@ class NilaiSiswa extends Model
 
     protected $primaryKey = 'id_nilai';
 
-    // tidak pakai timestamps
     public $timestamps = false;
 
     protected $fillable = [
@@ -22,17 +21,13 @@ class NilaiSiswa extends Model
         'catatan',
     ];
 
-    /**
-     * Relasi ke Penilaian (header).
-     */
     public function penilaian(): BelongsTo
     {
-        return $this->belongsTo(Penilaian::class, 'id_penilaian');
+        return $this->belongsTo(Penilaian::class, 'id_penilaian', 'id_penilaian');
     }
 
-     // relasi ke IndikatorAspek (child)
     public function indikator(): BelongsTo
     {
-        return $this->belongsTo(IndikatorAspek::class, 'indikator_aspek_id');
+        return $this->belongsTo(IndikatorAspek::class, 'indikator_aspek_id', 'id');
     }
 }

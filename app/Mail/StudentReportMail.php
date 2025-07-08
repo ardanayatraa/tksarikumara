@@ -16,19 +16,22 @@ class StudentReportMail extends Mailable
     public $start;
     public $end;
     public $summary;
+    public $rekap;
 
     /**
      * @param  \App\Models\AkunSiswa  $student
      * @param  array  $records
      * @param  string $start
      * @param  string $end
+     * @param  array  $rekap
      */
-    public function __construct($student, $records, $start, $end)
+    public function __construct($student, $records, $start, $end, $rekap)
     {
         $this->student = $student;
         $this->records = $records;
         $this->start   = $start;
         $this->end     = $end;
+        $this->rekap   = $rekap;
 
         // Hitung summary berdasarkan nilai
         $this->summary = [
@@ -46,6 +49,7 @@ class StudentReportMail extends Mailable
             'student' => $this->student,
             'records' => $this->records,
             'summary' => $this->summary,
+            'rekap'   => $this->rekap,
             'start'   => $this->start,
             'end'     => $this->end,
         ]);
@@ -55,9 +59,10 @@ class StudentReportMail extends Mailable
             ->view('emails.student-report', [
                 'student' => $this->student,
                 'records' => $this->records,
+                'summary' => $this->summary,
+                'rekap'   => $this->rekap,
                 'start'   => $this->start,
                 'end'     => $this->end,
-                'summary' => $this->summary,
             ])
             ->attachData($pdf->output(), 'laporan-perkembangan.pdf', [
                 'mime' => 'application/pdf',
