@@ -82,10 +82,28 @@
                 <th>Aspek Penilaian</th>
                 <th>Indikator</th>
                 <th>Skor</th>
+                <th>Skala</th>
             </tr>
         </thead>
         <tbody>
+            @php
+                $totalKategori = ['BSB' => 0, 'BSH' => 0, 'MB' => 0, 'BB' => 0];
+            @endphp
+
             @foreach ($rekap as $index => $aspek)
+                @php
+                    $skor = round($aspek['skor'] ?? 0, 2);
+                    $skala = match (true) {
+                        $skor >= 3.5 => 'BSB',
+                        $skor >= 2.5 => 'BSH',
+                        $skor >= 1.5 => 'MB',
+                        $skor > 0 => 'BB',
+                        default => '-',
+                    };
+                    if (isset($totalKategori[$skala])) {
+                        $totalKategori[$skala]++;
+                    }
+                @endphp
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $aspek['kode_aspek'] }}</td>
@@ -97,22 +115,29 @@
                             @endforeach
                         </ul>
                     </td>
-                    <td>
-                        @php
-                            $skor = round($aspek['skor'] ?? 0);
-                            $kategoriMap = [
-                                1 => 'BB',
-                                2 => 'MB',
-                                3 => 'BSH',
-                                4 => 'BSB',
-                            ];
-                        @endphp
-                        {{ $kategoriMap[$skor] ?? '-' }}
-                    </td>
+                    <td>{{ number_format($skor, 2) }}</td>
+                    <td>{{ $skala }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+
+    <h4>Kesimpulan Penilaian</h4>
+    <ul>
+        <li><strong>BSB (Berkembang Sangat Baik):</strong> {{ $totalKategori['BSB'] }}</li>
+        <li><strong>BSH (Berkembang Sesuai Harapan):</strong> {{ $totalKategori['BSH'] }}</li>
+        <li><strong>MB (Mulai Berkembang):</strong> {{ $totalKategori['MB'] }}</li>
+        <li><strong>BB (Belum Berkembang):</strong> {{ $totalKategori['BB'] }}</li>
+    </ul>
+
+    <h4>Rekomendasi Guru</h4>
+    @php
+        // ambil dari catatan penilaian terakhir jika tersedia
+        $catatan = $student->penilaian[0]->catatan ?? null;
+    @endphp
+    <p>
+        {{ $catatan ?: 'Anak menunjukkan perkembangan yang baik secara keseluruhan. Perlu penguatan pada aspek yang berada di kategori MB atau BB dengan metode pembelajaran menyenangkan dan partisipatif.' }}
+    </p>
 </body>
 
 </html>
