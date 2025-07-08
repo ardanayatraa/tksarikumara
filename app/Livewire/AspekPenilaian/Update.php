@@ -26,9 +26,7 @@ class Update extends Component
         '5-6' => '5–6 Tahun',
     ];
 
-    protected $listeners = [
-        'editIndikatorAspek'  // dipanggil dari table
-    ];
+    protected $listeners = ['editIndikatorAspek'];
 
     protected function rules()
     {
@@ -56,25 +54,37 @@ class Update extends Component
         $this->nama_indikator = $i->nama_indikator;
         $this->bobot          = $i->bobot;
 
-        $this->updatedAspekId($this->aspek_id);
+        $this->generateSuggestedCodes($this->aspek_id);
 
         $this->open = true;
     }
 
     public function updatedAspekId($value)
     {
-        $this->kode_indikator = null;
+        $this->generateSuggestedCodes($value);
+    }
+
+    protected function generateSuggestedCodes($aspekId)
+    {
         $this->suggestedCodes = [];
 
-        if ($value) {
-            $prefix = AspekPenilaian::find($value)->kode_aspek . '.';
-            $existing = IndikatorAspek::where('aspek_id', $value)
+        if ($aspekId) {
+            $aspek = AspekPenilaian::find($aspekId);
+            if (!$aspek) return;
+
+            $prefix = $aspek->kode_aspek . '.';
+            $existing = IndikatorAspek::where('aspek_id', $aspekId)
                 ->pluck('kode_indikator')
                 ->map(fn($c) => Str::after($c, $prefix))
                 ->toArray();
+
             $letters = range('A', 'Z');
-            $avail = array_diff($letters, $existing);
-            $this->suggestedCodes = array_map(fn($l) => $prefix . $l, $avail);
+            $available = array_diff($letters, $existing);
+            $this->suggestedCodes = array_map(fn($l) => $prefix . $l, $available);
+
+            if (!$this->kode_indikator) {
+                $this->kode_indikator = $this->suggestedCodes[0] ?? null;
+            }
         }
     }
 

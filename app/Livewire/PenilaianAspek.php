@@ -136,7 +136,21 @@ class PenilaianAspek extends Component
     private function simpanNilaiIndividual($siswaId, $indikatorId, $minggu, $isChecked)
     {
         try {
-            // Cari atau buat penilaian header
+            DB::beginTransaction();
+
+            // Pastikan semua data yang diperlukan ada
+            if (!$siswaId || !$indikatorId || !$minggu || !$this->selectedKelas) {
+                throw new \Exception('Data tidak lengkap untuk penyimpanan');
+            }
+
+            // Ambil bobot indikator
+            $indikator = $this->indikatorList->where('id', $indikatorId)->first();
+            if (!$indikator) {
+                throw new \Exception('Indikator tidak ditemukan');
+            }
+            $bobotIndikator = $indikator->bobot;
+
+            // Cari atau buat penilaian header dengan field yang konsisten
             $penilaian = Penilaian::firstOrCreate([
                 'id_akunsiswa' => $siswaId,
                 'id_kelas' => $this->selectedKelas,
@@ -144,14 +158,12 @@ class PenilaianAspek extends Component
                 'tahun_ajaran' => $this->tahunAjaran,
                 'semester' => $this->semester,
             ], [
-                'tanggal_penilaian' => now(),
+                'id_guru' => auth()->guard('guru')->user()->id_guru,
+                'tgl_penilaian' => now(),
                 'catatan_guru' => '',
             ]);
 
-            // Ambil bobot indikator
-            $indikator = $this->indikatorList->where('id', $indikatorId)->first();
-            $bobotIndikator = $indikator ? $indikator->bobot : 1;
-
+            // Simpan atau update nilai siswa
             if ($isChecked) {
                 // Jika checked, simpan dengan bobot indikator
                 NilaiSiswa::updateOrCreate([
@@ -163,7 +175,7 @@ class PenilaianAspek extends Component
                     'catatan' => '',
                 ]);
             } else {
-                // Jika unchecked, hapus atau set ke 0
+                // Jika unchecked, set ke 0 atau hapus record
                 NilaiSiswa::updateOrCreate([
                     'id_penilaian' => $penilaian->id_penilaian,
                     'indikator_aspek_id' => $indikatorId,
@@ -174,9 +186,14 @@ class PenilaianAspek extends Component
                 ]);
             }
 
+            DB::commit();
+
             // Flash message untuk auto-save
             session()->flash('saved_' . $siswaId . '_' . $indikatorId . '_' . $minggu, true);
+
         } catch (\Exception $e) {
+            DB::rollback();
+            \Log::error('Error simpan nilai individual: ' . $e->getMessage());
             $this->showAlert('Gagal menyimpan nilai: ' . $e->getMessage(), 'error');
         }
     }
@@ -198,16 +215,15 @@ class PenilaianAspek extends Component
                         if (isset($this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu])) {
                             $isChecked = $this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu];
 
-                            // Cari atau buat penilaian header
+                            // Cari atau buat penilaian header dengan field yang konsisten
                             $penilaian = Penilaian::firstOrCreate([
                                 'id_akunsiswa' => $siswa->id_akunsiswa,
                                 'id_kelas' => $this->selectedKelas,
                                 'minggu_ke' => $minggu,
-                                'id_guru' => auth()->guard('guru')->user()->id_guru,
-                                'tgl_penilaian' => now(),
                                 'tahun_ajaran' => $this->tahunAjaran,
                                 'semester' => $this->semester,
                             ], [
+                                'id_guru' => auth()->guard('guru')->user()->id_guru,
                                 'tanggal_penilaian' => now(),
                                 'catatan_guru' => '',
                             ]);
@@ -232,8 +248,13 @@ class PenilaianAspek extends Component
 
             DB::commit();
             $this->showAlert("Berhasil menyimpan {$totalSaved} data penilaian!", 'success');
+
+            // Reload data setelah berhasil simpan
+            $this->loadNilai();
+
         } catch (\Exception $e) {
             DB::rollback();
+            \Log::error('Error simpan semua nilai: ' . $e->getMessage());
             $this->showAlert('Terjadi kesalahan: ' . $e->getMessage(), 'error');
         }
     }

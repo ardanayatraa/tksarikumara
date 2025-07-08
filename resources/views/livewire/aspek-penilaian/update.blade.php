@@ -6,7 +6,7 @@
             {{-- Aspek Utama --}}
             <div class="mb-4">
                 <x-label for="aspek_id" value="Aspek Utama" />
-                <select id="aspek_id" wire:model.live="aspek_id" class="mt-1 block w-full border-gray-300 rounded-md">
+                <select id="aspek_id" wire:model="aspek_id" class="mt-1 block w-full border-gray-300 rounded-md">
                     <option value="">-- Pilih aspek --</option>
                     @foreach ($aspeks as $asp)
                         <option value="{{ $asp->id_aspek }}">
@@ -36,17 +36,25 @@
             {{-- Kode Indikator --}}
             <div class="mb-4">
                 <x-label for="kode_indikator" value="Kode Indikator" />
+                @php
+                    $existsInSuggested = in_array($kode_indikator, $suggestedCodes);
+                @endphp
+
                 @if (count($suggestedCodes))
-                    <select wire:model.defer="kode_indikator" class="mt-1 block w-full border-gray-300 rounded-md">
-                        <option value="">-- Pilih kode --</option>
+                    <select wire:model="kode_indikator" class="mt-1 block w-full border-gray-300 rounded-md">
+                        @if (!$existsInSuggested && $kode_indikator)
+                            <option value="{{ $kode_indikator }}" selected>{{ $kode_indikator }} (tersimpan)</option>
+                        @else
+                            <option value="">-- Pilih kode --</option>
+                        @endif
                         @foreach ($suggestedCodes as $code)
                             <option value="{{ $code }}">{{ $code }}</option>
                         @endforeach
                     </select>
                 @else
-                    <x-input wire:model.defer="kode_indikator" class="mt-1 block w-full"
-                        placeholder="Masukkan kode manual" />
+                    <x-input wire:model="kode_indikator" class="mt-1 block w-full" placeholder="Masukkan kode manual" />
                 @endif
+
                 @error('kode_indikator')
                     <span class="text-red-600">{{ $message }}</span>
                 @enderror
@@ -55,7 +63,7 @@
             {{-- Nama Indikator --}}
             <div class="mb-4">
                 <x-label for="nama_indikator" value="Nama Indikator" />
-                <x-input wire:model.defer="nama_indikator" class="mt-1 block w-full" />
+                <x-input wire:model="nama_indikator" class="mt-1 block w-full" />
                 @error('nama_indikator')
                     <span class="text-red-600">{{ $message }}</span>
                 @enderror
@@ -64,8 +72,7 @@
             {{-- Bobot --}}
             <div class="mb-4">
                 <x-label for="bobot" value="Bobot (1–10)" />
-                <x-input type="number" wire:model.defer="bobot" min="1" max="10"
-                    class="mt-1 block w-full" />
+                <x-input type="number" wire:model="bobot" min="1" max="10" class="mt-1 block w-full" />
                 @error('bobot')
                     <span class="text-red-600">{{ $message }}</span>
                 @enderror

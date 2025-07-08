@@ -7,7 +7,8 @@
         <div class="space-y-4">
             <div>
                 <x-label for="kode_aspek" value="Kode Aspek" />
-                <x-input id="kode_aspek" type="text" readonly wire:model.defer="kode_aspek" class="block w-full" />
+                <x-input id="kode_aspek" type="text" readonly wire:model="kode_aspek"
+                    class="block w-full bg-gray-100 text-gray-600" />
                 @error('kode_aspek')
                     <span class="text-sm text-red-600">{{ $message }}</span>
                 @enderror
@@ -15,7 +16,7 @@
 
             <div>
                 <x-label for="nama_aspek" value="Nama Aspek" />
-                <x-input id="nama_aspek" type="text" wire:model.defer="nama_aspek" class="block w-full" />
+                <x-input id="nama_aspek" type="text" wire:model.live="nama_aspek" class="block w-full" />
                 @error('nama_aspek')
                     <span class="text-sm text-red-600">{{ $message }}</span>
                 @enderror

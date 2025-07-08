@@ -131,7 +131,7 @@
                             </th>
                             <th rowspan="2"
                                 class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider border-b border-gray-300">
-                                Rata-<br>rata
+                                Jumlah-<br>Nilai
                             </th>
                         </tr>
                         <tr class="bg-gray-100">
