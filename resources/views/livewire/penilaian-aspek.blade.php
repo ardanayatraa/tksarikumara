@@ -132,13 +132,13 @@
                             <i class="fas fa-chart-line text-teal-500 mr-2"></i>
                             Hasil Penilaian (Sistem Checkbox)
                         </h3>
-                        <button wire:click="simpanNilai" wire:loading.attr="disabled"
+                        {{-- <button wire:click="simpanNilai" wire:loading.attr="disabled"
                             class="px-4 py-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white rounded-lg hover:from-teal-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-200 flex items-center disabled:opacity-50">
                             <i wire:loading.remove wire:target="simpanNilai" class="fas fa-save mr-2"></i>
                             <i wire:loading wire:target="simpanNilai" class="fas fa-spinner fa-spin mr-2"></i>
-                            {{-- <span wire:loading.remove wire:target="simpanNilai">Simpan Semua</span>
-                            <span wire:loading wire:target="simpanNilai">Menyimpan...</span> --}}
-                        </button>
+                            <span wire:loading.remove wire:target="simpanNilai">Simpan Semua</span>
+                            <span wire:loading wire:target="simpanNilai">Menyimpan...</span>
+                        </button> --}}
                     </div>
                 </div>
                 <div class="overflow-x-auto">
