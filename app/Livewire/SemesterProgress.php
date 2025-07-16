@@ -65,7 +65,6 @@ class SemesterProgress extends Component
             ->addData('Rata-rata Skor', $chartData['scores'])
             ->setColors(['#0d9488'])
             ->setHeight(400)
-            ->setGrid(true, '#f1f5f9')
             ->setMarkers(['#0d9488'], 6, 6);
 
         return view('livewire.semester-progress', [
