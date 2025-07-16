@@ -185,7 +185,7 @@ class PenilaianAspek extends Component
             }
             $bobotIndikator = $indikator->bobot;
 
-            // Cari atau buat penilaian header - pastikan menggunakan field yang benar
+            // Cari atau buat penilaian header
             $penilaian = Penilaian::firstOrCreate([
                 'id_akunsiswa' => $siswaId,
                 'id_kelas' => $this->selectedKelas,
@@ -194,7 +194,7 @@ class PenilaianAspek extends Component
                 'semester' => $this->semester,
             ], [
                 'id_guru' => auth()->guard('guru')->user()->id_guru,
-                'tgl_penilaian' => now(), // Gunakan tgl_penilaian, bukan tanggal_penilaian
+                'tgl_penilaian' => now(),
                 'catatan_guru' => '',
             ]);
 
@@ -259,7 +259,7 @@ class PenilaianAspek extends Component
                                 'semester' => $this->semester,
                             ], [
                                 'id_guru' => auth()->guard('guru')->user()->id_guru,
-                                'tgl_penilaian' => now(), // Gunakan tgl_penilaian, bukan tanggal_penilaian
+                                'tgl_penilaian' => now(),
                                 'catatan_guru' => '',
                             ]);
 
