@@ -227,6 +227,12 @@ class SendStudentReport extends Component
 
     public function downloadReport()
     {
+        // Validasi data sebelum generate PDF
+        if (!$this->year || !$this->month || !$this->week) {
+            session()->flash('error', 'Silakan pilih rentang tanggal yang valid terlebih dahulu.');
+            return;
+        }
+
         $student = AkunSiswa::findOrFail($this->id_akunsiswa);
 
         $summary = [
@@ -235,6 +241,24 @@ class SendStudentReport extends Component
             'MB'  => collect($this->records)->where('nilai', 'MB')->count(),
             'BB'  => collect($this->records)->where('nilai', 'BB')->count(),
         ];
+
+        // Array bulan Indonesia
+        $monthNames = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember'
+        ];
+
+        $monthName = $monthNames[$this->month] ?? 'Unknown';
 
         $pdf = Pdf::loadView('reports.student_report_pdf', [
             'student' => $student,
@@ -246,11 +270,14 @@ class SendStudentReport extends Component
             'year'    => $this->year,
             'month'   => $this->month,
             'week'    => $this->week,
+            'monthName' => $monthName,
+            'monthNames' => $monthNames,
+            'tahun_ajaran' => '2024/2025', // Tambahkan tahun ajaran
         ]);
 
         return response()->streamDownload(
             fn() => print($pdf->output()),
-            'laporan-perkembangan-' . Str::slug($student->namaSiswa) . '-' . $this->months[$this->month] . '-minggu-' . $this->week . '-' . $this->year . '.pdf'
+            'laporan-perkembangan-' . Str::slug($student->namaSiswa) . '-' . $monthName . '-minggu-' . $this->week . '-' . $this->year . '.pdf'
         );
     }
 

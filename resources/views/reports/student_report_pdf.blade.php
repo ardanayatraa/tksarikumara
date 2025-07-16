@@ -108,9 +108,9 @@
         <table class="no-border">
             <tr>
                 <td><strong>Nama Siswa</strong></td>
-                <td>: {{ $student->namaSiswa }}</td>
+                <td>: {{ $student->namaSiswa ?? '-' }}</td>
                 <td><strong>Usia</strong></td>
-                <td>: {{ \Carbon\Carbon::parse($student->tgl_lahir)->age }} Tahun</td>
+                <td>: {{ $student->tgl_lahir ? \Carbon\Carbon::parse($student->tgl_lahir)->age : '-' }} Tahun</td>
             </tr>
             <tr>
                 <td><strong>Kelas</strong></td>
@@ -127,23 +127,7 @@
             <tr>
                 <td><strong>Periode</strong></td>
                 <td colspan="3">:
-                    @php
-                        $bulanNama = [
-                            1 => 'Januari',
-                            2 => 'Februari',
-                            3 => 'Maret',
-                            4 => 'April',
-                            5 => 'Mei',
-                            6 => 'Juni',
-                            7 => 'Juli',
-                            8 => 'Agustus',
-                            9 => 'September',
-                            10 => 'Oktober',
-                            11 => 'November',
-                            12 => 'Desember',
-                        ];
-                    @endphp
-                    {{ $bulanNama[$month] ?? $month }} {{ $year }} - Minggu ke-{{ $week }}
+                    {{ $monthName ?? 'Unknown' }} {{ $year ?? 'Unknown' }} - Minggu ke-{{ $week ?? 'Unknown' }}
                     @if ($start && $end)
                         ({{ \Carbon\Carbon::parse($start)->format('d M') }} -
                         {{ \Carbon\Carbon::parse($end)->format('d M Y') }})
@@ -187,11 +171,11 @@
                     @endphp
                     <tr>
                         <td>{{ $index + 1 }}</td>
-                        <td>{{ $aspek['kode_aspek'] }}</td>
-                        <td>{{ $aspek['nama_aspek'] }}</td>
+                        <td>{{ $aspek['kode_aspek'] ?? '-' }}</td>
+                        <td>{{ $aspek['nama_aspek'] ?? '-' }}</td>
                         <td>
                             <ul>
-                                @foreach (array_unique($aspek['indikator']) as $indikator)
+                                @foreach (array_unique($aspek['indikator'] ?? []) as $indikator)
                                     <li>{{ $indikator }}</li>
                                 @endforeach
                             </ul>
@@ -240,8 +224,8 @@
             <ul>
                 <li>Skor Total adalah jumlah nilai dari semua indikator dalam aspek tersebut</li>
                 <li>Skala Penilaian: BSB (≥3.5), BSH (2.5-3.4), MB (1.5-2.4), BB (<1.5)< /li>
-                <li>Laporan ini mencakup penilaian minggu ke-{{ $week }} bulan
-                    {{ $bulanNama[$month] ?? $month }} {{ $year }}</li>
+                <li>Laporan ini mencakup penilaian minggu ke-{{ $week ?? 'Unknown' }} bulan
+                    {{ $monthName ?? 'Unknown' }} {{ $year ?? 'Unknown' }}</li>
             </ul>
         </div>
     </div>
