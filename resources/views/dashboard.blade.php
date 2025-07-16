@@ -159,7 +159,7 @@
                     <!-- Tab Content: Weekly Progress -->
                     <div id="tabContentWeekly" class="animate-fadeIn">
                         <div class="bg-blue-50 rounded-2xl p-6 border border-blue-200">
-                            @livewire('weekly-progress', ['id_akunsiswa' => $id])
+                            @livewire('semester-progress', ['id_akunsiswa' => $id])
                         </div>
                     </div>
 

@@ -134,7 +134,7 @@
                                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
                                     </path>
                                 </svg>
-                                Perkembangan Mingguan
+                                Perkembangan Mingguan Semester Ini
                             </span>
                         </button>
                         <button id="tabBtnTopAspect"
@@ -156,7 +156,7 @@
                     <!-- Tab Content: Weekly Progress -->
                     <div id="tabContentWeekly" class="animate-fadeIn">
                         <div class="bg-blue-50 rounded-2xl p-6 border border-blue-200">
-                            @livewire('weekly-progress', ['id_akunsiswa' => $id])
+                            @livewire('semester-progress', ['id_akunsiswa' => $id])
                         </div>
                     </div>
 
