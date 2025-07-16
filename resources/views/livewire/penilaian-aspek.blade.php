@@ -204,13 +204,10 @@
                                             <td class="px-1 py-1 border-r border-gray-300">
                                                 <div class="relative group flex justify-center">
                                                     <input type="checkbox"
-                                                        wire:model="nilaiData.{{ $siswa->id_akunsiswa }}.{{ $indikator->id }}.{{ $minggu }}"
-                                                        wire:change="updateNilai({{ $siswa->id_akunsiswa }}, {{ $indikator->id }}, {{ $minggu }}, $event.target.checked)"
+                                                        {{ isset($nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu]) && $nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] ? 'checked' : '' }}
+                                                        wire:click="toggleNilai({{ $siswa->id_akunsiswa }}, {{ $indikator->id }}, {{ $minggu }})"
                                                         class="w-5 h-5 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 focus:ring-2 transition duration-200 cursor-pointer
-                                                        {{ isset($nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu]) &&
-                                                        $nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu]
-                                                            ? 'bg-teal-100 border-teal-500'
-                                                            : 'hover:bg-gray-50' }}">
+                {{ isset($nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu]) && $nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] ? 'bg-teal-100 border-teal-500' : 'hover:bg-gray-50' }}">
 
                                                     @if (session()->has('saved_' . $siswa->id_akunsiswa . '_' . $indikator->id . '_' . $minggu))
                                                         <div

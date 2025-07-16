@@ -49,42 +49,14 @@ class PenilaianAspek extends Component
 
     public function updatedSelectedKelas()
     {
-        $this->resetNilaiData();
         $this->loadSiswa();
-        if ($this->selectedAspek) {
-            $this->loadIndikator();
-            $this->loadNilai();
-        }
+        $this->loadNilai();
     }
 
     public function updatedSelectedAspek()
     {
-        $this->resetNilaiData();
         $this->loadIndikator();
-        if ($this->selectedKelas) {
-            $this->loadNilai();
-        }
-    }
-
-    public function updatedSemester()
-    {
-        $this->resetNilaiData();
-        if ($this->selectedKelas && $this->selectedAspek) {
-            $this->loadNilai();
-        }
-    }
-
-    public function updatedTahunAjaran()
-    {
-        $this->resetNilaiData();
-        if ($this->selectedKelas && $this->selectedAspek) {
-            $this->loadNilai();
-        }
-    }
-
-    private function resetNilaiData()
-    {
-        $this->nilaiData = [];
+        $this->loadNilai();
     }
 
     public function loadSiswa()
@@ -112,78 +84,77 @@ class PenilaianAspek extends Component
 
     public function loadNilai()
     {
-        if (!$this->selectedKelas || !$this->selectedAspek) {
-            return;
-        }
+        if ($this->selectedKelas && $this->selectedAspek) {
+            $this->isLoading = true;
 
-        $this->isLoading = true;
-        $this->resetNilaiData();
+            // Jangan reset nilaiData, tapi preserve yang sudah ada
+            $existingData = $this->nilaiData;
 
-        try {
-            // Inisialisasi struktur data untuk semua siswa, indikator, dan minggu
+            // Load nilai untuk semua minggu (1-20)
             foreach ($this->siswaList as $siswa) {
-                $this->nilaiData[$siswa->id_akunsiswa] = [];
                 foreach ($this->indikatorList as $indikator) {
-                    $this->nilaiData[$siswa->id_akunsiswa][$indikator->id] = [];
                     for ($minggu = 1; $minggu <= 20; $minggu++) {
-                        $this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] = false;
+                        // Skip jika data sudah ada di memory (untuk preserve existing state)
+                        if (isset($existingData[$siswa->id_akunsiswa][$indikator->id][$minggu])) {
+                            $this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] =
+                                $existingData[$siswa->id_akunsiswa][$indikator->id][$minggu];
+                            continue;
+                        }
+
+                        // Cari penilaian yang sudah ada di database
+                        $penilaian = Penilaian::where('id_akunsiswa', $siswa->id_akunsiswa)
+                            ->where('id_kelas', $this->selectedKelas)
+                            ->where('minggu_ke', $minggu)
+                            ->where('tahun_ajaran', $this->tahunAjaran)
+                            ->where('semester', $this->semester)
+                            ->first();
+
+                        if ($penilaian) {
+                            $nilai = NilaiSiswa::where('id_penilaian', $penilaian->id_penilaian)
+                                ->where('indikator_aspek_id', $indikator->id)
+                                ->first();
+
+                            if ($nilai && $nilai->nilai > 0) {
+                                $this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] = true;
+                            } else {
+                                $this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] = false;
+                            }
+                        } else {
+                            $this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] = false;
+                        }
                     }
                 }
             }
-
-            // Query optimized untuk mengambil semua data penilaian sekaligus
-            $penilaianData = DB::table('penilaian as p')
-                ->join('nilai_siswa as ns', 'p.id_penilaian', '=', 'ns.id_penilaian')
-                ->whereIn('p.id_akunsiswa', $this->siswaList->pluck('id_akunsiswa'))
-                ->where('p.id_kelas', $this->selectedKelas)
-                ->where('p.tahun_ajaran', $this->tahunAjaran)
-                ->where('p.semester', $this->semester)
-                ->whereIn('ns.indikator_aspek_id', $this->indikatorList->pluck('id'))
-                ->whereBetween('p.minggu_ke', [1, 20])
-                ->select(
-                    'p.id_akunsiswa',
-                    'p.minggu_ke',
-                    'ns.indikator_aspek_id',
-                    'ns.nilai'
-                )
-                ->get();
-
-            // Populasi data berdasarkan hasil query
-            foreach ($penilaianData as $data) {
-                $siswaId = $data->id_akunsiswa;
-                $indikatorId = $data->indikator_aspek_id;
-                $minggu = $data->minggu_ke;
-                $nilai = $data->nilai;
-
-                // Set checkbox checked jika nilai > 0
-                if (isset($this->nilaiData[$siswaId][$indikatorId][$minggu])) {
-                    $this->nilaiData[$siswaId][$indikatorId][$minggu] = $nilai > 0;
-                }
-            }
-
-        } catch (\Exception $e) {
-            \Log::error('Error load nilai: ' . $e->getMessage());
-            $this->showAlert('Gagal memuat data nilai: ' . $e->getMessage(), 'error');
-        } finally {
             $this->isLoading = false;
         }
     }
 
+    // Method baru untuk toggle checkbox tanpa wire:model
+    public function toggleNilai($siswaId, $indikatorId, $minggu)
+    {
+        // Toggle nilai
+        $currentValue = $this->nilaiData[$siswaId][$indikatorId][$minggu] ?? false;
+        $newValue = !$currentValue;
+
+        // Update di array
+        $this->nilaiData[$siswaId][$indikatorId][$minggu] = $newValue;
+
+        // Auto-save ke database
+        $this->simpanNilaiIndividual($siswaId, $indikatorId, $minggu, $newValue);
+    }
+
+    // Method lama tetap ada untuk backward compatibility
     public function updateNilai($siswaId, $indikatorId, $minggu, $isChecked)
     {
-        // Validasi input
-        if (!$siswaId || !$indikatorId || !$minggu) {
-            $this->showAlert('Data tidak valid', 'error');
-            return;
+        // Update nilai di array tanpa merusak yang lain
+        if (!isset($this->nilaiData[$siswaId])) {
+            $this->nilaiData[$siswaId] = [];
+        }
+        if (!isset($this->nilaiData[$siswaId][$indikatorId])) {
+            $this->nilaiData[$siswaId][$indikatorId] = [];
         }
 
-        // Pastikan struktur array ada
-        if (!isset($this->nilaiData[$siswaId][$indikatorId][$minggu])) {
-            $this->nilaiData[$siswaId][$indikatorId][$minggu] = false;
-        }
-
-        // Update nilai di array dengan explicit boolean conversion
-        $this->nilaiData[$siswaId][$indikatorId][$minggu] = (bool) $isChecked;
+        $this->nilaiData[$siswaId][$indikatorId][$minggu] = $isChecked;
 
         // Auto-save
         $this->simpanNilaiIndividual($siswaId, $indikatorId, $minggu, $isChecked);
@@ -194,7 +165,7 @@ class PenilaianAspek extends Component
         try {
             DB::beginTransaction();
 
-            // Validasi data
+            // Pastikan semua data yang diperlukan ada
             if (!$siswaId || !$indikatorId || !$minggu || !$this->selectedKelas) {
                 throw new \Exception('Data tidak lengkap untuk penyimpanan');
             }
@@ -204,7 +175,8 @@ class PenilaianAspek extends Component
             if (!$indikator) {
                 throw new \Exception('Indikator tidak ditemukan');
             }
-            $bobotIndikator = $indikator->bobot ?? 1;
+
+            $bobotIndikator = $indikator->bobot;
 
             // Cari atau buat penilaian header
             $penilaian = Penilaian::firstOrCreate([
@@ -219,43 +191,43 @@ class PenilaianAspek extends Component
                 'catatan_guru' => '',
             ]);
 
-            // Tentukan nilai berdasarkan status checkbox
-            $nilai = $isChecked ? $bobotIndikator : 0;
-
             // Simpan atau update nilai siswa
-            NilaiSiswa::updateOrCreate([
-                'id_penilaian' => $penilaian->id_penilaian,
-                'indikator_aspek_id' => $indikatorId,
-            ], [
-                'nilai' => $nilai,
-                'skor' => $nilai,
-                'catatan' => '',
-            ]);
+            if ($isChecked) {
+                NilaiSiswa::updateOrCreate([
+                    'id_penilaian' => $penilaian->id_penilaian,
+                    'indikator_aspek_id' => $indikatorId,
+                ], [
+                    'nilai' => $bobotIndikator,
+                    'skor' => $bobotIndikator,
+                    'catatan' => '',
+                ]);
+            } else {
+                NilaiSiswa::updateOrCreate([
+                    'id_penilaian' => $penilaian->id_penilaian,
+                    'indikator_aspek_id' => $indikatorId,
+                ], [
+                    'nilai' => 0,
+                    'skor' => 0,
+                    'catatan' => '',
+                ]);
+            }
 
             DB::commit();
 
-            // Flash message untuk feedback visual
+            // Flash message untuk auto-save
             session()->flash('saved_' . $siswaId . '_' . $indikatorId . '_' . $minggu, true);
-
-            // Dispatch event untuk notifikasi
-            $this->dispatch('nilai-tersimpan', [
-                'siswa' => $siswaId,
-                'indikator' => $indikatorId,
-                'minggu' => $minggu,
-                'status' => $isChecked ? 'checked' : 'unchecked'
-            ]);
 
         } catch (\Exception $e) {
             DB::rollback();
             \Log::error('Error simpan nilai individual: ' . $e->getMessage());
-
-            // Revert nilai di array jika gagal simpan
-            if (isset($this->nilaiData[$siswaId][$indikatorId][$minggu])) {
-                $this->nilaiData[$siswaId][$indikatorId][$minggu] = !$isChecked;
-            }
-
             $this->showAlert('Gagal menyimpan nilai: ' . $e->getMessage(), 'error');
         }
+    }
+
+    // Method untuk refresh data tanpa kehilangan state
+    public function refreshData()
+    {
+        $this->loadNilai();
     }
 
     public function simpanNilai()
@@ -268,14 +240,12 @@ class PenilaianAspek extends Component
         DB::beginTransaction();
         try {
             $totalSaved = 0;
-
             foreach ($this->siswaList as $siswa) {
                 foreach ($this->indikatorList as $indikator) {
                     for ($minggu = 1; $minggu <= 20; $minggu++) {
                         if (isset($this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu])) {
                             $isChecked = $this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu];
 
-                            // Cari atau buat penilaian header
                             $penilaian = Penilaian::firstOrCreate([
                                 'id_akunsiswa' => $siswa->id_akunsiswa,
                                 'id_kelas' => $this->selectedKelas,
@@ -284,11 +254,11 @@ class PenilaianAspek extends Component
                                 'semester' => $this->semester,
                             ], [
                                 'id_guru' => auth()->guard('guru')->user()->id_guru,
-                                'tgl_penilaian' => now(),
+                                'tanggal_penilaian' => now(),
                                 'catatan_guru' => '',
                             ]);
 
-                            $bobotIndikator = $indikator->bobot ?? 1;
+                            $bobotIndikator = $indikator->bobot;
                             $nilai = $isChecked ? $bobotIndikator : 0;
 
                             NilaiSiswa::updateOrCreate([
@@ -309,9 +279,6 @@ class PenilaianAspek extends Component
             DB::commit();
             $this->showAlert("Berhasil menyimpan {$totalSaved} data penilaian!", 'success');
 
-            // Reload data setelah berhasil simpan
-            $this->loadNilai();
-
         } catch (\Exception $e) {
             DB::rollback();
             \Log::error('Error simpan semua nilai: ' . $e->getMessage());
@@ -319,80 +286,11 @@ class PenilaianAspek extends Component
         }
     }
 
-    // Helper method untuk cek apakah checkbox harus dicentang
-    public function isChecked($siswaId, $indikatorId, $minggu)
-    {
-        return isset($this->nilaiData[$siswaId][$indikatorId][$minggu])
-            && $this->nilaiData[$siswaId][$indikatorId][$minggu] === true;
-    }
-
-    // Helper method untuk menghitung rata-rata nilai siswa
-    public function getRataRata($siswaId)
-    {
-        $totalNilai = 0;
-        $countNilai = 0;
-
-        foreach ($this->indikatorList as $indikator) {
-            for ($minggu = 1; $minggu <= 20; $minggu++) {
-                if (isset($this->nilaiData[$siswaId][$indikator->id][$minggu])) {
-                    if ($this->nilaiData[$siswaId][$indikator->id][$minggu] === true) {
-                        $totalNilai += $indikator->bobot;
-                    }
-                    $countNilai++;
-                }
-            }
-        }
-
-        return $countNilai > 0 ? $totalNilai / $countNilai : 0;
-    }
-
-    // Helper method untuk mendapatkan kelas CSS berdasarkan rata-rata
-    public function getRataRataClass($rataRata)
-    {
-        if ($rataRata >= 3.5) {
-            return 'bg-green-100 text-green-800';
-        } elseif ($rataRata >= 2.5) {
-            return 'bg-blue-100 text-blue-800';
-        } elseif ($rataRata >= 1.5) {
-            return 'bg-yellow-100 text-yellow-800';
-        } else {
-            return 'bg-red-100 text-red-800';
-        }
-    }
-
-    // Helper method untuk debugging (hanya untuk development)
-    public function debugNilaiData()
-    {
-        if (config('app.debug')) {
-            return $this->nilaiData;
-        }
-        return null;
-    }
-
-    // Method untuk menangani perubahan semester
-    public function changeSemester($semester)
-    {
-        $this->semester = $semester;
-        $this->resetNilaiData();
-        if ($this->selectedKelas && $this->selectedAspek) {
-            $this->loadNilai();
-        }
-    }
-
-    // Method untuk export data (jika diperlukan)
-    public function exportData()
-    {
-        // Implementasi export bisa ditambahkan di sini
-        $this->showAlert('Fitur export akan segera tersedia', 'info');
-    }
-
     private function showAlert($message, $type = 'success')
     {
         $this->alertMessage = $message;
         $this->alertType = $type;
         $this->showAlert = true;
-
-        // Auto hide after 3 seconds
         $this->dispatch('hide-alert');
     }
 
