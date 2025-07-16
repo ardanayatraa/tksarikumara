@@ -28,7 +28,7 @@
     {{-- Header Penilaian --}}
     <div class="container mx-auto px-4 py-6">
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
-            <div class="bg-gradient-to-r from-teal-500 to-blue-600 p-6 text-white">
+            <div class="bg-blue-600 p-6 text-white">
                 <h2 class="text-2xl font-bold text-white flex items-center">
                     <i class="fas fa-clipboard-list text-3xl mr-3"></i>
                     Penilaian Perkelas Per Minggu - Semester {{ $semester }}
@@ -84,7 +84,7 @@
                             </select>
                         </div>
                         @if ($selectedAspek && $aspekList->where('id_aspek', $selectedAspek)->first())
-                            <div class="bg-gradient-to-r from-blue-50 to-teal-50 rounded-lg p-4 border border-blue-200">
+                            <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
                                 <div class="space-y-2">
                                     <div class="flex items-center">
                                         <span class="font-semibold text-gray-700 mr-2">Kode Aspek:</span>
@@ -126,7 +126,7 @@
         {{-- Tabel Penilaian --}}
         @if ($selectedKelas && $selectedAspek && $siswaList->count() > 0 && $indikatorList->count() > 0)
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
-                <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+                <div class="bg-gray-100 px-6 py-4 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-bold text-gray-800 flex items-center">
                             <i class="fas fa-chart-line text-teal-500 mr-2"></i>
@@ -144,7 +144,7 @@
                 <div class="overflow-x-auto">
                     <table class="min-w-full">
                         <thead>
-                            <tr class="bg-gradient-to-r from-gray-100 to-gray-200">
+                            <tr class="bg-gray-200">
                                 <th rowspan="2"
                                     class="sticky left-0 z-10 bg-gray-100 px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-r-2 border-gray-300">
                                     No
@@ -272,7 +272,7 @@
                     </table>
                 </div>
                 {{-- Footer Keterangan --}}
-                <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-t border-gray-200">
+                <div class="bg-gray-100 px-6 py-4 border-t border-gray-200">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="flex items-center">
                             <div class="text-sm text-gray-600">
@@ -311,7 +311,7 @@
                 </p>
             </div>
         @else
-            <div class="bg-white rounded-2xl shadow-xl p-12">
+            <div class="bg-white rounded-2xl shadow p-12 border border-gray-200">
                 <div class="max-w-md mx-auto text-center">
                     <i class="fas fa-clipboard-check text-gray-300 text-8xl mb-6"></i>
                     <h3 class="text-xl font-semibold text-gray-700 mb-2">
