@@ -86,47 +86,68 @@ class PenilaianAspek extends Component
     {
         if ($this->selectedKelas && $this->selectedAspek) {
             $this->isLoading = true;
-            // Reset nilai data
-            $this->nilaiData = [];
 
-            // Load nilai untuk semua minggu (1-20)
+            // Jangan reset nilaiData, preserve data yang sudah ada
+            if (empty($this->nilaiData)) {
+                $this->nilaiData = [];
+            }
+
+            // Load semua data penilaian sekaligus dengan query yang lebih efisien
+            $allPenilaian = Penilaian::where('id_kelas', $this->selectedKelas)
+                ->where('tahun_ajaran', $this->tahunAjaran)
+                ->where('semester', $this->semester)
+                ->whereIn('id_akunsiswa', $this->siswaList->pluck('id_akunsiswa'))
+                ->with(['nilaiSiswa' => function($query) {
+                    $query->whereIn('indikator_aspek_id', $this->indikatorList->pluck('id'));
+                }])
+                ->get()
+                ->keyBy(function($item) {
+                    return $item->id_akunsiswa . '_' . $item->minggu_ke;
+                });
+
+            // Initialize data untuk semua siswa, indikator, dan minggu
             foreach ($this->siswaList as $siswa) {
                 foreach ($this->indikatorList as $indikator) {
                     for ($minggu = 1; $minggu <= 20; $minggu++) {
-                        // Cari penilaian yang sudah ada
-                        $penilaian = Penilaian::where('id_akunsiswa', $siswa->id_akunsiswa)
-                            ->where('id_kelas', $this->selectedKelas)
-                            ->where('minggu_ke', $minggu)
-                            ->where('tahun_ajaran', $this->tahunAjaran)
-                            ->where('semester', $this->semester)
-                            ->first();
+                        $key = $siswa->id_akunsiswa . '_' . $minggu;
 
-                        if ($penilaian) {
-                            $nilai = NilaiSiswa::where('id_penilaian', $penilaian->id_penilaian)
-                                ->where('indikator_aspek_id', $indikator->id)
-                                ->first();
+                        // Jika data sudah ada dan tidak kosong, jangan di-overwrite
+                        if (isset($this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu])) {
+                            continue;
+                        }
 
-                            if ($nilai && $nilai->nilai > 0) {
-                                // Jika ada nilai dan > 0, berarti checkbox checked
+                        // Default value
+                        $this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] = false;
+
+                        // Cek apakah ada penilaian untuk siswa dan minggu tersebut
+                        if (isset($allPenilaian[$key])) {
+                            $penilaian = $allPenilaian[$key];
+
+                            // Cari nilai untuk indikator ini
+                            $nilaiSiswa = $penilaian->nilaiSiswa->where('indikator_aspek_id', $indikator->id)->first();
+
+                            if ($nilaiSiswa && $nilaiSiswa->nilai > 0) {
                                 $this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] = true;
-                            } else {
-                                // Jika tidak ada nilai atau 0, berarti checkbox unchecked
-                                $this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] = false;
                             }
-                        } else {
-                            // Default unchecked
-                            $this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] = false;
                         }
                     }
                 }
             }
+
             $this->isLoading = false;
         }
     }
 
     public function updateNilai($siswaId, $indikatorId, $minggu, $isChecked)
     {
-        // Update nilai di array
+        // Update nilai di array - pastikan data tidak hilang
+        if (!isset($this->nilaiData[$siswaId])) {
+            $this->nilaiData[$siswaId] = [];
+        }
+        if (!isset($this->nilaiData[$siswaId][$indikatorId])) {
+            $this->nilaiData[$siswaId][$indikatorId] = [];
+        }
+
         $this->nilaiData[$siswaId][$indikatorId][$minggu] = $isChecked;
 
         // Auto-save
@@ -150,7 +171,7 @@ class PenilaianAspek extends Component
             }
             $bobotIndikator = $indikator->bobot;
 
-            // Cari atau buat penilaian header dengan field yang konsisten
+            // Cari atau buat penilaian header
             $penilaian = Penilaian::firstOrCreate([
                 'id_akunsiswa' => $siswaId,
                 'id_kelas' => $this->selectedKelas,
@@ -175,7 +196,7 @@ class PenilaianAspek extends Component
                     'catatan' => '',
                 ]);
             } else {
-                // Jika unchecked, set ke 0 atau hapus record
+                // Jika unchecked, set ke 0
                 NilaiSiswa::updateOrCreate([
                     'id_penilaian' => $penilaian->id_penilaian,
                     'indikator_aspek_id' => $indikatorId,
@@ -215,7 +236,7 @@ class PenilaianAspek extends Component
                         if (isset($this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu])) {
                             $isChecked = $this->nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu];
 
-                            // Cari atau buat penilaian header dengan field yang konsisten
+                            // Cari atau buat penilaian header
                             $penilaian = Penilaian::firstOrCreate([
                                 'id_akunsiswa' => $siswa->id_akunsiswa,
                                 'id_kelas' => $this->selectedKelas,
@@ -224,7 +245,7 @@ class PenilaianAspek extends Component
                                 'semester' => $this->semester,
                             ], [
                                 'id_guru' => auth()->guard('guru')->user()->id_guru,
-                                'tanggal_penilaian' => now(),
+                                'tgl_penilaian' => now(),
                                 'catatan_guru' => '',
                             ]);
 
@@ -248,9 +269,6 @@ class PenilaianAspek extends Component
 
             DB::commit();
             $this->showAlert("Berhasil menyimpan {$totalSaved} data penilaian!", 'success');
-
-            // Reload data setelah berhasil simpan
-            $this->loadNilai();
 
         } catch (\Exception $e) {
             DB::rollback();
