@@ -13,9 +13,12 @@ class SemesterProgress extends Component
     public $tahun_ajaran;
     public $semester = 1;
     public $title = 'Progress 1 Semester';
+    public $selectedAspek = 'all'; // Default to show all aspects
+    public $aspekList = [];
 
     protected $listeners = [
-        'refreshChart' => 'emitChartData'
+        'refreshChart' => 'emitChartData',
+        'changeAspek' => 'changeSelectedAspek'
     ];
 
     public function mount($id_akunsiswa, $id_kelas = null, $tahun_ajaran = null, $semester = null)
@@ -33,6 +36,22 @@ class SemesterProgress extends Component
         }
 
         $this->semester = $semester ?? $this->getCurrentSemester();
+        $this->loadAspekList();
+    }
+
+    public function loadAspekList()
+    {
+        // Get all available aspects from the database
+        $this->aspekList = DB::table('aspek_penilaian')
+            ->select('id_aspek', 'nama_aspek')
+            ->orderBy('nama_aspek')
+            ->get();
+    }
+
+    public function changeSelectedAspek($aspekId)
+    {
+        $this->selectedAspek = $aspekId;
+        $this->emitChartData();
     }
 
     private function getSiswaData()
@@ -57,18 +76,36 @@ class SemesterProgress extends Component
     {
         $chartData = $this->getWeeklyScores();
 
+        // Get aspect name for title if specific aspect is selected
+        $aspectTitle = 'Semua Aspek';
+        if ($this->selectedAspek !== 'all') {
+            $aspect = DB::table('aspek_penilaian')
+                ->where('id_aspek', $this->selectedAspek)
+                ->first();
+            if ($aspect) {
+                $aspectTitle = $aspect->nama_aspek;
+            }
+        }
+
         // Build simple line chart
         $chartObj = $chart->lineChart()
             ->setTitle($this->title)
-            ->setSubtitle('Semester ' . $this->semester . ' (' . $this->tahun_ajaran . ')')
+            ->setSubtitle('Semester ' . $this->semester . ' (' . $this->tahun_ajaran . ') - ' . $aspectTitle)
             ->setXAxis($chartData['labels'])
-            ->addData('Rata-rata Skor', $chartData['scores'])
+            ->setDataset([
+                [
+                    'name' => 'Rata-rata Skor',
+                    'data' => $chartData['scores']
+                ]
+            ])
             ->setColors(['#0d9488'])
             ->setHeight(400)
             ->setMarkers(['#0d9488'], 6, 6);
 
         return view('livewire.semester-progress', [
-            'chart' => $chartObj
+            'chart' => $chartObj,
+            'aspekList' => $this->aspekList,
+            'selectedAspek' => $this->selectedAspek
         ]);
     }
 
@@ -83,7 +120,7 @@ class SemesterProgress extends Component
             $labels[] = 'Minggu ' . $minggu;
 
             // Query rata-rata skor per minggu
-            $avgScore = DB::table('penilaian')
+            $query = DB::table('penilaian')
                 ->join('nilai_siswa', 'penilaian.id_penilaian', '=', 'nilai_siswa.id_penilaian')
                 ->where('penilaian.id_akunsiswa', $this->id_akunsiswa)
                 ->where('penilaian.minggu_ke', $minggu)
@@ -92,9 +129,15 @@ class SemesterProgress extends Component
                 ->where('nilai_siswa.skor', '>', 0)
                 ->when($this->id_kelas, function($q) {
                     $q->where('penilaian.id_kelas', $this->id_kelas);
-                })
-                ->avg('nilai_siswa.skor');
+                });
 
+            // Filter by aspect if specific aspect is selected
+            if ($this->selectedAspek !== 'all') {
+                $query->join('indikator_aspek', 'nilai_siswa.indikator_aspek_id', '=', 'indikator_aspek.id')
+                      ->where('indikator_aspek.aspek_id', $this->selectedAspek);
+            }
+
+            $avgScore = $query->avg('nilai_siswa.skor');
             $scores[] = $avgScore ? round($avgScore, 2) : 0;
         }
 
