@@ -5,6 +5,9 @@ namespace App\Livewire;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use ArielMejiaDev\LarapexCharts\LarapexChart;
+use App\Models\AspekPenilaian;
+use App\Models\Penilaian;
+use App\Models\NilaiSiswa;
 
 class SemesterProgress extends Component
 {
@@ -12,6 +15,7 @@ class SemesterProgress extends Component
     public $id_kelas;
     public $tahun_ajaran;
     public $semester = 1;
+    public $id_aspek = '';  // Filter aspek
     public $title = 'Progress 1 Semester';
     public $selectedAspek = 'all'; // Default to show all aspects
     public $aspekList = [];
@@ -72,6 +76,12 @@ class SemesterProgress extends Component
         return ($bulan >= 7 && $bulan <= 12) ? 1 : 2;
     }
 
+    // Method untuk mendapatkan daftar aspek penilaian
+    public function getAspekOptions()
+    {
+        return AspekPenilaian::orderBy('kode_aspek')->get();
+    }
+
     public function render(LarapexChart $chart)
     {
         $chartData = $this->getWeeklyScores();
@@ -109,7 +119,7 @@ class SemesterProgress extends Component
         ]);
     }
 
-    // Mendapatkan skor per minggu (1-20)
+    // Mendapatkan skor per minggu (1-20) dengan filter aspek
     private function getWeeklyScores()
     {
         $labels = [];
@@ -180,13 +190,86 @@ class SemesterProgress extends Component
         $this->emitChartData();
     }
 
+    // Method yang dipanggil ketika filter aspek berubah
+    public function updatedIdAspek()
+    {
+        // Debug: log perubahan aspek
+        logger('Aspek changed to: ' . $this->id_aspek);
+
+        // Force re-render component untuk membuat chart baru
+        $this->dispatch('forceChartReload');
+    }
+
     public function emitChartData()
     {
         $chartData = $this->getWeeklyScores();
 
+        // Debug: log chart data
+        logger('Chart data for aspek ' . $this->id_aspek . ':', $chartData);
+
+        // Kirim event dengan timestamp untuk memastikan uniqueness
         $this->dispatch('semesterChartUpdated', [
             'labels' => $chartData['labels'],
-            'data' => $chartData['scores']
+            'data' => $chartData['scores'],
+            'aspek_id' => $this->id_aspek,
+            'timestamp' => now()->timestamp
+        ]);
+    }
+
+    // Method untuk debug - bisa dipanggil dari blade
+    public function debugQuery()
+    {
+        $chartData = $this->getWeeklyScores();
+
+        // Cek data penilaian untuk minggu pertama
+        $penilaianMinggu1 = Penilaian::where('id_akunsiswa', $this->id_akunsiswa)
+            ->where('minggu_ke', 1)
+            ->where('tahun_ajaran', $this->tahun_ajaran)
+            ->where('semester', $this->semester)
+            ->when($this->id_kelas, function($q) {
+                $q->where('id_kelas', $this->id_kelas);
+            })
+            ->with(['nilaiSiswa.indikator.aspek'])
+            ->get();
+
+        // Ambil semua nilai siswa untuk aspek tertentu
+        $nilaiSiswaFiltered = collect();
+        if ($this->id_aspek) {
+            foreach ($penilaianMinggu1 as $penilaian) {
+                $nilaiFiltered = $penilaian->nilaiSiswa->filter(function($nilai) {
+                    return $nilai->indikator && $nilai->indikator->aspek_id == $this->id_aspek && $nilai->skor > 0;
+                });
+                $nilaiSiswaFiltered = $nilaiSiswaFiltered->merge($nilaiFiltered);
+            }
+        }
+
+        // Cek semua aspek yang tersedia
+        $availableAspeks = collect();
+        foreach ($penilaianMinggu1 as $penilaian) {
+            foreach ($penilaian->nilaiSiswa as $nilai) {
+                if ($nilai->indikator && $nilai->skor > 0) {
+                    $availableAspeks->push([
+                        'aspek_id' => $nilai->indikator->aspek_id,
+                        'aspek_nama' => $nilai->indikator->aspek->nama_aspek ?? 'Unknown',
+                        'skor' => $nilai->skor
+                    ]);
+                }
+            }
+        }
+
+        dd([
+            'aspek_filter' => $this->id_aspek,
+            'chart_data' => $chartData,
+            'penilaian_minggu_1' => $penilaianMinggu1,
+            'nilai_siswa_filtered' => $nilaiSiswaFiltered,
+            'available_aspeks' => $availableAspeks->unique('aspek_id')->values(),
+            'all_aspeks_with_scores' => $availableAspeks->groupBy('aspek_id')->map(function($group) {
+                return [
+                    'aspek_nama' => $group->first()['aspek_nama'],
+                    'jumlah_nilai' => $group->count(),
+                    'rata_rata' => $group->avg('skor')
+                ];
+            })
         ]);
     }
 }

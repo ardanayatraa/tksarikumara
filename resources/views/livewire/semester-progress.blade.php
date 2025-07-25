@@ -1,7 +1,7 @@
 {{-- resources/views/livewire/semester-progress.blade.php --}}
 <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
     {{-- Header --}}
-    <div class="bg-blue-600 text-white ml-8 p-6 flex items-center justify-between">
+    <div class="bg-blue-600 text-white ml-8 p-6">
         <div class="flex items-center justify-between">
             <div>
                 <h3 class="text-xl font-bold flex items-center">
@@ -10,14 +10,45 @@
                 </h3>
                 <p class="text-teal-100 mt-1">
                     Semester {{ $semester }} - {{ $tahun_ajaran }}
+                    @if ($id_aspek)
+                        @php
+                            $selectedAspek = $aspekOptions->where('id_aspek', $id_aspek)->first();
+                        @endphp
+                        @if ($selectedAspek)
+                            - {{ $selectedAspek->kode_aspek }} ({{ $selectedAspek->nama_aspek }})
+                        @endif
+                    @endif
                 </p>
             </div>
-            <div class="flex items-center">
+            <div class="flex items-center space-x-3">
+                {{-- Filter Aspek --}}
+                <div class="relative">
+                    <select wire:model.live="id_aspek"
+                        class="bg-white bg-opacity-20 text-white rounded-lg px-4 py-2 appearance-none pr-8 hover:bg-opacity-30 transition duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
+                        <option value="">Semua Aspek</option>
+                        @foreach ($aspekOptions as $aspek)
+                            <option value="{{ $aspek->id_aspek }}">
+                                {{ $aspek->kode_aspek }} - {{ $aspek->nama_aspek }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+
                 {{-- Tombol Refresh --}}
                 <button wire:click="emitChartData"
                     class="px-4 py-2 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition duration-200 flex items-center">
                     <i class="fas fa-sync-alt mr-2"></i>
                     <span class="text-sm">Refresh</span>
+                </button>
+
+                {{-- Tombol Debug (hapus di production) --}}
+                <button wire:click="debugQuery"
+                    class="px-4 py-2 bg-red-500 bg-opacity-80 rounded-lg hover:bg-opacity-100 transition duration-200 flex items-center">
+                    <i class="fas fa-bug mr-2"></i>
+                    <span class="text-sm">Debug</span>
                 </button>
             </div>
         </div>
@@ -46,11 +77,13 @@
 
     {{-- Chart Container --}}
     <div class="p-6" wire:ignore>
-        {!! $chart->container() !!}
+        <div id="chart-container-{{ $semester }}-{{ $id_aspek }}">
+            {!! $chart->container() !!}
+        </div>
     </div>
 
     {{-- Loading Indicator --}}
-    <div wire:loading.flex wire:target="emitChartData"
+    <div wire:loading.flex wire:target="emitChartData,id_aspek"
         class="absolute inset-0 bg-white bg-opacity-75 items-center justify-center rounded-2xl">
         <div class="text-center">
             <i class="fas fa-spinner fa-spin text-teal-600 text-2xl mb-2"></i>
@@ -64,54 +97,40 @@
     {!! $chart->script() !!}
 
     <script>
+        let currentChart = null;
+        let chartContainer = null;
+
         document.addEventListener('livewire:init', function() {
-            // Store chart instance
-            setTimeout(() => {
-                window.semesterChart = document.querySelector('#{{ $chart->id() }}')
-                    .__apexchart__;
-            }, 500);
+            initializeChart();
+
+            // Listen for force reload
+            Livewire.on('forceChartReload', () => {
+                console.log('Force chart reload triggered');
+                destroyChart();
+                setTimeout(() => {
+                    @this.call('emitChartData');
+                }, 100);
+            });
 
             // Listen for updates
             Livewire.on('semesterChartUpdated', (event) => {
                 const {
                     labels,
-                    data
+                    data,
+                    aspek_id,
+                    timestamp
                 } = event[0];
 
-                if (window.semesterChart) {
-                    // Update chart
-                    window.semesterChart.updateOptions({
-                        xaxis: {
-                            categories: labels,
-                            labels: {
-                                rotate: -45,
-                                style: {
-                                    fontSize: '12px'
-                                }
-                            }
-                        },
-                        yaxis: {
-                            title: {
-                                text: 'Rata-rata Skor'
-                            },
-                            min: 0,
-                            max: 5
-                        },
-                        tooltip: {
-                            y: {
-                                formatter: function(value) {
-                                    return value > 0 ? 'Skor: ' + value.toFixed(2) :
-                                        'Belum ada nilai';
-                                }
-                            }
-                        }
-                    });
+                console.log('Chart update received:', {
+                    labels,
+                    data,
+                    aspek_id,
+                    timestamp
+                });
 
-                    window.semesterChart.updateSeries([{
-                        name: 'Rata-rata Skor',
-                        data: data
-                    }]);
-                }
+                // Always destroy and recreate chart for clean update
+                destroyChart();
+                createNewChart(labels, data);
             });
 
             // Listen for parent refresh
@@ -119,6 +138,103 @@
                 @this.call('emitChartData');
             });
         });
+
+        function initializeChart() {
+            // Initial chart will be created by Larapex
+            setTimeout(() => {
+                currentChart = document.querySelector('#{{ $chart->id() }}')
+                    ?.__apexchart__;
+                console.log('Initial chart found:', !!currentChart);
+            }, 1000);
+        }
+
+        function destroyChart() {
+            if (currentChart) {
+                try {
+                    currentChart.destroy();
+                    console.log('Chart destroyed');
+                } catch (error) {
+                    console.log('Error destroying chart:', error);
+                }
+                currentChart = null;
+            }
+        }
+
+        function createNewChart(labels, data) {
+            // Find chart container
+            const container = document.querySelector('#{{ $chart->id() }}');
+            if (!container) {
+                console.error('Chart container not found');
+                return;
+            }
+
+            // Clear container
+            container.innerHTML = '';
+
+            // Create new chart options
+            const options = {
+                series: [{
+                    name: 'Rata-rata Skor',
+                    data: data
+                }],
+                chart: {
+                    type: 'line',
+                    height: 400,
+                    animations: {
+                        enabled: true,
+                        speed: 800
+                    }
+                },
+                colors: ['#0d9488'],
+                xaxis: {
+                    categories: labels,
+                    labels: {
+                        rotate: -45,
+                        style: {
+                            fontSize: '12px'
+                        }
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: 'Rata-rata Skor'
+                    },
+                    min: 0,
+                    max: 5
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 3
+                },
+                markers: {
+                    colors: ['#0d9488'],
+                    strokeWidth: 6,
+                    size: 6
+                },
+                tooltip: {
+                    y: {
+                        formatter: function(value) {
+                            return value > 0 ? 'Skor: ' + value.toFixed(2) : 'Belum ada nilai';
+                        }
+                    }
+                },
+                grid: {
+                    borderColor: '#e7e7e7',
+                    row: {
+                        colors: ['#f3f3f3', 'transparent'],
+                        opacity: 0.5
+                    }
+                }
+            };
+
+            // Create new chart
+            currentChart = new ApexCharts(container, options);
+            currentChart.render().then(() => {
+                console.log('New chart created successfully with data:', data);
+            }).catch(error => {
+                console.error('Error creating chart:', error);
+            });
+        }
     </script>
 
     <style>
@@ -127,6 +243,11 @@
             .apexcharts-toolbar {
                 display: none !important;
             }
+        }
+
+        /* Loading state styling */
+        select:disabled {
+            opacity: 0.6;
         }
 
         /* Custom grid styling */

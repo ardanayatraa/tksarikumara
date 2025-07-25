@@ -22,7 +22,8 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-            AccountSeeder::class,
+            // AccountSeeder::class,
+            RealDataSeederUpdated::class,
             AspekPenilaianSeeder::class,
             StudentSeeder::class,
             PenilaianSeeder::class,
