@@ -3,9 +3,8 @@
 
         <!-- Card Guru Login -->
         <a href="{{ route('profil.guru') }}"
-            class="block transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-            <div
-                class="bg-gradient-to-r from-indigo-500 to-indigo-600 shadow-xl rounded-xl p-6 text-white cursor-pointer">
+            class="block transition-transform duration-300 transform hover:-translate-y-1">
+            <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 shadow-xl rounded-xl p-6 text-white">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-lg font-semibold">Informasi Guru</h3>
@@ -27,9 +26,8 @@
 
         <!-- Card Detail Kelas -->
         <a href="{{ route('guru.penilaian') }}"
-            class="block transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-            <div
-                class="bg-gradient-to-r from-green-500 to-green-600 shadow-xl rounded-xl p-6 text-white cursor-pointer">
+            class="block transition-transform duration-300 transform hover:-translate-y-1">
+            <div class="bg-gradient-to-r from-green-500 to-green-600 shadow-xl rounded-xl p-6 text-white">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-lg font-semibold">Kelas Anda</h3>
@@ -49,18 +47,19 @@
         </a>
 
         <!-- Card Jumlah Murid -->
-        <a href="{{ route('guru.penilaian') }}"
-            class="block transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-            <div class="bg-gradient-to-r from-blue-500 to-blue-600 shadow-xl rounded-xl p-6 text-white cursor-pointer">
+        <a href="{{ route('guru.aspek-penilaian') }}"
+            class="block transition-transform duration-300 transform hover:-translate-y-1">
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 shadow-xl rounded-xl p-6 text-white">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold">Jumlah Murid</h3>
+                        <h3 class="text-lg font-semibold">Aspek Penilaian</h3>
                         <p class="text-5xl font-bold mt-2">
                             {{ $jumlahSiswaDiKelas }}
                         </p>
+                        <p class="text-sm opacity-90 mt-2">Siswa untuk dinilai</p>
                     </div>
                     <div class="text-4xl opacity-30">
-                        <i class="fas fa-users"></i>
+                        <i class="fas fa-clipboard-list"></i>
                     </div>
                 </div>
             </div>

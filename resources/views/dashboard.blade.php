@@ -67,22 +67,55 @@
                     </div>
                 </div>
 
+                <!-- Profil Siswa Card -->
+                <a href="{{ route('profil.siswa') }}"
+                    class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="p-3 bg-blue-500 rounded-lg">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-semibold text-gray-800">Profil Siswa</h3>
+                                <p class="text-gray-600 text-sm">Lihat dan edit profil</p>
+                            </div>
+                        </div>
+                        <div
+                            class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                            <span class="flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                Lihat Profil
+                            </span>
+                        </div>
+                    </div>
+                </a>
+
             </div>
 
             <!-- Main Content Area -->
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
-                <div class="bg-slate-800 px-8 py-6">
-                    <h2 class="text-2xl font-bold text-white flex items-center">
-                        <svg class="w-7 h-7 mr-3 text-blue-400" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
-                            </path>
-                        </svg>
-                        Detail Penilaian Siswa
-                    </h2>
-                    <p class="text-slate-300 mt-2">Data lengkap perkembangan akademik dan non-akademik</p>
-                </div>
+                <a href="{{ route('dashboard.siswa') }}" class="block">
+                    <div class="bg-slate-800 px-8 py-6 hover:bg-slate-700 transition-colors duration-300">
+                        <h2 class="text-2xl font-bold text-white flex items-center">
+                            <svg class="w-7 h-7 mr-3 text-blue-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                </path>
+                            </svg>
+                            Detail Penilaian Siswa
+                        </h2>
+                        <p class="text-slate-300 mt-2">Data lengkap perkembangan akademik dan non-akademik</p>
+                    </div>
+                </a>
 
                 <div class="p-8">
                     @livewire('detail-penilaian-siswa', ['siswaId' => $id, 'viewOnly' => true])

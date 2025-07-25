@@ -25,9 +25,8 @@ class DatabaseSeeder extends Seeder
             // AccountSeeder::class,
             RealDataSeederUpdated::class,
             AspekPenilaianSeeder::class,
-            PenilaianNilaiSeeder::class,
-            DetailPenilaianSeeder::class,
-            LaporanPerkembanganSeeder::class,
+            StudentSeeder::class,
+            PenilaianSeeder::class,
             // Tambahkan seeder lain yang ingin dijalankan
         ]);
     }

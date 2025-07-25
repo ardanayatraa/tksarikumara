@@ -2,8 +2,8 @@
 
     {{-- Card: Detail Kepala Sekolah --}}
     <a href="{{ route('profil.kepala-sekolah') }}"
-        class="block transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-        <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 shadow-xl rounded-xl p-6 text-white cursor-pointer">
+        class="block transition-transform duration-300 transform hover:-translate-y-1">
+        <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 shadow-xl rounded-xl p-6 text-white">
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-lg font-semibold">Informasi Kepala Sekolah</h3>
@@ -26,9 +26,9 @@
 
         {{-- Total Siswa --}}
         <a href="{{ route('penilaian.kepsek') }}"
-            class="block transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
+            class="block transition-transform duration-300 transform hover:-translate-y-1">
             <div
-                class="group relative bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-md hover:shadow-lg transition p-4 border border-red-200 overflow-hidden cursor-pointer">
+                class="group relative bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-md hover:shadow-lg transition p-4 border border-red-200 overflow-hidden">
                 <div class="absolute top-0 right-0 -mt-2 -mr-2 w-12 h-12 bg-red-500/10 rounded-full"></div>
                 <div class="flex items-center justify-between mb-3">
                     <div class="bg-red-500 rounded-lg p-2 shadow-md group-hover:scale-110 transition">
@@ -46,9 +46,9 @@
 
         {{-- Total Guru --}}
         <a href="{{ route('penilaian.kepsek') }}"
-            class="block transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
+            class="block transition-transform duration-300 transform hover:-translate-y-1">
             <div
-                class="group relative bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl shadow-md hover:shadow-lg transition p-4 border border-emerald-200 cursor-pointer">
+                class="group relative bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl shadow-md hover:shadow-lg transition p-4 border border-emerald-200">
                 <div class="absolute top-0 right-0 -mt-2 -mr-2 w-12 h-12 bg-emerald-500/10 rounded-full"></div>
                 <div class="flex items-center justify-between mb-3">
                     <div class="bg-emerald-500 rounded-lg p-2 shadow-md group-hover:scale-110 transition">
@@ -118,10 +118,10 @@
 
         @foreach ($totalSiswaPerKelas as $i => $kelas)
             @php $c = $warnaKelas[$i % count($warnaKelas)]; @endphp
-            <a href="{{ route('kepsek.penilaian.detail', $kelas['id_kelas']) }}"
-                class="block transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
+            <a href="{{ route('penilaian.kepsek') }}"
+                class="block transition-transform duration-300 transform hover:-translate-y-1">
                 <div
-                    class="group relative bg-gradient-to-br from-{{ $c['from'] }} to-{{ $c['to'] }} rounded-xl shadow-md hover:shadow-lg transition p-4 border border-{{ $c['border'] }} overflow-hidden cursor-pointer">
+                    class="group relative bg-gradient-to-br from-{{ $c['from'] }} to-{{ $c['to'] }} rounded-xl shadow-md hover:shadow-lg transition p-4 border border-{{ $c['border'] }} overflow-hidden">
                     <div class="absolute top-0 right-0 -mt-2 -mr-2 w-12 h-12 bg-{{ $c['icon'] }}/10 rounded-full">
                     </div>
                     <div class="flex items-center justify-between mb-3">
@@ -139,9 +139,9 @@
 
         {{-- Total Aspek --}}
         <a href="{{ route('penilaian.kepsek') }}"
-            class="block transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
+            class="block transition-transform duration-300 transform hover:-translate-y-1">
             <div
-                class="group relative bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl shadow-md hover:shadow-lg transition p-4 border border-indigo-200 overflow-hidden cursor-pointer">
+                class="group relative bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl shadow-md hover:shadow-lg transition p-4 border border-indigo-200 overflow-hidden">
                 <div class="absolute top-0 right-0 -mt-2 -mr-2 w-12 h-12 bg-indigo-500/10 rounded-full"></div>
                 <div class="flex items-center justify-between mb-3">
                     <div class="bg-indigo-500 rounded-lg p-2 shadow-md group-hover:scale-110 transition">

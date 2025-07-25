@@ -54,6 +54,27 @@
         </div>
     </div>
 
+    {{-- Aspect Selection Tabs --}}
+    <div class="bg-gray-100 px-6 py-3 border-b border-gray-200">
+        <div class="flex flex-wrap gap-2">
+            <button wire:click="changeSelectedAspek('all')"
+                class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                {{ $selectedAspek === 'all' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
+                <i class="fas fa-layer-group mr-2"></i>
+                Semua Aspek
+            </button>
+
+            @foreach ($aspekList as $aspek)
+                <button wire:click="changeSelectedAspek('{{ $aspek->id_aspek }}')"
+                    class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                    {{ $selectedAspek == $aspek->id_aspek ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
+                    <i class="fas fa-chart-pie mr-2"></i>
+                    {{ $aspek->nama_aspek }}
+                </button>
+            @endforeach
+        </div>
+    </div>
+
     {{-- Chart Container --}}
     <div class="p-6" wire:ignore>
         <div id="chart-container-{{ $semester }}-{{ $id_aspek }}">

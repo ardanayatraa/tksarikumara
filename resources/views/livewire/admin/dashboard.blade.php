@@ -1,9 +1,8 @@
 <div class="p-6 bg-gray-100 min-h-screen space-y-6">
 
     {{-- Card Admin Login --}}
-    <a href="{{ route('profil.admin') }}"
-        class="block transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-        <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 shadow-xl rounded-xl p-6 text-white cursor-pointer">
+    <a href="{{ route('profil.admin') }}" class="block transition-transform duration-300 transform hover:-translate-y-1">
+        <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 shadow-xl rounded-xl p-6 text-white">
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-lg font-semibold">Informasi Admin</h3>
@@ -25,9 +24,8 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Jumlah Siswa -->
         <a href="{{ route('admin.data-account') }}"
-            class="block transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-            <div
-                class="bg-gradient-to-r from-purple-500 to-purple-600 shadow-xl rounded-xl p-6 text-white cursor-pointer">
+            class="block transition-transform duration-300 transform hover:-translate-y-1">
+            <div class="bg-gradient-to-r from-purple-500 to-purple-600 shadow-xl rounded-xl p-6 text-white">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-lg font-semibold">Jumlah Siswa</h3>
@@ -42,8 +40,8 @@
 
         <!-- Jumlah Guru -->
         <a href="{{ route('admin.data-account') }}"
-            class="block transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-            <div class="bg-gradient-to-r from-blue-500 to-blue-600 shadow-xl rounded-xl p-6 text-white cursor-pointer">
+            class="block transition-transform duration-300 transform hover:-translate-y-1">
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 shadow-xl rounded-xl p-6 text-white">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-lg font-semibold">Jumlah Guru</h3>
@@ -58,9 +56,8 @@
 
         <!-- Jumlah Kelas -->
         <a href="{{ route('admin.master-data') }}"
-            class="block transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
-            <div
-                class="bg-gradient-to-r from-green-500 to-green-600 shadow-xl rounded-xl p-6 text-white cursor-pointer">
+            class="block transition-transform duration-300 transform hover:-translate-y-1">
+            <div class="bg-gradient-to-r from-green-500 to-green-600 shadow-xl rounded-xl p-6 text-white">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-lg font-semibold">Jumlah Kelas</h3>

@@ -25,6 +25,10 @@ class PenilaianAspek extends Component
     public $showAlert = false;
     public $alertMessage = '';
     public $alertType = 'success';
+    public $selectedYearRange = 'current'; // 'current', 'previous', 'all'
+    public $availableYears = [];
+    public $selectedAgeRange = 'all'; // 'all', '3-4', '4-5', '5-6', etc.
+    public $ageRanges = [];
 
     public function mount()
     {
@@ -35,6 +39,53 @@ class PenilaianAspek extends Component
         $this->indikatorList = collect();
         $this->loadKelas();
         $this->loadAspek();
+        $this->loadAvailableYears();
+        $this->loadAgeRanges();
+    }
+
+    public function loadAvailableYears()
+    {
+        // Get current year
+        $currentYear = (int)date('Y');
+
+        // Add current and previous years
+        $this->availableYears = [
+            'current' => $currentYear . '/' . ($currentYear + 1),
+            'previous' => ($currentYear - 1) . '/' . $currentYear,
+            'older' => ($currentYear - 2) . '/' . ($currentYear - 1)
+        ];
+    }
+
+    public function loadAgeRanges()
+    {
+        // Define common age ranges for indicators
+        $this->ageRanges = [
+            'all' => 'Semua Usia',
+            '3-4' => '3-4 Tahun',
+            '4-5' => '4-5 Tahun',
+            '5-6' => '5-6 Tahun',
+            '6-7' => '6-7 Tahun'
+        ];
+    }
+
+    public function setYearRange($range)
+    {
+        $this->selectedYearRange = $range;
+
+        // Update tahun ajaran based on selected range
+        if ($range === 'current') {
+            $currentYear = (int)date('Y');
+            $this->tahunAjaran = $currentYear . '/' . ($currentYear + 1);
+        } elseif ($range === 'previous') {
+            $currentYear = (int)date('Y');
+            $this->tahunAjaran = ($currentYear - 1) . '/' . $currentYear;
+        } elseif ($range === 'older') {
+            $currentYear = (int)date('Y');
+            $this->tahunAjaran = ($currentYear - 2) . '/' . ($currentYear - 1);
+        }
+
+        // Reload data with new year range
+        $this->loadNilai();
     }
 
     public function loadKelas()
@@ -73,13 +124,32 @@ class PenilaianAspek extends Component
     public function loadIndikator()
     {
         if ($this->selectedAspek) {
-            $this->indikatorList = AspekPenilaian::find($this->selectedAspek)
-                ->indikator()
-                ->orderBy('kode_indikator')
-                ->get();
+            $query = AspekPenilaian::find($this->selectedAspek)->indikator();
+
+            // Filter by age range if not 'all'
+            if ($this->selectedAgeRange !== 'all') {
+                list($minAge, $maxAge) = explode('-', $this->selectedAgeRange);
+                $query->where(function($q) use ($minAge, $maxAge) {
+                    $q->where(function($q) use ($minAge, $maxAge) {
+                        $q->where('min_umur', '>=', $minAge)
+                          ->where('min_umur', '<=', $maxAge);
+                    })->orWhere(function($q) use ($minAge, $maxAge) {
+                        $q->where('max_umur', '>=', $minAge)
+                          ->where('max_umur', '<=', $maxAge);
+                    });
+                });
+            }
+
+            $this->indikatorList = $query->orderBy('kode_indikator')->get();
         } else {
             $this->indikatorList = collect();
         }
+    }
+
+    public function setAgeRange($range)
+    {
+        $this->selectedAgeRange = $range;
+        $this->loadIndikator();
     }
 
     public function loadNilai()
@@ -219,7 +289,7 @@ class PenilaianAspek extends Component
 
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::error('Error simpan nilai individual: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Error simpan nilai individual: ' . $e->getMessage());
             $this->showAlert('Gagal menyimpan nilai: ' . $e->getMessage(), 'error');
         }
     }
@@ -281,7 +351,7 @@ class PenilaianAspek extends Component
 
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::error('Error simpan semua nilai: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Error simpan semua nilai: ' . $e->getMessage());
             $this->showAlert('Terjadi kesalahan: ' . $e->getMessage(), 'error');
         }
     }

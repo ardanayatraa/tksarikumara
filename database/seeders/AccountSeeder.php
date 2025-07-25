@@ -22,7 +22,14 @@ class AccountSeeder extends Seeder
             'notlp' => '081234567890',
         ]);
 
-        // Guru
+        // Create class first
+        $kelas = Kelas::create([
+            'namaKelas' => 'A',
+            'tahunAjaran' => '2025',
+            'jumlahSiswa' => '10',
+        ]);
+
+        // Guru with class assignment
         Guru::create([
             'namaGuru' => 'Guru Satu',
             'nip' => '1234567890',
@@ -31,6 +38,7 @@ class AccountSeeder extends Seeder
             'email' => 'guru@example.com',
             'jenis_kelamin' => 'L',
             'notlp' => '081234567891',
+            'id_kelas' => $kelas->id_kelas,
         ]);
 
         // Kepala Sekolah
@@ -43,11 +51,6 @@ class AccountSeeder extends Seeder
             'password' => Hash::make('password'),
         ]);
 
-            $kelas=Kelas::create([
-            'namaKelas'=>'A',
-            'tahunAjaran'=>'2025',
-            'jumlahSiswa'=>'10',
-            ]);
         // Akun Siswa
         AkunSiswa::create([
             'id_kelas' => $kelas->id_kelas, // Pastikan kelas id 1 udah ada ya
