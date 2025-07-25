@@ -24,7 +24,7 @@
                 {{-- Filter Aspek --}}
                 <div class="relative">
                     <select wire:model.live="id_aspek"
-                        class="bg-white bg-opacity-20 text-white rounded-lg px-4 py-2 appearance-none pr-8 hover:bg-opacity-30 transition duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
+                        class="bg-white bg-opacity-20 text-black rounded-lg px-4 py-2 appearance-none pr-8 hover:bg-opacity-30 transition duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
                         <option value="">Semua Aspek</option>
                         @foreach ($aspekOptions as $aspek)
                             <option value="{{ $aspek->id_aspek }}">
@@ -45,11 +45,11 @@
                 </button>
 
                 {{-- Tombol Debug (hapus di production) --}}
-                <button wire:click="debugQuery"
+                {{-- <button wire:click="debugQuery"
                     class="px-4 py-2 bg-red-500 bg-opacity-80 rounded-lg hover:bg-opacity-100 transition duration-200 flex items-center">
                     <i class="fas fa-bug mr-2"></i>
                     <span class="text-sm">Debug</span>
-                </button>
+                </button> --}}
             </div>
         </div>
     </div>
