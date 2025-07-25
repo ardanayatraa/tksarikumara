@@ -34,30 +34,6 @@
                     Penilaian Perkelas Per Minggu - Semester {{ $semester }}
                 </h2>
             </div>
-
-            {{-- Year Range Tabs --}}
-            <div class="bg-gray-100 px-6 py-3 border-b border-gray-200">
-                <div class="flex space-x-2">
-                    <button wire:click="setYearRange('current')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                        {{ $selectedYearRange === 'current' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
-                        <i class="fas fa-calendar-alt mr-2"></i>
-                        {{ $availableYears['current'] }} (Sekarang)
-                    </button>
-                    <button wire:click="setYearRange('previous')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                        {{ $selectedYearRange === 'previous' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
-                        <i class="fas fa-calendar-alt mr-2"></i>
-                        {{ $availableYears['previous'] }} (Sebelumnya)
-                    </button>
-                    <button wire:click="setYearRange('older')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-                        {{ $selectedYearRange === 'older' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
-                        <i class="fas fa-calendar-alt mr-2"></i>
-                        {{ $availableYears['older'] }} (Lama)
-                    </button>
-                </div>
-            </div>
             <div class="p-6">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {{-- Kolom Kiri --}}
@@ -80,14 +56,8 @@
                                 <i class="fas fa-calendar-alt text-teal-500 mr-2"></i>
                                 Tahun Ajaran
                             </label>
-                            <div class="flex items-center">
-                                <input type="text" value="{{ $tahunAjaran }}"
-                                    class="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg" readonly>
-                                <span
-                                    class="ml-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
-                                    {{ $selectedYearRange === 'current' ? 'Sekarang' : ($selectedYearRange === 'previous' ? 'Sebelumnya' : 'Lama') }}
-                                </span>
-                            </div>
+                            <input type="text" value="{{ $tahunAjaran }}"
+                                class="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg" readonly>
                         </div>
                         <div class="group">
                             <label class="flex items-center text-gray-700 font-semibold mb-2">
@@ -123,34 +93,9 @@
                                             {{ $aspekList->where('id_aspek', $selectedAspek)->first()->kode_aspek }}
                                         </span>
                                     </div>
-
-                                    {{-- Age Range Tabs --}}
-                                    <div class="mt-4 mb-2">
-                                        <div class="text-sm font-semibold text-gray-700 mb-2">Filter Indikator
-                                            berdasarkan Rentang Usia:</div>
-                                        <div class="flex flex-wrap gap-2">
-                                            @foreach ($ageRanges as $key => $label)
-                                                <button wire:click="setAgeRange('{{ $key }}')"
-                                                    class="px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200
-                                                    {{ $selectedAgeRange === $key ? 'bg-teal-600 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200' }}">
-                                                    <i class="fas fa-child mr-1"></i>
-                                                    {{ $label }}
-                                                </button>
-                                            @endforeach
-                                        </div>
-                                    </div>
-
                                     @if ($indikatorList->count() > 0)
                                         <div>
-                                            <div class="flex items-center justify-between">
-                                                <span class="font-semibold text-gray-700">Indikator:</span>
-                                                <span class="text-xs text-gray-500">
-                                                    Menampilkan {{ $indikatorList->count() }} indikator
-                                                    @if ($selectedAgeRange !== 'all')
-                                                        untuk usia {{ $ageRanges[$selectedAgeRange] }}
-                                                    @endif
-                                                </span>
-                                            </div>
+                                            <span class="font-semibold text-gray-700">Indikator:</span>
                                             <div class="mt-2 space-y-1">
                                                 @foreach ($indikatorList as $ind)
                                                     <div
@@ -160,26 +105,14 @@
                                                             <span>{{ $ind->nama_indikator }} <span
                                                                     class="ml-1 text-teal-600">[{{ $ind->kode_indikator }}]</span></span>
                                                         </div>
-                                                        <div class="flex items-center">
-                                                            <span class="text-xs text-gray-500 mr-2">
-                                                                <i
-                                                                    class="fas fa-baby mr-1"></i>{{ $ind->min_umur }}-{{ $ind->max_umur }}
-                                                                thn
-                                                            </span>
-                                                            <span
-                                                                class="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs font-semibold">
-                                                                <i
-                                                                    class="fas fa-weight-hanging mr-1"></i>{{ $ind->bobot }}
-                                                            </span>
-                                                        </div>
+                                                        <span
+                                                            class="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs font-semibold">
+                                                            <i
+                                                                class="fas fa-weight-hanging mr-1"></i>{{ $ind->bobot }}
+                                                        </span>
                                                     </div>
                                                 @endforeach
                                             </div>
-                                        </div>
-                                    @else
-                                        <div class="text-center py-4 text-gray-500">
-                                            <i class="fas fa-info-circle mr-1"></i>
-                                            Tidak ada indikator untuk rentang usia yang dipilih
                                         </div>
                                     @endif
                                 </div>
