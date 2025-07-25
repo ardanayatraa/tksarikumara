@@ -25,6 +25,7 @@ class Dashboard extends Component
         // total siswa per kelas
         $kelasList = Kelas::withCount('akunSiswa')->get();
         $this->totalSiswaPerKelas = $kelasList->map(fn($kelas) => [
+            'id_kelas'     => $kelas->id_kelas,
             'namaKelas'    => $kelas->namaKelas,
             'jumlahSiswa'  => $kelas->akun_siswa_count,
         ])->toArray();

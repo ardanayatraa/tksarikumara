@@ -22,8 +22,12 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-            AccountSeeder::class,
+            // AccountSeeder::class,
+            RealDataSeederUpdated::class,
             AspekPenilaianSeeder::class,
+            PenilaianNilaiSeeder::class,
+            DetailPenilaianSeeder::class,
+            LaporanPerkembanganSeeder::class,
             // Tambahkan seeder lain yang ingin dijalankan
         ]);
     }
