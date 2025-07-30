@@ -5,7 +5,10 @@
     </x-button>
 
     <x-dialog-modal wire:model="open" max-width="2xl">
-        <x-slot name="title">Filter Rentang Tanggal</x-slot>
+        <x-slot name="title">
+            Filter Rentang Tanggal
+        </x-slot>
+
         <x-slot name="content">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
@@ -105,6 +108,7 @@
                 </div>
             @endif
         </x-slot>
+
         <x-slot name="footer">
             @if (auth()->guard('guru')->check())
                 @if (empty($records))
@@ -119,17 +123,17 @@
             @endif
 
             @if (empty($records))
-                <x-secondary-button disabled class="ml-2">
+                <x-secondary-button disabled class="ml-3">
                     Download PDF
                 </x-secondary-button>
             @else
-                <x-secondary-button wire:click="downloadReport" class="ml-2">
+                <x-secondary-button wire:click="downloadReport" class="ml-3">
                     Download PDF
                 </x-secondary-button>
             @endif
 
-            <x-secondary-button wire:click="$set('open', false)" class="ml-2">
-                Batal
+            <x-secondary-button wire:click="$set('open', false)" class="ml-3">
+                {{ __('Cancel') }}
             </x-secondary-button>
         </x-slot>
     </x-dialog-modal>

@@ -10,7 +10,7 @@
             </div>
 
             <!-- Quick Actions Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="flex flex-row gap-6 mb-8">
                 <!-- Chart Button Card -->
                 <div
                     class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
