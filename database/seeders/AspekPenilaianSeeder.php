@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\AspekPenilaian;
 use App\Models\IndikatorAspek;
+use Illuminate\Support\Str;
 
 class AspekPenilaianSeeder extends Seeder
 {
@@ -21,80 +22,80 @@ class AspekPenilaianSeeder extends Seeder
         // definisi aspek utama + anak‐anaknya
         $aspekData = [
             [
-                'kode'     => 'I',
                 'nama'     => 'Nilai Agama dan Moral',
                 'kategori' => 'Spiritual',
                 'children' => [
-                    ['kode' => 'I.A', 'nama' => 'Nilai Agama dan Moral'],
+                    ['nama' => 'Nilai Agama dan Moral'],
                 ],
             ],
             [
-                'kode'     => 'II',
                 'nama'     => 'Fisik – Motorik',
                 'kategori' => 'Motorik',
                 'children' => [
-                    ['kode' => 'II.A', 'nama' => 'Motorik Kasar'],
-                    ['kode' => 'II.B', 'nama' => 'Motorik Halus'],
-                    ['kode' => 'II.C', 'nama' => 'Kesehatan & Perilaku Keselamatan'],
+                    ['nama' => 'Motorik Kasar'],
+                    ['nama' => 'Motorik Halus'],
+                    ['nama' => 'Kesehatan & Perilaku Keselamatan'],
                 ],
             ],
             [
-                'kode'     => 'III',
                 'nama'     => 'Kognitif',
                 'kategori' => 'Kognitif',
                 'children' => [
-                    ['kode' => 'III.A', 'nama' => 'Belajar & Memecahkan Masalah'],
-                    ['kode' => 'III.B', 'nama' => 'Berpikir Logis'],
-                    ['kode' => 'III.C', 'nama' => 'Berpikir Simbolik'],
+                    ['nama' => 'Belajar & Memecahkan Masalah'],
+                    ['nama' => 'Berpikir Logis'],
+                    ['nama' => 'Berpikir Simbolik'],
                 ],
             ],
             [
-                'kode'     => 'IV',
                 'nama'     => 'Bahasa',
                 'kategori' => 'Bahasa',
                 'children' => [
-                    ['kode' => 'IV.A', 'nama' => 'Memahami Bahasa'],
-                    ['kode' => 'IV.B', 'nama' => 'Mengungkapkan Bahasa'],
+                    ['nama' => 'Memahami Bahasa'],
+                    ['nama' => 'Mengungkapkan Bahasa'],
                 ],
             ],
             [
-                'kode'     => 'V',
                 'nama'     => 'Sosial – Emosional',
                 'kategori' => 'Sosial',
                 'children' => [
-                    ['kode' => 'V.A', 'nama' => 'Kesadaran Diri'],
-                    ['kode' => 'V.B', 'nama' => 'Tanggung Jawab Diri & Orang Lain'],
-                    ['kode' => 'V.C', 'nama' => 'Perilaku Prososial'],
+                    ['nama' => 'Kesadaran Diri'],
+                    ['nama' => 'Tanggung Jawab Diri & Orang Lain'],
+                    ['nama' => 'Perilaku Prososial'],
                 ],
             ],
             [
-                'kode'     => 'VI',
                 'nama'     => 'Seni',
                 'kategori' => 'Seni',
                 'children' => [
-                    ['kode' => 'VI.A', 'nama' => 'Membedakan Bunyi & Suara'],
-                    ['kode' => 'VI.B', 'nama' => 'Antusias Musik, Orang, & Hewan'],
-                    ['kode' => 'VI.C', 'nama' => 'Mengikuti Kegiatan Seni'],
+                    ['nama' => 'Membedakan Bunyi & Suara'],
+                    ['nama' => 'Antusias Musik, Orang, & Hewan'],
+                    ['nama' => 'Mengikuti Kegiatan Seni'],
                 ],
             ],
         ];
 
         foreach ($aspekData as $aspek) {
+            // Generate kode_aspek mengikuti format Livewire component
+            $kodeAspek = $this->generateKodeAspek($aspek['nama']);
+
             // 1) Buat atau update aspek utama
             $parent = AspekPenilaian::updateOrCreate(
-                ['kode_aspek' => $aspek['kode']],
+                ['kode_aspek' => $kodeAspek],
                 ['nama_aspek' => $aspek['nama'], 'kategori' => $aspek['kategori']]
             );
 
             // 2) Buat/Update tiap indikator-nya
-            foreach ($aspek['children'] as $child) {
+            foreach ($aspek['children'] as $index => $child) {
+                // Generate kode indikator: kode_aspek + urutan (A, B, C, dst)
+                $kodeIndikator = $kodeAspek . '.' . chr(65 + $index); // A=65, B=66, C=67, dst
+
                 // kita pakai looping umur agar seeder bisa mengubah min/max
                 foreach ($ageRanges as $range) {
                     IndikatorAspek::updateOrCreate(
                         // Cuma match by aspek_id + kode_indikator → mencegah duplikat
                         [
                             'aspek_id'       => $parent->id_aspek,
-                            'kode_indikator' => $child['kode'],
+                            'kode_indikator' => $kodeIndikator,
                         ],
                         // Kemudian set atau update field lainnya
                         [
@@ -106,5 +107,18 @@ class AspekPenilaianSeeder extends Seeder
                 }
             }
         }
+    }
+
+    /**
+     * Generate kode aspek mengikuti format yang sama dengan Livewire component
+     */
+    protected function generateKodeAspek($namaAspek)
+    {
+        // Ambil kata pertama dari nama aspek
+        $first = explode(' ', trim($namaAspek))[0];
+        $singkatan = strtoupper(Str::substr($first, 0, 3));
+        $tahun = now()->year;
+
+        return $singkatan . $tahun;
     }
 }
