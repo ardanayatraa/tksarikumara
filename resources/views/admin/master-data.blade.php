@@ -45,14 +45,18 @@
                 </h3>
 
                 <div class="p-4 border rounded-lg mb-4">
-                    @livewire('aspek-penilaian.add')
+                    @livewire('sub-aspek.create')
+
+                    <div class="my-6">
+                        @livewire('sub-aspek.update')
+                        @livewire('sub-aspek.delete')
+                    </div>
                 </div>
                 <div class="p-4 border rounded-lg mb-4">
-                    @livewire('table.aspek-penilaian-table')
+                    @livewire('table.sub-aspek-table')
                 </div>
 
-                @livewire('aspek-penilaian.update')
-                @livewire('aspek-penilaian.delete')
+
             </div>
         </div>
     </div>
