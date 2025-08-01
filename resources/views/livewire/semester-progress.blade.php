@@ -1,34 +1,39 @@
-{{-- resources/views/livewire/semester-progress.blade.php --}}
-<div class="bg-white rounded-2xl shadow-xl overflow-hidden">
-    {{-- Header --}}
-    <div class="bg-blue-600 text-white ml-8 p-6">
-        <div class="flex items-center justify-between">
+{{-- resources/views/livewire/semester-progress-modal.blade.php --}}
+<div class="bg-white rounded-lg overflow-hidden">
+    {{-- Header dengan Filter --}}
+    <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
             <div>
-                <h3 class="text-xl font-bold flex items-center">
-                    <i class="fas fa-chart-line mr-2"></i>
-                    {{ $title }}
+                <h3 class="text-lg font-semibold">
+                    Progress Semester {{ $semester }} - {{ $tahun_ajaran }}
                 </h3>
-                <p class="text-teal-100 mt-1">
-                    Semester {{ $semester }} - {{ $tahun_ajaran }}
-                    @if ($id_aspek)
-                        @php
-                            $selectedAspek = $aspekOptions->where('id_aspek', $id_aspek)->first();
-                        @endphp
-                        @if ($selectedAspek)
-                            - {{ $selectedAspek->kode_aspek }} ({{ $selectedAspek->nama_aspek }})
-                        @endif
-                    @endif
-                </p>
             </div>
-            <div class="flex items-center space-x-3">
+
+            <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                 {{-- Filter Aspek --}}
                 <div class="relative">
                     <select wire:model.live="id_aspek"
-                        class="bg-white bg-opacity-20 text-black rounded-lg px-4 py-2 appearance-none pr-8 hover:bg-opacity-30 transition duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
-                        <option value="">Semua Aspek</option>
+                        class="bg-white bg-opacity-20 text-white rounded-lg px-3 py-2 text-sm appearance-none pr-8 hover:bg-opacity-30 transition duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 backdrop-blur-sm min-w-[150px]">
+                        <option value="" style="color: #374151;">Semua Aspek</option>
                         @foreach ($aspekOptions as $aspek)
-                            <option value="{{ $aspek->id_aspek }}">
-                                {{ $aspek->kode_aspek }} - {{ $aspek->nama_aspek }}
+                            <option value="{{ $aspek->id_aspek }}" style="color: #374151;">
+                                {{ $aspek->kode_aspek }} - {{ Str::limit($aspek->nama_aspek, 20) }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+
+                {{-- Filter Kelompok Usia --}}
+                <div class="relative">
+                    <select wire:model.live="kelompok_usia"
+                        class="bg-white bg-opacity-20 text-white rounded-lg px-3 py-2 text-sm appearance-none pr-8 hover:bg-opacity-30 transition duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 backdrop-blur-sm min-w-[120px]">
+                        <option value="" style="color: #374151;">Semua Usia</option>
+                        @foreach ($kelompokUsiaOptions as $key => $label)
+                            <option value="{{ $key }}" style="color: #374151;">
+                                {{ $label }}
                             </option>
                         @endforeach
                     </select>
@@ -39,203 +44,261 @@
 
                 {{-- Tombol Refresh --}}
                 <button wire:click="emitChartData"
-                    class="px-4 py-2 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition duration-200 flex items-center">
-                    <i class="fas fa-sync-alt mr-2"></i>
-                    <span class="text-sm">Refresh</span>
+                    class="px-3 py-2 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition duration-200 flex items-center backdrop-blur-sm">
+                    <i class="fas fa-sync-alt text-sm"></i>
                 </button>
+            </div>
+        </div>
 
-                {{-- Tombol Debug (hapus di production) --}}
-                {{-- <button wire:click="debugQuery"
-                    class="px-4 py-2 bg-red-500 bg-opacity-80 rounded-lg hover:bg-opacity-100 transition duration-200 flex items-center">
-                    <i class="fas fa-bug mr-2"></i>
-                    <span class="text-sm">Debug</span>
-                </button> --}}
+        {{-- Info Filter Aktif --}}
+        @if ($id_aspek || $kelompok_usia)
+            <div class="mt-3 flex flex-wrap gap-2">
+                @if ($id_aspek)
+                    @php
+                        $selectedAspek = $aspekOptions->where('id_aspek', $id_aspek)->first();
+                    @endphp
+                    @if ($selectedAspek)
+                        <span class="bg-white bg-opacity-20 px-2 py-1 rounded-md text-xs">
+                            {{ $selectedAspek->kode_aspek }} - {{ $selectedAspek->nama_aspek }}
+                        </span>
+                    @endif
+                @endif
+                @if ($kelompok_usia)
+                    <span class="bg-purple-500 bg-opacity-80 px-2 py-1 rounded-md text-xs">
+                        {{ $kelompokUsiaOptions[$kelompok_usia] }}
+                    </span>
+                @endif
+            </div>
+        @endif
+    </div>
+
+    {{-- Chart Container --}}
+    <div class="p-4 relative" wire:ignore>
+        <div id="chart-container-modal-{{ $semester }}-{{ $id_aspek }}-{{ $kelompok_usia }}"
+            class="min-h-[350px]">
+            {!! $chart->container() !!}
+        </div>
+
+        {{-- Loading Overlay --}}
+        <div wire:loading.flex wire:target="emitChartData,id_aspek,kelompok_usia"
+            class="absolute inset-0 bg-white bg-opacity-90 items-center justify-center rounded-lg">
+            <div class="text-center">
+                <i class="fas fa-spinner fa-spin text-blue-600 text-2xl mb-2"></i>
+                <p class="text-gray-600 text-sm">Memuat data...</p>
             </div>
         </div>
     </div>
 
-    {{-- Chart Container --}}
-    <div class="p-6" wire:ignore>
-        <div id="chart-container-{{ $semester }}-{{ $id_aspek }}">
-            {!! $chart->container() !!}
-        </div>
-    </div>
-
-    {{-- Loading Indicator --}}
-    <div wire:loading.flex wire:target="emitChartData,id_aspek"
-        class="absolute inset-0 bg-white bg-opacity-75 items-center justify-center rounded-2xl">
-        <div class="text-center">
-            <i class="fas fa-spinner fa-spin text-teal-600 text-2xl mb-2"></i>
-            <p class="text-gray-600">Memuat data chart...</p>
+    {{-- Simple Stats Footer --}}
+    <div class="bg-gray-50 px-4 py-3 border-t border-gray-200">
+        <div class="flex justify-between items-center text-sm">
+            <div class="flex items-center space-x-4 text-gray-600">
+                <div class="flex items-center">
+                    <div class="w-3 h-3 bg-blue-500 rounded-full mr-1"></div>
+                    <span>Rata-rata: {{ $stats['rata_rata'] }}</span>
+                </div>
+                <div>Progress: {{ $stats['progress_percent'] }}%</div>
+            </div>
+            <div class="text-gray-500">
+                {{ $stats['minggu_dinilai'] }}/20 minggu dinilai
+            </div>
         </div>
     </div>
 </div>
 
 @push('scripts')
-    {{-- Load ApexCharts --}}
     {!! $chart->script() !!}
 
     <script>
-        let currentChart = null;
-        let chartContainer = null;
+        let modalChart = null;
+        let isModalUpdating = false;
 
         document.addEventListener('livewire:init', function() {
-            initializeChart();
+            initializeModalChart();
 
-            // Listen for force reload
             Livewire.on('forceChartReload', () => {
-                console.log('Force chart reload triggered');
-                destroyChart();
+                if (isModalUpdating) return;
+
+                console.log('Modal chart reload triggered');
+                isModalUpdating = true;
+                destroyModalChart();
+
                 setTimeout(() => {
-                    @this.call('emitChartData');
-                }, 100);
+                    @this.call('emitChartData').then(() => {
+                        isModalUpdating = false;
+                    });
+                }, 200);
             });
 
-            // Listen for updates
             Livewire.on('semesterChartUpdated', (event) => {
+                if (isModalUpdating) return;
+
                 const {
                     labels,
-                    data,
-                    aspek_id,
-                    timestamp
+                    data
                 } = event[0];
 
-                console.log('Chart update received:', {
-                    labels,
-                    data,
-                    aspek_id,
-                    timestamp
-                });
+                isModalUpdating = true;
+                destroyModalChart();
 
-                // Always destroy and recreate chart for clean update
-                destroyChart();
-                createNewChart(labels, data);
-            });
-
-            // Listen for parent refresh
-            Livewire.on('refreshChart', () => {
-                @this.call('emitChartData');
+                setTimeout(() => {
+                    createModalChart(labels, data);
+                    isModalUpdating = false;
+                }, 100);
             });
         });
 
-        function initializeChart() {
-            // Initial chart will be created by Larapex
+        function initializeModalChart() {
             setTimeout(() => {
-                currentChart = document.querySelector('#{{ $chart->id() }}')
-                    ?.__apexchart__;
-                console.log('Initial chart found:', !!currentChart);
+                const chartElement = document.querySelector('#{{ $chart->id() }}');
+                if (chartElement && chartElement.__apexchart__) {
+                    modalChart = chartElement.__apexchart__;
+                    console.log('Modal chart initialized');
+                }
             }, 1000);
         }
 
-        function destroyChart() {
-            if (currentChart) {
+        function destroyModalChart() {
+            if (modalChart) {
                 try {
-                    currentChart.destroy();
-                    console.log('Chart destroyed');
+                    modalChart.destroy();
                 } catch (error) {
-                    console.log('Error destroying chart:', error);
+                    console.log('Error destroying modal chart:', error);
                 }
-                currentChart = null;
+                modalChart = null;
             }
         }
 
-        function createNewChart(labels, data) {
-            // Find chart container
+        function createModalChart(labels, data) {
             const container = document.querySelector('#{{ $chart->id() }}');
-            if (!container) {
-                console.error('Chart container not found');
-                return;
-            }
+            if (!container) return;
 
-            // Clear container
             container.innerHTML = '';
+            const validData = data.map(d => d || 0);
+            const hasData = validData.some(d => d > 0);
 
-            // Create new chart options
             const options = {
                 series: [{
                     name: 'Rata-rata Skor',
-                    data: data
+                    data: validData
                 }],
                 chart: {
                     type: 'line',
-                    height: 400,
+                    height: 350,
                     animations: {
                         enabled: true,
-                        speed: 800
-                    }
+                        speed: 600
+                    },
+                    toolbar: {
+                        show: false
+                    } // Hide toolbar for modal
                 },
-                colors: ['#0d9488'],
+                colors: ['#3b82f6'],
                 xaxis: {
                     categories: labels,
                     labels: {
                         rotate: -45,
                         style: {
-                            fontSize: '12px'
+                            fontSize: '11px'
                         }
                     }
                 },
                 yaxis: {
-                    title: {
-                        text: 'Rata-rata Skor'
-                    },
                     min: 0,
-                    max: 5
+                    max: 4,
+                    labels: {
+                        formatter: function(value) {
+                            return value.toFixed(1);
+                        }
+                    }
                 },
                 stroke: {
                     curve: 'smooth',
-                    width: 3
+                    width: 2
                 },
                 markers: {
-                    colors: ['#0d9488'],
-                    strokeWidth: 6,
-                    size: 6
+                    size: 4,
+                    colors: ['#3b82f6'],
+                    strokeWidth: 2,
+                    strokeColors: '#fff'
                 },
                 tooltip: {
                     y: {
                         formatter: function(value) {
-                            return value > 0 ? 'Skor: ' + value.toFixed(2) : 'Belum ada nilai';
+                            if (value > 0) {
+                                return 'Skor: ' + value.toFixed(2);
+                            }
+                            return 'Belum ada penilaian';
                         }
                     }
                 },
                 grid: {
-                    borderColor: '#e7e7e7',
-                    row: {
-                        colors: ['#f3f3f3', 'transparent'],
-                        opacity: 0.5
-                    }
-                }
+                    borderColor: '#e5e7eb',
+                    strokeDashArray: 3
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                annotations: !hasData ? {
+                    texts: [{
+                        x: '50%',
+                        y: '50%',
+                        text: 'Tidak ada data',
+                        textAnchor: 'middle',
+                        style: {
+                            fontSize: '14px',
+                            color: '#6b7280'
+                        }
+                    }]
+                } : {}
             };
 
-            // Create new chart
-            currentChart = new ApexCharts(container, options);
-            currentChart.render().then(() => {
-                console.log('New chart created successfully with data:', data);
-            }).catch(error => {
-                console.error('Error creating chart:', error);
-            });
+            modalChart = new ApexCharts(container, options);
+            modalChart.render();
         }
     </script>
 
     <style>
-        /* Responsive chart */
-        @media (max-width: 768px) {
-            .apexcharts-toolbar {
-                display: none !important;
+        /* Modal specific styles */
+        .min-h-[350px] {
+            min-height: 350px;
+        }
+
+        /* Compact select styling */
+        select {
+            font-size: 13px;
+        }
+
+        select option {
+            background-color: white;
+            color: #374151;
+            padding: 4px;
+        }
+
+        /* Loading animation */
+        .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
             }
         }
 
-        /* Loading state styling */
-        select:disabled {
-            opacity: 0.6;
-        }
+        /* Responsive adjustments for modal */
+        @media (max-width: 640px) {
+            .min-w-[150px] {
+                min-width: 120px;
+            }
 
-        /* Custom grid styling */
-        .grid>div {
-            transition: transform 0.2s ease;
-        }
-
-        .grid>div:hover {
-            transform: translateY(-2px);
+            .min-w-[120px] {
+                min-width: 100px;
+            }
         }
     </style>
 @endpush

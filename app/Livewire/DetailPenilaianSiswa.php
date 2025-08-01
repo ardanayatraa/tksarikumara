@@ -7,7 +7,9 @@ use App\Models\AkunSiswa;
 use App\Models\AspekPenilaian;
 use App\Models\Penilaian;
 use App\Models\NilaiSiswa;
+use App\Models\Indikator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class DetailPenilaianSiswa extends Component
 {
@@ -47,7 +49,13 @@ class DetailPenilaianSiswa extends Component
 
     public function loadAspek()
     {
-        $this->aspekList = AspekPenilaian::with('indikator')->orderBy('kode_aspek')->get();
+        // Load aspek dengan indikator yang aktif, diurutkan berdasarkan kode aspek
+        $this->aspekList = AspekPenilaian::with(['indikatorAktif' => function($query) {
+            $query->orderBy('kode_indikator');
+        }])
+        ->aktif()
+        ->orderBy('kode_aspek')
+        ->get();
     }
 
     public function loadNilai()
@@ -59,7 +67,7 @@ class DetailPenilaianSiswa extends Component
 
         // Load nilai untuk semua aspek dan indikator
         foreach ($this->aspekList as $aspek) {
-            foreach ($aspek->indikator as $indikator) {
+            foreach ($aspek->indikatorAktif as $indikator) {
                 for ($minggu = 1; $minggu <= 20; $minggu++) {
                     // Cari penilaian yang sudah ada
                     $penilaian = Penilaian::where('id_akunsiswa', $this->siswaId)
@@ -70,12 +78,13 @@ class DetailPenilaianSiswa extends Component
                         ->first();
 
                     if ($penilaian) {
-                        $nilai = NilaiSiswa::where('id_penilaian', $penilaian->id_penilaian)
-                            ->where('indikator_aspek_id', $indikator->id)
+                        $nilai = NilaiSiswa::where('penilaian_id', $penilaian->id_penilaian)
+                            ->where('indikator_id', $indikator->id_indikator)
                             ->first();
 
                         if ($nilai) {
-                            $this->nilaiData[$indikator->id][$minggu] = $nilai->nilai;
+                            // Menggunakan skor (1-4) sesuai dengan model NilaiSiswa
+                            $this->nilaiData[$indikator->id_indikator][$minggu] = $nilai->skor;
                         }
                     }
                 }
@@ -112,17 +121,23 @@ class DetailPenilaianSiswa extends Component
                 'tahun_ajaran' => $this->tahunAjaran,
                 'semester' => $this->semester,
             ], [
-                'tanggal_penilaian' => now(),
-                'catatan_guru' => '',
+                'id_guru' => Auth::id(), // Sesuaikan dengan ID guru yang login
+                'tgl_penilaian' => now(),
+                'kelompok_usia_siswa' => $this->getKelompokUsiaSiswa(),
+                'status' => 'draft',
+                'catatan_umum' => '',
             ]);
+
+            // Konversi skor ke nilai sesuai model NilaiSiswa
+            $nilaiText = NilaiSiswa::konversiSkorKeNilai((int)$nilai);
 
             // Simpan nilai
             NilaiSiswa::updateOrCreate([
-                'id_penilaian' => $penilaian->id_penilaian,
-                'indikator_aspek_id' => $indikatorId,
+                'penilaian_id' => $penilaian->id_penilaian,
+                'indikator_id' => $indikatorId,
             ], [
-                'nilai' => $nilai,
-                'skor' => (int)$nilai,
+                'nilai' => $nilaiText, // BB, MB, BSH, BSB
+                'skor' => (int)$nilai,  // 1, 2, 3, 4
                 'catatan' => '',
             ]);
 
@@ -141,12 +156,12 @@ class DetailPenilaianSiswa extends Component
             $totalSaved = 0;
 
             foreach ($this->aspekList as $aspek) {
-                foreach ($aspek->indikator as $indikator) {
+                foreach ($aspek->indikatorAktif as $indikator) {
                     for ($minggu = 1; $minggu <= 20; $minggu++) {
-                        if (isset($this->nilaiData[$indikator->id][$minggu]) &&
-                            !empty($this->nilaiData[$indikator->id][$minggu])) {
+                        if (isset($this->nilaiData[$indikator->id_indikator][$minggu]) &&
+                            !empty($this->nilaiData[$indikator->id_indikator][$minggu])) {
 
-                            $nilai = $this->nilaiData[$indikator->id][$minggu];
+                            $nilai = $this->nilaiData[$indikator->id_indikator][$minggu];
 
                             // Cari atau buat penilaian header
                             $penilaian = Penilaian::firstOrCreate([
@@ -156,15 +171,21 @@ class DetailPenilaianSiswa extends Component
                                 'tahun_ajaran' => $this->tahunAjaran,
                                 'semester' => $this->semester,
                             ], [
-                                'tanggal_penilaian' => now(),
-                                'catatan_guru' => '',
+                                'id_guru' => Auth::id(),
+                                'tgl_penilaian' => now(),
+                                'kelompok_usia_siswa' => $this->getKelompokUsiaSiswa(),
+                                'status' => 'draft',
+                                'catatan_umum' => '',
                             ]);
 
+                            // Konversi skor ke nilai
+                            $nilaiText = NilaiSiswa::konversiSkorKeNilai((int)$nilai);
+
                             NilaiSiswa::updateOrCreate([
-                                'id_penilaian' => $penilaian->id_penilaian,
-                                'indikator_aspek_id' => $indikator->id,
+                                'penilaian_id' => $penilaian->id_penilaian,
+                                'indikator_id' => $indikator->id_indikator,
                             ], [
-                                'nilai' => $nilai,
+                                'nilai' => $nilaiText,
                                 'skor' => (int)$nilai,
                                 'catatan' => '',
                             ]);
@@ -181,6 +202,82 @@ class DetailPenilaianSiswa extends Component
         } catch (\Exception $e) {
             DB::rollback();
             $this->showAlert('Terjadi kesalahan: ' . $e->getMessage(), 'error');
+        }
+    }
+
+    /**
+     * Mendapatkan kelompok usia siswa berdasarkan tanggal lahir
+     */
+    private function getKelompokUsiaSiswa()
+    {
+        if (!$this->siswa->tgl_lahir) {
+            return '2-3_tahun'; // Default
+        }
+
+        $usia = \Carbon\Carbon::parse($this->siswa->tgl_lahir)->age;
+
+        if ($usia >= 3) {
+            return '3-4_tahun';
+        } else {
+            return '2-3_tahun';
+        }
+    }
+
+    /**
+     * Menghitung total nilai untuk suatu aspek
+     */
+    public function getTotalNilaiAspek($aspek)
+    {
+        $totalNilaiAspek = 0;
+        $hasNilai = false;
+
+        foreach ($aspek->indikatorAktif as $indikator) {
+            for ($minggu = 1; $minggu <= 20; $minggu++) {
+                if (isset($this->nilaiData[$indikator->id_indikator][$minggu]) &&
+                    !empty($this->nilaiData[$indikator->id_indikator][$minggu])) {
+
+                    $nilai = $this->nilaiData[$indikator->id_indikator][$minggu];
+                    $totalNilaiAspek += (int) $nilai;
+                    $hasNilai = true;
+                }
+            }
+        }
+
+        return $hasNilai ? $totalNilaiAspek : null;
+    }
+
+    /**
+     * Mendapatkan CSS class untuk nilai berdasarkan skor
+     */
+    public function getNilaiClass($skor)
+    {
+        switch ($skor) {
+            case '4':
+                return 'bg-green-100 text-green-800 font-semibold';
+            case '3':
+                return 'bg-blue-100 text-blue-800 font-semibold';
+            case '2':
+                return 'bg-yellow-100 text-yellow-800 font-semibold';
+            case '1':
+                return 'bg-red-100 text-red-800 font-semibold';
+            default:
+                return 'bg-white';
+        }
+    }
+
+    /**
+     * Mendapatkan CSS class untuk total nilai aspek
+     */
+    public function getTotalNilaiClass($totalNilai)
+    {
+        if ($totalNilai >= 240) {
+            return 'bg-green-100 text-green-800 border-2 border-green-300';
+        } elseif ($totalNilai >= 160) {
+            return 'bg-blue-100 text-blue-800 border-2 border-blue-300';
+        } elseif ($totalNilai >= 80) {
+            return 'bg-yellow-100 text-yellow-800 border-2 border-yellow-300';
+        } else {
+            return 'bg-red-100 text-red-800 border-2 border-red-300';
         }
     }
 

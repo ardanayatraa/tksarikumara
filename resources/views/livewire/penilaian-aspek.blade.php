@@ -51,25 +51,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="group">
-                            <label class="flex items-center text-gray-700 font-semibold mb-2">
-                                <i class="fas fa-calendar-alt text-teal-500 mr-2"></i>
-                                Tahun Ajaran
-                            </label>
-                            <input type="text" value="{{ $tahunAjaran }}"
-                                class="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg" readonly>
-                        </div>
-                        <div class="group">
-                            <label class="flex items-center text-gray-700 font-semibold mb-2">
-                                <i class="fas fa-user-tie text-teal-500 mr-2"></i>
-                                Nama Guru
-                            </label>
-                            <input type="text" value="{{ Auth::user()->name ?? 'Guru Kelas' }}"
-                                class="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg" readonly>
-                        </div>
-                    </div>
-                    {{-- Kolom Kanan --}}
-                    <div class="space-y-4">
+
                         <div class="group">
                             <label class="flex items-center text-gray-700 font-semibold mb-2">
                                 <i class="fas fa-tasks text-teal-500 mr-2"></i>
@@ -79,42 +61,82 @@
                                 class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-teal-500 focus:ring focus:ring-teal-200 transition duration-200">
                                 <option value="">-- Pilih Aspek --</option>
                                 @foreach ($aspekList as $aspek)
-                                    <option value="{{ $aspek->id_aspek }}">{{ $aspek->nama_aspek }}</option>
+                                    <option value="{{ $aspek->id_aspek }}">{{ $aspek->kode_aspek }}. {{ $aspek->nama_aspek }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        @if ($selectedAspek && $aspekList->where('id_aspek', $selectedAspek)->first())
+
+                        <div class="group">
+                            <label class="flex items-center text-gray-700 font-semibold mb-2">
+                                <i class="fas fa-users text-teal-500 mr-2"></i>
+                                Kelompok Usia
+                            </label>
+                            <select wire:model.live="selectedKelompokUsia"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-teal-500 focus:ring focus:ring-teal-200 transition duration-200">
+                                <option value="">-- Pilih Kelompok Usia --</option>
+                                @foreach ($kelompokUsiaOptions as $key => $label)
+                                    <option value="{{ $key }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- Kolom Kanan --}}
+                    <div class="space-y-4">
+                        <div class="group">
+                            <label class="flex items-center text-gray-700 font-semibold mb-2">
+                                <i class="fas fa-calendar-alt text-teal-500 mr-2"></i>
+                                Tahun Ajaran
+                            </label>
+                            <input type="text" value="{{ $tahunAjaran }}"
+                                class="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg" readonly>
+                        </div>
+
+                        <div class="group">
+                            <label class="flex items-center text-gray-700 font-semibold mb-2">
+                                <i class="fas fa-user-tie text-teal-500 mr-2"></i>
+                                Nama Guru
+                            </label>
+                            <input type="text" value="{{ Auth::user()->name ?? 'Guru Kelas' }}"
+                                class="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg" readonly>
+                        </div>
+
+                        @if ($selectedAspek && $selectedKelompokUsia && $indikatorList->count() > 0)
                             <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
                                 <div class="space-y-2">
-                                    <div class="flex items-center">
-                                        <span class="font-semibold text-gray-700 mr-2">Kode Aspek:</span>
-                                        <span
-                                            class="bg-white px-3 py-1 rounded-full text-sm font-medium text-teal-600 border border-teal-200">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-semibold text-gray-700">Kode Aspek:</span>
+                                        <span class="bg-white px-3 py-1 rounded-full text-sm font-medium text-teal-600 border border-teal-200">
                                             {{ $aspekList->where('id_aspek', $selectedAspek)->first()->kode_aspek }}
                                         </span>
                                     </div>
-                                    @if ($indikatorList->count() > 0)
-                                        <div>
-                                            <span class="font-semibold text-gray-700">Indikator:</span>
-                                            <div class="mt-2 space-y-1">
-                                                @foreach ($indikatorList as $ind)
-                                                    <div
-                                                        class="flex items-center justify-between text-sm text-gray-600 bg-white rounded p-2">
-                                                        <div class="flex items-center">
-                                                            <i class="fas fa-check-circle text-teal-500 mr-2"></i>
-                                                            <span>{{ $ind->nama_indikator }} <span
-                                                                    class="ml-1 text-teal-600">[{{ $ind->kode_indikator }}]</span></span>
-                                                        </div>
-                                                        <span
-                                                            class="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs font-semibold">
-                                                            <i
-                                                                class="fas fa-weight-hanging mr-1"></i>{{ $ind->bobot }}
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-semibold text-gray-700">Kelompok Usia:</span>
+                                        <span class="bg-purple-100 px-3 py-1 rounded-full text-sm font-medium text-purple-600">
+                                            {{ $kelompokUsiaOptions[$selectedKelompokUsia] }}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span class="font-semibold text-gray-700">Indikator ({{ $indikatorList->count() }}):</span>
+                                        <div class="mt-2 space-y-1 max-h-32 overflow-y-auto">
+                                            @foreach ($indikatorList as $ind)
+                                                <div class="flex items-center justify-between text-sm text-gray-600 bg-white rounded p-2">
+                                                    <div class="flex items-center">
+                                                        <i class="fas fa-check-circle text-teal-500 mr-2"></i>
+                                                        <span title="{{ $ind->deskripsi_indikator }}">
+                                                            {{ Str::limit($ind->deskripsi_indikator, 30) }}
+                                                            <span class="ml-1 text-teal-600">[{{ $ind->kode_indikator }}]</span>
                                                         </span>
                                                     </div>
-                                                @endforeach
-                                            </div>
+                                                    @if($ind->subAspek)
+                                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">
+                                                            {{ $ind->subAspek->kode_sub_aspek }}
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            @endforeach
                                         </div>
-                                    @endif
+                                    </div>
                                 </div>
                             </div>
                         @endif
@@ -124,21 +146,21 @@
         </div>
 
         {{-- Tabel Penilaian --}}
-        @if ($selectedKelas && $selectedAspek && $siswaList->count() > 0 && $indikatorList->count() > 0)
+        @if ($selectedKelas && $selectedAspek && $selectedKelompokUsia && $siswaList->count() > 0 && $indikatorList->count() > 0)
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
                 <div class="bg-gray-100 px-6 py-4 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-bold text-gray-800 flex items-center">
                             <i class="fas fa-chart-line text-teal-500 mr-2"></i>
-                            Hasil Penilaian (Sistem Checkbox)
+                            Hasil Penilaian - {{ $kelompokUsiaOptions[$selectedKelompokUsia] }}
                         </h3>
-                        {{-- <button wire:click="simpanNilai" wire:loading.attr="disabled"
-                            class="px-4 py-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white rounded-lg hover:from-teal-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-200 flex items-center disabled:opacity-50">
-                            <i wire:loading.remove wire:target="simpanNilai" class="fas fa-save mr-2"></i>
-                            <i wire:loading wire:target="simpanNilai" class="fas fa-spinner fa-spin mr-2"></i>
-                            <span wire:loading.remove wire:target="simpanNilai">Simpan Semua</span>
-                            <span wire:loading wire:target="simpanNilai">Menyimpan...</span>
-                        </button> --}}
+                        <div class="flex items-center space-x-4">
+                            <div class="text-sm text-gray-600">
+                                <span class="font-medium">Legend:</span>
+                                <span class="ml-2 px-2 py-1 bg-green-100 text-green-800 rounded text-xs">✓ BSH (Tercapai)</span>
+                                <span class="ml-1 px-2 py-1 bg-red-100 text-red-800 rounded text-xs">✗ BB (Belum)</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="overflow-x-auto">
@@ -154,8 +176,8 @@
                                     Nama<br>Siswa
                                 </th>
                                 <th rowspan="2"
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-r-2 border-gray-300 min-w-[250px]">
-                                    Indikator (Bobot)
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border-r-2 border-gray-300 min-w-[300px]">
+                                    Indikator Penilaian
                                 </th>
                                 <th colspan="20"
                                     class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider border-r-2 border-gray-300">
@@ -163,7 +185,7 @@
                                 </th>
                                 <th rowspan="2"
                                     class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
-                                    Rata-<br>rata
+                                    Pencapaian
                                 </th>
                             </tr>
                             <tr class="bg-gradient-to-r from-gray-100 to-gray-200">
@@ -178,8 +200,7 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach ($siswaList as $index => $siswa)
                                 @foreach ($indikatorList as $indIndex => $indikator)
-                                    <tr
-                                        class="hover:bg-gray-50 {{ $indIndex == 0 ? 'border-t-2 border-gray-400' : '' }}">
+                                    <tr class="hover:bg-gray-50 {{ $indIndex == 0 ? 'border-t-2 border-gray-400' : '' }}">
                                         @if ($indIndex == 0)
                                             <td rowspan="{{ $indikatorList->count() }}"
                                                 class="sticky left-0 z-10 bg-white px-4 py-3 text-center text-sm font-medium text-gray-900 border-r-2 border-gray-300">
@@ -192,24 +213,35 @@
                                             </td>
                                         @endif
                                         <td class="px-4 py-3 text-sm text-gray-700 border-r-2 border-gray-300">
-                                            <div class="flex items-center justify-between">
-                                                <span>{{ $indikator->nama_indikator }}</span>
-                                                <span
-                                                    class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold ml-2">
-                                                    <i class="fas fa-weight-hanging mr-1"></i>{{ $indikator->bobot }}
-                                                </span>
+                                            <div class="flex flex-col">
+                                                <div class="flex items-start justify-between">
+                                                    <span class="font-medium">{{ $indikator->deskripsi_indikator }}</span>
+                                                    <div class="flex items-center ml-2 space-x-1">
+                                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">
+                                                            {{ $indikator->kode_indikator }}
+                                                        </span>
+                                                        @if($indikator->subAspek)
+                                                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold">
+                                                                {{ $indikator->subAspek->kode_sub_aspek }}
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                @if($indikator->subAspek)
+                                                    <small class="text-gray-500 mt-1">{{ $indikator->subAspek->nama_sub_aspek }}</small>
+                                                @endif
                                             </div>
                                         </td>
                                         @for ($minggu = 1; $minggu <= 20; $minggu++)
                                             <td class="px-1 py-1 border-r border-gray-300">
                                                 <div class="relative group flex justify-center">
                                                     <input type="checkbox"
-                                                        {{ isset($nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu]) && $nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] ? 'checked' : '' }}
-                                                        wire:click="toggleNilai({{ $siswa->id_akunsiswa }}, {{ $indikator->id }}, {{ $minggu }})"
+                                                        {{ isset($nilaiData[$siswa->id_akunsiswa][$indikator->id_indikator][$minggu]) && $nilaiData[$siswa->id_akunsiswa][$indikator->id_indikator][$minggu] ? 'checked' : '' }}
+                                                        wire:click="toggleNilai({{ $siswa->id_akunsiswa }}, {{ $indikator->id_indikator }}, {{ $minggu }})"
                                                         class="w-5 h-5 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 focus:ring-2 transition duration-200 cursor-pointer
-                {{ isset($nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu]) && $nilaiData[$siswa->id_akunsiswa][$indikator->id][$minggu] ? 'bg-teal-100 border-teal-500' : 'hover:bg-gray-50' }}">
+                                {{ isset($nilaiData[$siswa->id_akunsiswa][$indikator->id_indikator][$minggu]) && $nilaiData[$siswa->id_akunsiswa][$indikator->id_indikator][$minggu] ? 'bg-teal-100 border-teal-500' : 'hover:bg-gray-50' }}">
 
-                                                    @if (session()->has('saved_' . $siswa->id_akunsiswa . '_' . $indikator->id . '_' . $minggu))
+                                                    @if (session()->has('saved_' . $siswa->id_akunsiswa . '_' . $indikator->id_indikator . '_' . $minggu))
                                                         <div
                                                             class="absolute -top-6 left-1/2 transform -translate-x-1/2 z-20">
                                                             <span
@@ -225,38 +257,32 @@
                                             <td rowspan="{{ $indikatorList->count() }}"
                                                 class="px-4 py-3 text-center text-sm font-bold">
                                                 @php
-                                                    $totalNilai = 0;
-                                                    $countNilai = 0;
+                                                    $totalChecked = 0;
+                                                    $totalPossible = 0;
                                                     foreach ($indikatorList as $ind) {
                                                         for ($m = 1; $m <= 20; $m++) {
-                                                            if (
-                                                                isset($nilaiData[$siswa->id_akunsiswa][$ind->id][$m]) &&
-                                                                $nilaiData[$siswa->id_akunsiswa][$ind->id][$m] === true
-                                                            ) {
-                                                                $totalNilai += $ind->bobot;
-                                                                $countNilai++;
-                                                            } elseif (
-                                                                isset($nilaiData[$siswa->id_akunsiswa][$ind->id][$m])
-                                                            ) {
-                                                                // Hitung juga yang tidak dicentang untuk pembagi
-                                                                $countNilai++;
+                                                            if (isset($nilaiData[$siswa->id_akunsiswa][$ind->id_indikator][$m])) {
+                                                                $totalPossible++;
+                                                                if ($nilaiData[$siswa->id_akunsiswa][$ind->id_indikator][$m] === true) {
+                                                                    $totalChecked++;
+                                                                }
                                                             }
                                                         }
                                                     }
-                                                    $rataRata = $countNilai > 0 ? $totalNilai / $countNilai : 0;
+                                                    $percentage = $totalPossible > 0 ? ($totalChecked / $totalPossible) * 100 : 0;
                                                 @endphp
-                                                @if ($rataRata > 0)
+                                                @if ($percentage > 0)
                                                     <span
                                                         class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                                                        {{ $rataRata >= 3.5
+                                                        {{ $percentage >= 80
                                                             ? 'bg-green-100 text-green-800'
-                                                            : ($rataRata >= 2.5
+                                                            : ($percentage >= 60
                                                                 ? 'bg-blue-100 text-blue-800'
-                                                                : ($rataRata >= 1.5
+                                                                : ($percentage >= 40
                                                                     ? 'bg-yellow-100 text-yellow-800'
                                                                     : 'bg-red-100 text-red-800')) }}">
-                                                        <i class="fas fa-calculator mr-1"></i>
-                                                        {{ number_format($rataRata, 2) }}
+                                                        <i class="fas fa-chart-pie mr-1"></i>
+                                                        {{ number_format($percentage, 1) }}%
                                                     </span>
                                                 @else
                                                     <span class="text-gray-400">
@@ -278,11 +304,11 @@
                             <div class="text-sm text-gray-600">
                                 <p class="flex items-center mb-2">
                                     <i class="fas fa-check-square text-green-500 mr-2"></i>
-                                    Centang checkbox jika indikator tercapai
+                                    Centang checkbox jika indikator tercapai (BSH)
                                 </p>
                                 <p class="flex items-center">
                                     <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-                                    Nilai otomatis tersimpan berdasarkan bobot indikator
+                                    Nilai otomatis tersimpan: ✓ = BSH, ✗ = BB
                                 </p>
                             </div>
                         </div>
@@ -292,21 +318,23 @@
                                         class="font-semibold">{{ $siswaList->count() }}</span></p>
                                 <p><i class="fas fa-list-ul mr-1"></i>Total Indikator: <span
                                         class="font-semibold">{{ $indikatorList->count() }}</span></p>
+                                <p><i class="fas fa-layer-group mr-1"></i>Kelompok Usia: <span
+                                        class="font-semibold">{{ $kelompokUsiaOptions[$selectedKelompokUsia] }}</span></p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        @elseif($selectedKelas && $selectedAspek)
+        @elseif($selectedKelas && $selectedAspek && $selectedKelompokUsia)
             <div class="bg-white rounded-2xl shadow-xl p-8 text-center">
                 <i class="fas fa-file-alt text-gray-300 text-8xl mb-4"></i>
                 <p class="text-gray-500 text-lg">
                     @if ($siswaList->count() == 0)
                         <i class="fas fa-user-times mr-2"></i>Tidak ada siswa di kelas ini.
                     @elseif($indikatorList->count() == 0)
-                        <i class="fas fa-list-alt mr-2"></i>Tidak ada indikator untuk aspek ini.
+                        <i class="fas fa-list-alt mr-2"></i>Tidak ada indikator untuk aspek dan kelompok usia ini.
                     @else
-                        Silakan pilih kelas dan aspek penilaian.
+                        Data tidak tersedia.
                     @endif
                 </p>
             </div>
@@ -317,8 +345,12 @@
                     <h3 class="text-xl font-semibold text-gray-700 mb-2">
                         <i class="fas fa-play-circle mr-2"></i>Mulai Penilaian
                     </h3>
-                    <p class="text-gray-500">Silakan pilih kelas dan aspek penilaian untuk memulai input nilai siswa
-                        dengan sistem checkbox</p>
+                    <p class="text-gray-500">Silakan pilih kelas, aspek penilaian, dan kelompok usia untuk memulai input nilai siswa dengan sistem checkbox</p>
+                    <div class="mt-4 text-sm text-gray-400">
+                        <p>📋 Sistem penilaian berbasis indikator</p>
+                        <p>👥 Sesuai kelompok usia anak</p>
+                        <p>💾 Auto-save setiap perubahan</p>
+                    </div>
                 </div>
             </div>
         @endif

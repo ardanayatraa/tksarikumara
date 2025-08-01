@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Carbon\Carbon;
 
 class Penilaian extends Model
 {
-    protected $table = 'penilaian';
+    use HasFactory;
 
+    protected $table = 'penilaian';
     protected $primaryKey = 'id_penilaian';
 
     protected $fillable = [
@@ -17,33 +18,73 @@ class Penilaian extends Model
         'id_guru',
         'id_kelas',
         'tgl_penilaian',
-        'minggu_ke',
-        'semester',
-        'tahun_ajaran',
+        'kelompok_usia_siswa',
+        'status',
+        'catatan_umum'
     ];
 
-    public function akunSiswa(): BelongsTo
+    protected $casts = [
+        'tgl_penilaian' => 'date'
+    ];
+
+    // Relasi ke NilaiSiswa
+    public function nilaiSiswa()
     {
-        return $this->belongsTo(AkunSiswa::class, 'id_akunsiswa', 'id_akunsiswa');
+        return $this->hasMany(NilaiSiswa::class, 'penilaian_id', 'id_penilaian');
     }
 
-    public function guru(): BelongsTo
+    // Relasi ke Guru (sesuaikan dengan model yang ada)
+    public function guru()
     {
         return $this->belongsTo(Guru::class, 'id_guru', 'id_guru');
     }
 
-    public function kelas(): BelongsTo
+    // Relasi ke Kelas (sesuaikan dengan model yang ada)
+    public function kelas()
     {
         return $this->belongsTo(Kelas::class, 'id_kelas', 'id_kelas');
     }
 
-    public function nilaiSiswa(): HasMany
+    // Method untuk mendapatkan total skor
+    public function getTotalSkorAttribute()
     {
-        return $this->hasMany(NilaiSiswa::class, 'id_penilaian', 'id_penilaian');
+        return $this->nilaiSiswa->sum('skor');
     }
 
-    public function notifikasi(): HasMany
+    // Method untuk mendapatkan rata-rata skor
+    public function getRataSkorAttribute()
     {
-        return $this->hasMany(Notifikasi::class, 'id_penilaian', 'id_penilaian');
+        $nilaiSiswa = $this->nilaiSiswa;
+        return $nilaiSiswa->count() > 0 ? $nilaiSiswa->avg('skor') : 0;
+    }
+
+    // Method untuk mendapatkan jumlah indikator
+    public function getJumlahIndikatorAttribute()
+    {
+        return $this->nilaiSiswa->count();
+    }
+
+    // Scope untuk status
+    public function scopeStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    // Scope untuk kelompok usia
+    public function scopeKelompokUsia($query, $usia)
+    {
+        return $query->where('kelompok_usia_siswa', $usia);
+    }
+
+    // Method untuk finalisasi penilaian
+    public function finalisasi()
+    {
+        $this->update(['status' => 'final']);
+    }
+
+    // Method untuk kembalikan ke draft
+    public function kembalikanKeDraft()
+    {
+        $this->update(['status' => 'draft']);
     }
 }

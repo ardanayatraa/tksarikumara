@@ -5,6 +5,7 @@ namespace App\Livewire\Table;
 use App\Models\AspekPenilaian;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use Rappasoft\LaravelLivewireTables\Views\Columns\BooleanColumn;
 
 class AspekTable extends DataTableComponent
 {
@@ -22,7 +23,10 @@ class AspekTable extends DataTableComponent
             Column::make('ID', 'id_aspek')->sortable(),
             Column::make('Kode Aspek', 'kode_aspek')->searchable()->sortable(),
             Column::make('Nama Aspek', 'nama_aspek')->searchable()->sortable(),
-            Column::make('Kategori', 'kategori')->searchable()->sortable(),
+            Column::make('Sub Aspek', 'has_sub_aspek')
+                ->label(fn ($row) => $row->has_sub_aspek ? 'Ya' : 'Tidak')
+                ->sortable(),
+                  BooleanColumn::make('Status', 'is_active'),
 
             Column::make('Aksi')
                 ->label(fn ($row) => view('components.table-action', [

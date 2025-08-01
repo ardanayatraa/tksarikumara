@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Livewire\AspekPenilaian;
+// File: app/Livewire/Indikator/Update.php
+namespace App\Livewire\Indikator;
 
 use Livewire\Component;
 use App\Models\AspekPenilaian;
@@ -14,32 +15,30 @@ class Update extends Component
     public $id;
     public $aspek_id;
     public $sub_aspek_id;
-    public $rentang;
+    public $kelompok_usia;
     public $kode_indikator;
-    public $nama_indikator;
-    public $bobot;
+    public $deskripsi_indikator;
 
     public $aspeks = [];
     public $subAspeks = [];
     public $suggestedCodes = [];
-    public $ranges = [
+    public $kelompokUsiaOptions = [
         '2-3_tahun' => '2–3 Tahun',
         '3-4_tahun' => '3–4 Tahun',
         '4-5_tahun' => '4–5 Tahun',
         '5-6_tahun' => '5–6 Tahun',
     ];
 
-    protected $listeners = ['editIndikatorAspek'];
+    protected $listeners = ['editIndikator'];
 
     protected function rules()
     {
         return [
-            'aspek_id'        => 'required|exists:aspek_penilaian,id_aspek',
-            'sub_aspek_id'    => 'nullable|exists:sub_aspek,id_sub_aspek',
-            'rentang'         => 'required|in:2-3_tahun,3-4_tahun,4-5_tahun,5-6_tahun',
-            'kode_indikator'  => 'required|string',
-            'nama_indikator'  => 'required|string',
-            'bobot'           => 'required|integer|min:1|max:10',
+            'aspek_id'              => 'required|exists:aspek_penilaian,id_aspek',
+            'sub_aspek_id'          => 'nullable|exists:sub_aspek,id_sub_aspek',
+            'kelompok_usia'         => 'required|in:2-3_tahun,3-4_tahun,4-5_tahun,5-6_tahun',
+            'kode_indikator'        => 'required|string',
+            'deskripsi_indikator'   => 'required|string',
         ];
     }
 
@@ -48,22 +47,18 @@ class Update extends Component
         $this->aspeks = AspekPenilaian::where('is_active', true)->orderBy('kode_aspek')->get();
     }
 
-    public function editIndikatorAspek($id)
+    public function editIndikator($id)
     {
         $indikator = Indikator::with(['aspekPenilaian', 'subAspek'])->findOrFail($id);
 
-        $this->id             = $indikator->id_indikator;
-        $this->aspek_id       = $indikator->aspek_id;
-        $this->sub_aspek_id   = $indikator->sub_aspek_id;
-        $this->rentang        = $indikator->kelompok_usia;
-        $this->kode_indikator = $indikator->kode_indikator;
-        $this->nama_indikator = $indikator->deskripsi_indikator;
-        $this->bobot          = 5; // Default bobot jika tidak ada di model
+        $this->id                   = $indikator->id_indikator;
+        $this->aspek_id             = $indikator->aspek_id;
+        $this->sub_aspek_id         = $indikator->sub_aspek_id;
+        $this->kelompok_usia        = $indikator->kelompok_usia;
+        $this->kode_indikator       = $indikator->kode_indikator;
+        $this->deskripsi_indikator  = $indikator->deskripsi_indikator;
 
-        // Load sub aspek jika aspek memiliki sub aspek
         $this->loadSubAspeks($this->aspek_id);
-
-        // Generate suggested codes
         $this->generateSuggestedCodes($this->aspek_id, $this->sub_aspek_id);
 
         $this->open = true;
@@ -95,7 +90,7 @@ class Update extends Component
         }
     }
 
-    public function updatedRentang($value)
+    public function updatedKelompokUsia($value)
     {
         if ($this->aspek_id) {
             $this->generateSuggestedCodes($this->aspek_id, $this->sub_aspek_id);
@@ -122,26 +117,23 @@ class Update extends Component
     {
         $this->suggestedCodes = [];
 
-        if (!$aspekId || !$this->rentang) return;
+        if (!$aspekId || !$this->kelompok_usia) return;
 
         $aspek = AspekPenilaian::findOrFail($aspekId);
         $prefix = $aspek->kode_aspek . '.';
 
-        // Jika ada sub aspek, tambahkan ke prefix
         if ($subAspekId) {
             $subAspek = SubAspek::findOrFail($subAspekId);
             $prefix .= $subAspek->kode_sub_aspek . '.';
         }
 
-        // Cari indikator yang sudah ada (kecuali yang sedang diedit)
         $existing = Indikator::where('aspek_id', $aspekId)
             ->where('sub_aspek_id', $subAspekId)
-            ->where('kelompok_usia', $this->rentang)
-            ->where('id_indikator', '!=', $this->id) // Exclude current record
+            ->where('kelompok_usia', $this->kelompok_usia)
+            ->where('id_indikator', '!=', $this->id)
             ->pluck('kode_indikator')
             ->toArray();
 
-        // Generate nomor urut yang tersedia
         $numbers = range(1, 20);
         $existingNumbers = [];
 
@@ -155,7 +147,6 @@ class Update extends Component
         $available = array_diff($numbers, $existingNumbers);
         $this->suggestedCodes = array_map(fn($n) => $prefix . $n, array_slice($available, 0, 5));
 
-        // Jika kode saat ini tidak dalam suggested codes, tetap tampilkan sebagai opsi
         if ($this->kode_indikator && !in_array($this->kode_indikator, $this->suggestedCodes)) {
             array_unshift($this->suggestedCodes, $this->kode_indikator);
         }
@@ -165,11 +156,10 @@ class Update extends Component
     {
         $this->validate();
 
-        // Validasi unique (kecuali record yang sedang diedit)
         $exists = Indikator::where('aspek_id', $this->aspek_id)
             ->where('sub_aspek_id', $this->sub_aspek_id)
             ->where('kode_indikator', $this->kode_indikator)
-            ->where('kelompok_usia', $this->rentang)
+            ->where('kelompok_usia', $this->kelompok_usia)
             ->where('id_indikator', '!=', $this->id)
             ->exists();
 
@@ -182,14 +172,13 @@ class Update extends Component
             'aspek_id'              => $this->aspek_id,
             'sub_aspek_id'          => $this->sub_aspek_id,
             'kode_indikator'        => $this->kode_indikator,
-            'deskripsi_indikator'   => $this->nama_indikator,
-            'kelompok_usia'         => $this->rentang,
+            'deskripsi_indikator'   => $this->deskripsi_indikator,
+            'kelompok_usia'         => $this->kelompok_usia,
         ]);
 
         $this->reset([
-            'open', 'id', 'aspek_id', 'sub_aspek_id', 'rentang',
-            'kode_indikator', 'nama_indikator',
-            'bobot', 'suggestedCodes', 'subAspeks'
+            'open', 'id', 'aspek_id', 'sub_aspek_id', 'kelompok_usia',
+            'kode_indikator', 'deskripsi_indikator', 'suggestedCodes', 'subAspeks'
         ]);
 
         $this->dispatch('refreshDatatable');
@@ -199,6 +188,6 @@ class Update extends Component
 
     public function render()
     {
-        return view('livewire.aspek-penilaian.update');
+        return view('livewire.indikator.update');
     }
 }

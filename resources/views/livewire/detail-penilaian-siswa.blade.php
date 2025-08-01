@@ -146,18 +146,18 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         @php $no = 1; @endphp
                         @foreach ($aspekList as $aspek)
-                            @foreach ($aspek->indikator as $indIndex => $indikator)
+                            @foreach ($aspek->indikatorAktif as $indIndex => $indikator)
                                 <tr class="hover:bg-gray-50 {{ $indIndex == 0 ? 'border-t-2 border-gray-600' : '' }}">
                                     @if ($indIndex == 0)
-                                        <td rowspan="{{ $aspek->indikator->count() }}"
+                                        <td rowspan="{{ $aspek->indikatorAktif->count() }}"
                                             class="px-4 py-3 text-center text-sm font-medium text-gray-900 border-r border-gray-300">
                                             {{ $no++ }}
                                         </td>
-                                        <td rowspan="{{ $aspek->indikator->count() }}"
+                                        <td rowspan="{{ $aspek->indikatorAktif->count() }}"
                                             class="px-4 py-3 text-center text-sm font-medium text-gray-900 border-r border-gray-300">
                                             {{ $aspek->kode_aspek }}
                                         </td>
-                                        <td rowspan="{{ $aspek->indikator->count() }}"
+                                        <td rowspan="{{ $aspek->indikatorAktif->count() }}"
                                             class="px-4 py-3 text-sm font-medium text-gray-900 border-r border-gray-300">
                                             {{ $aspek->nama_aspek }}
                                         </td>
@@ -166,7 +166,7 @@
                                     <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-300">
                                         <div class="flex items-start">
                                             <span class="mr-2">•</span>
-                                            <span>{{ $indikator->nama_indikator }}
+                                            <span>{{ $indikator->deskripsi_indikator }}
                                                 [{{ $indikator->kode_indikator }}]</span>
                                         </div>
                                     </td>
@@ -177,19 +177,11 @@
                                                 {{-- Mode Edit --}}
                                                 <div class="relative group">
                                                     <select
-                                                        wire:model="nilaiData.{{ $indikator->id }}.{{ $minggu }}"
-                                                        wire:change="updateNilai({{ $indikator->id }}, {{ $minggu }}, $event.target.value)"
+                                                        wire:model="nilaiData.{{ $indikator->id_indikator }}.{{ $minggu }}"
+                                                        wire:change="updateNilai({{ $indikator->id_indikator }}, {{ $minggu }}, $event.target.value)"
                                                         class="w-full px-1 py-1 text-sm text-center border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 transition duration-200
-                                            {{ isset($nilaiData[$indikator->id][$minggu])
-                                                ? ($nilaiData[$indikator->id][$minggu] == '4'
-                                                    ? 'bg-green-100 text-green-800 font-semibold'
-                                                    : ($nilaiData[$indikator->id][$minggu] == '3'
-                                                        ? 'bg-blue-100 text-blue-800 font-semibold'
-                                                        : ($nilaiData[$indikator->id][$minggu] == '2'
-                                                            ? 'bg-yellow-100 text-yellow-800 font-semibold'
-                                                            : ($nilaiData[$indikator->id][$minggu] == '1'
-                                                                ? 'bg-red-100 text-red-800 font-semibold'
-                                                                : 'bg-white'))))
+                                            {{ isset($nilaiData[$indikator->id_indikator][$minggu])
+                                                ? $this->getNilaiClass($nilaiData[$indikator->id_indikator][$minggu])
                                                 : 'bg-white hover:bg-gray-50' }}">
                                                         <option value="">-</option>
                                                         <option value="1">1</option>
@@ -198,7 +190,7 @@
                                                         <option value="4">4</option>
                                                     </select>
 
-                                                    @if (session()->has('saved_' . $indikator->id . '_' . $minggu))
+                                                    @if (session()->has('saved_' . $indikator->id_indikator . '_' . $minggu))
                                                         <div
                                                             class="absolute -top-6 left-1/2 transform -translate-x-1/2 z-20">
                                                             <span
@@ -208,19 +200,10 @@
                                                 </div>
                                             @else
                                                 {{-- Mode View Only --}}
-                                                @if (isset($nilaiData[$indikator->id][$minggu]))
-                                                    @php $nilai = $nilaiData[$indikator->id][$minggu]; @endphp
+                                                @if (isset($nilaiData[$indikator->id_indikator][$minggu]))
+                                                    @php $nilai = $nilaiData[$indikator->id_indikator][$minggu]; @endphp
                                                     <div
-                                                        class="w-full h-full py-1 text-sm text-center rounded
-                                            {{ $nilai == '4'
-                                                ? 'bg-green-100 text-green-800 font-semibold'
-                                                : ($nilai == '3'
-                                                    ? 'bg-blue-100 text-blue-800 font-semibold'
-                                                    : ($nilai == '2'
-                                                        ? 'bg-yellow-100 text-yellow-800 font-semibold'
-                                                        : ($nilai == '1'
-                                                            ? 'bg-red-100 text-red-800 font-semibold'
-                                                            : ''))) }}">
+                                                        class="w-full h-full py-1 text-sm text-center rounded {{ $this->getNilaiClass($nilai) }}">
                                                         {{ $nilai }}
                                                     </div>
                                                 @else
@@ -233,36 +216,14 @@
                                     @endfor
 
                                     @if ($indIndex == 0)
-                                        <td rowspan="{{ $aspek->indikator->count() }}"
+                                        <td rowspan="{{ $aspek->indikatorAktif->count() }}"
                                             class="px-4 py-3 text-center text-sm font-bold border-l-2 border-gray-400">
                                             @php
-                                                $totalNilaiAspek = 0;
-                                                $hasNilai = false;
-
-                                                // Hitung total nilai untuk semua indikator dalam aspek ini
-                                                foreach ($aspek->indikator as $ind) {
-                                                    for ($m = 1; $m <= 20; $m++) {
-                                                        if (
-                                                            isset($nilaiData[$ind->id][$m]) &&
-                                                            !empty($nilaiData[$ind->id][$m])
-                                                        ) {
-                                                            $nilai = $nilaiData[$ind->id][$m];
-                                                            $totalNilaiAspek += (int) $nilai;
-                                                            $hasNilai = true;
-                                                        }
-                                                    }
-                                                }
+                                                $totalNilaiAspek = $this->getTotalNilaiAspek($aspek);
                                             @endphp
-                                            @if ($hasNilai)
+                                            @if ($totalNilaiAspek)
                                                 <span
-                                                    class="inline-flex items-center justify-center min-w-[60px] px-3 py-2 rounded-lg text-lg font-bold
-                                            {{ $totalNilaiAspek >= 240
-                                                ? 'bg-green-100 text-green-800 border-2 border-green-300'
-                                                : ($totalNilaiAspek >= 160
-                                                    ? 'bg-blue-100 text-blue-800 border-2 border-blue-300'
-                                                    : ($totalNilaiAspek >= 80
-                                                        ? 'bg-yellow-100 text-yellow-800 border-2 border-yellow-300'
-                                                        : 'bg-red-100 text-red-800 border-2 border-red-300')) }}">
+                                                    class="inline-flex items-center justify-center min-w-[60px] px-3 py-2 rounded-lg text-lg font-bold {{ $this->getTotalNilaiClass($totalNilaiAspek) }}">
                                                     {{ $totalNilaiAspek }}
                                                 </span>
                                             @else

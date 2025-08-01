@@ -6,7 +6,8 @@ use Illuminate\Database\Seeder;
 use App\Models\AkunSiswa;
 use App\Models\Penilaian;
 use App\Models\NilaiSiswa;
-use App\Models\IndikatorAspek;
+use App\Models\Indikator;
+use App\Models\AspekPenilaian;
 use Carbon\Carbon;
 
 class DetailPenilaianSeeder extends Seeder
@@ -21,6 +22,11 @@ class DetailPenilaianSeeder extends Seeder
         ];
 
         $students = AkunSiswa::all();
+
+        if ($students->isEmpty()) {
+            echo "No students found. Please run student seeder first.\n";
+            return;
+        }
 
         // Assign profiles to students
         $profiledStudents = [];
@@ -41,44 +47,99 @@ class DetailPenilaianSeeder extends Seeder
             }
         }
 
-        // Update existing assessments with more realistic data
-        $penilaianRecords = Penilaian::with(['nilaiSiswa', 'akunSiswa'])->get();
+        // Get all active indicators
+        $indikators = Indikator::aktif()->get();
 
-        foreach ($penilaianRecords as $penilaian) {
-            $studentProfile = $profiledStudents[$penilaian->id_akunsiswa];
-            $week = $penilaian->minggu_ke;
-            $studentAge = Carbon::parse($penilaian->akunSiswa->tgl_lahir)->age;
+        if ($indikators->isEmpty()) {
+            echo "No active indicators found. Please create indicators first.\n";
+            return;
+        }
 
-            foreach ($penilaian->nilaiSiswa as $nilai) {
-                // Update score based on student profile and week
-                $newScore = $this->calculateRealisticScore(
-                    $studentProfile,
-                    $week,
-                    $studentAge,
-                    $nilai->indikator->aspek->kode_aspek
-                );
+        $tahunAjaran = date('Y') . '/' . (date('Y') + 1);
+        $semester = 1;
 
-                $scoreKey = $this->getScoreKey($newScore);
-                $scoreData = $this->getNilaiKriteria()[$scoreKey];
+        // Create assessments for each student
+        foreach ($students as $student) {
+            $studentProfile = $profiledStudents[$student->id_akunsiswa];
+            $studentAge = $student->tgl_lahir ? Carbon::parse($student->tgl_lahir)->age : 3;
 
-                // Generate detailed, contextual notes
-                $catatan = $this->generateDetailedNote(
-                    $studentProfile,
-                    $scoreKey,
-                    $week,
-                    $nilai->indikator->nama_indikator,
-                    $penilaian->akunSiswa->namaSiswa
-                );
+            // Determine appropriate age group for indicators
+            $kelompokUsia = $studentAge >= 3 ? '3-4_tahun' : '2-3_tahun';
 
-                $nilai->update([
-                    'nilai' => $scoreData['nilai'],
-                    'skor' => $scoreData['skor'],
-                    'catatan' => $catatan,
+            // Filter indicators by age group
+            $ageAppropriateIndicators = $indikators->where('kelompok_usia', $kelompokUsia);
+
+            if ($ageAppropriateIndicators->isEmpty()) {
+                // If no age-specific indicators, use all indicators
+                $ageAppropriateIndicators = $indikators;
+            }
+
+            // Create assessments for 20 weeks
+            for ($week = 1; $week <= 20; $week++) {
+                // Create or get assessment record
+                $penilaian = Penilaian::firstOrCreate([
+                    'id_akunsiswa' => $student->id_akunsiswa,
+                    'id_kelas' => $student->id_kelas,
+                    'minggu_ke' => $week,
+                    'tahun_ajaran' => $tahunAjaran,
+                    'semester' => $semester,
+                ], [
+                    'id_guru' => 1, // Assuming first guru ID, adjust as needed
+                    'tgl_penilaian' => Carbon::now()->subWeeks(20 - $week),
+                    'kelompok_usia_siswa' => $kelompokUsia,
+                    'status' => 'draft',
+                    'catatan_umum' => $this->generateWeeklyNote($studentProfile, $week)
                 ]);
+
+                // Create nilai for each indicator
+                foreach ($ageAppropriateIndicators as $indikator) {
+                    $existingNilai = NilaiSiswa::where('penilaian_id', $penilaian->id_penilaian)
+                        ->where('indikator_id', $indikator->id_indikator)
+                        ->first();
+
+                    if (!$existingNilai) {
+                        // Calculate realistic score
+                        $newScore = $this->calculateRealisticScore(
+                            $studentProfile,
+                            $week,
+                            $studentAge,
+                            $indikator->aspekPenilaian->kode_aspek
+                        );
+
+                        $scoreKey = $this->getScoreKey($newScore);
+                        $scoreData = $this->getNilaiKriteria()[$scoreKey];
+
+                        // Generate detailed, contextual notes
+                        $catatan = $this->generateDetailedNote(
+                            $studentProfile,
+                            $scoreKey,
+                            $week,
+                            $indikator->deskripsi_indikator,
+                            $student->namaSiswa
+                        );
+
+                        NilaiSiswa::create([
+                            'penilaian_id' => $penilaian->id_penilaian,
+                            'indikator_id' => $indikator->id_indikator,
+                            'nilai' => $scoreData['nilai'],
+                            'skor' => $scoreData['skor'],
+                            'catatan' => $catatan,
+                        ]);
+                    }
+                }
+
+                // Randomly finalize some assessments (70% chance for weeks 1-15)
+                if ($week <= 15 && rand(1, 100) <= 70) {
+                    $penilaian->update(['status' => 'final']);
+                }
             }
         }
 
-        echo "Detailed assessment data updated successfully!\n";
+        echo "Detailed assessment data created successfully!\n";
+        echo "Total students processed: " . $students->count() . "\n";
+        echo "Total indicators used: " . $indikators->count() . "\n";
+        echo "Assessment weeks: 20\n";
+        echo "Academic year: " . $tahunAjaran . "\n";
     }
 
     private function calculateRealisticScore($profile, $week, $age, $aspekKode): int
@@ -92,7 +153,7 @@ class DetailPenilaianSeeder extends Seeder
 
         $baseScore = $profileBases[$profile];
 
-        // Age adjustment
+        // Age adjustment (older children tend to score higher)
         $ageBonus = ($age - 2) * 0.2;
 
         // Weekly progression (different rates by profile)
@@ -107,23 +168,42 @@ class DetailPenilaianSeeder extends Seeder
         // Aspect-specific adjustments
         $aspekAdjustment = $this->getAspekAdjustment($aspekKode, $profile);
 
-        // Add realistic variation
+        // Add realistic variation (some randomness)
         $variation = (rand(-8, 12) / 100);
 
-        $finalScore = $baseScore + $ageBonus + $weeklyProgress + $aspekAdjustment + $variation;
+        // Seasonal adjustment (children often perform better mid-semester)
+        $seasonalBonus = 0;
+        if ($week >= 8 && $week <= 12) {
+            $seasonalBonus = 0.1;
+        } elseif ($week >= 16 && $week <= 18) {
+            $seasonalBonus = 0.15; // End of semester boost
+        }
+
+        $finalScore = $baseScore + $ageBonus + $weeklyProgress + $aspekAdjustment + $variation + $seasonalBonus;
 
         return max(1, min(4, round($finalScore)));
     }
 
     private function getAspekAdjustment($aspekKode, $profile): float
     {
+        // Aspect adjustments based on typical development patterns
         $adjustments = [
             'advanced' => [
-                'I' => 0.3, 'II.A' => 0.4, 'II.B' => 0.3, 'II.C' => 0.2,
-                'III.A' => 0.5, 'III.B' => 0.4, 'III.C' => 0.3,
-                'IV.A' => 0.4, 'IV.B' => 0.5,
-                'V.A' => 0.3, 'V.B' => 0.2, 'V.C' => 0.3,
-                'VI.A' => 0.3, 'VI.B' => 0.4, 'VI.C' => 0.3
+                'I' => 0.3,     // Nilai Agama dan Moral
+                'II.A' => 0.4,  // Fisik Motorik - Motorik Kasar
+                'II.B' => 0.3,  // Fisik Motorik - Motorik Halus
+                'II.C' => 0.2,  // Fisik Motorik - Kesehatan
+                'III.A' => 0.5, // Kognitif - Pembelajaran
+                'III.B' => 0.4, // Kognitif - Berfikir Logis
+                'III.C' => 0.3, // Kognitif - Berfikir Simbolik
+                'IV.A' => 0.4,  // Bahasa - Memahami Bahasa
+                'IV.B' => 0.5,  // Bahasa - Mengungkapkan Bahasa
+                'V.A' => 0.3,   // Sosial Emosional - Kesadaran Diri
+                'V.B' => 0.2,   // Sosial Emosional - Rasa Tanggung Jawab
+                'V.C' => 0.3,   // Sosial Emosional - Perilaku Prososial
+                'VI.A' => 0.3,  // Seni - Eksplorasi
+                'VI.B' => 0.4,  // Seni - Ekspresi
+                'VI.C' => 0.3   // Seni - Apresiasi
             ],
             'typical' => [
                 'I' => 0.1, 'II.A' => 0.2, 'II.B' => 0.1, 'II.C' => 0.1,
@@ -144,28 +224,33 @@ class DetailPenilaianSeeder extends Seeder
         return $adjustments[$profile][$aspekKode] ?? 0;
     }
 
-    private function generateDetailedNote($profile, $scoreKey, $week, $indikatorName, $studentName): string
+    private function generateDetailedNote($profile, $scoreKey, $week, $indikatorDeskripsi, $studentName): string
     {
         $firstName = explode(' ', $studentName)[0];
 
+        // Shorten indicator description for readability
+        $shortIndicator = strlen($indikatorDeskripsi) > 50
+            ? substr($indikatorDeskripsi, 0, 47) . '...'
+            : $indikatorDeskripsi;
+
         $noteTemplates = [
             'advanced' => [
-                'BB' => "{$firstName} menunjukkan potensi baik dalam {$indikatorName}, namun perlu konsistensi lebih.",
-                'MB' => "{$firstName} berkembang dengan baik dalam {$indikatorName} dan menunjukkan antusiasme tinggi.",
-                'BSH' => "{$firstName} menguasai {$indikatorName} dengan sangat baik dan dapat membantu teman lain.",
-                'BSB' => "{$firstName} menunjukkan kemampuan luar biasa dalam {$indikatorName} dan menjadi contoh bagi teman-teman."
+                'BB' => "{$firstName} menunjukkan potensi baik dalam {$shortIndicator}, namun perlu konsistensi lebih.",
+                'MB' => "{$firstName} berkembang dengan baik dalam {$shortIndicator} dan menunjukkan antusiasme tinggi.",
+                'BSH' => "{$firstName} menguasai {$shortIndicator} dengan sangat baik dan dapat membantu teman lain.",
+                'BSB' => "{$firstName} menunjukkan kemampuan luar biasa dalam {$shortIndicator} dan menjadi contoh bagi teman-teman."
             ],
             'typical' => [
-                'BB' => "{$firstName} memerlukan bimbingan tambahan dalam {$indikatorName}.",
-                'MB' => "{$firstName} mulai menunjukkan kemajuan dalam {$indikatorName} dengan bimbingan guru.",
-                'BSH' => "{$firstName} dapat melakukan {$indikatorName} dengan baik sesuai tahapan usianya.",
-                'BSB' => "{$firstName} menunjukkan kemampuan yang baik dalam {$indikatorName}."
+                'BB' => "{$firstName} memerlukan bimbingan tambahan dalam {$shortIndicator}.",
+                'MB' => "{$firstName} mulai menunjukkan kemajuan dalam {$shortIndicator} dengan bimbingan guru.",
+                'BSH' => "{$firstName} dapat melakukan {$shortIndicator} dengan baik sesuai tahapan usianya.",
+                'BSB' => "{$firstName} menunjukkan kemampuan yang baik dalam {$shortIndicator}."
             ],
             'needs_support' => [
-                'BB' => "{$firstName} memerlukan perhatian khusus dan bimbingan intensif dalam {$indikatorName}.",
-                'MB' => "{$firstName} menunjukkan kemajuan kecil dalam {$indikatorName} dengan dukungan ekstra.",
-                'BSH' => "{$firstName} berhasil mencapai kemajuan yang baik dalam {$indikatorName} dengan bantuan.",
-                'BSB' => "{$firstName} menunjukkan kemajuan menggembirakan dalam {$indikatorName}."
+                'BB' => "{$firstName} memerlukan perhatian khusus dan bimbingan intensif dalam {$shortIndicator}.",
+                'MB' => "{$firstName} menunjukkan kemajuan kecil dalam {$shortIndicator} dengan dukungan ekstra.",
+                'BSH' => "{$firstName} berhasil mencapai kemajuan yang baik dalam {$shortIndicator} dengan bantuan.",
+                'BSB' => "{$firstName} menunjukkan kemajuan menggembirakan dalam {$shortIndicator}."
             ]
         ];
 
@@ -185,6 +270,45 @@ class DetailPenilaianSeeder extends Seeder
         return $baseNote;
     }
 
+    private function generateWeeklyNote($profile, $week): string
+    {
+        $weeklyNotes = [
+            'advanced' => [
+                1 => "Siswa menunjukkan adaptasi yang sangat baik di minggu pertama.",
+                5 => "Perkembangan konsisten terlihat di berbagai aspek.",
+                10 => "Kemampuan leadership mulai terlihat dalam aktivitas kelompok.",
+                15 => "Menunjukkan kemampuan yang melampaui ekspektasi usia.",
+                20 => "Siap untuk tantangan yang lebih kompleks."
+            ],
+            'typical' => [
+                1 => "Proses adaptasi berjalan normal sesuai usia.",
+                5 => "Mulai menunjukkan kemajuan yang stabil.",
+                10 => "Perkembangan sesuai dengan tahapan usia.",
+                15 => "Mencapai milestone perkembangan dengan baik.",
+                20 => "Menunjukkan kesiapan untuk tahap selanjutnya."
+            ],
+            'needs_support' => [
+                1 => "Memerlukan dukungan ekstra dalam proses adaptasi.",
+                5 => "Mulai menunjukkan kemajuan dengan bantuan intensif.",
+                10 => "Perkembangan lambat namun konsisten.",
+                15 => "Mencapai beberapa milestone dengan bantuan.",
+                20 => "Menunjukkan kemajuan yang menggembirakan."
+            ]
+        ];
+
+        // Find the closest week key
+        $availableWeeks = array_keys($weeklyNotes[$profile]);
+        $closestWeek = $availableWeeks[0];
+
+        foreach ($availableWeeks as $availableWeek) {
+            if ($week >= $availableWeek) {
+                $closestWeek = $availableWeek;
+            }
+        }
+
+        return $weeklyNotes[$profile][$closestWeek];
+    }
+
     private function getScoreKey($score): string
     {
         if ($score <= 1.5) return 'BB';
@@ -196,10 +320,10 @@ class DetailPenilaianSeeder extends Seeder
     private function getNilaiKriteria(): array
     {
         return [
-            'BB' => ['nilai' => 'BB', 'skor' => 1],
-            'MB' => ['nilai' => 'MB', 'skor' => 2],
-            'BSH' => ['nilai' => 'BSH', 'skor' => 3],
-            'BSB' => ['nilai' => 'BSB', 'skor' => 4]
+            'BB' => ['nilai' => 'BB', 'skor' => 1],   // Belum Berkembang
+            'MB' => ['nilai' => 'MB', 'skor' => 2],   // Mulai Berkembang
+            'BSH' => ['nilai' => 'BSH', 'skor' => 3], // Berkembang Sesuai Harapan
+            'BSB' => ['nilai' => 'BSB', 'skor' => 4]  // Berkembang Sangat Baik
         ];
     }
 }

@@ -8,23 +8,23 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('indikator_aspek', function (Blueprint $table) {
-            $table->id();
+        Schema::create('sub_aspek', function (Blueprint $table) {
+            $table->id('id_sub_aspek');
             $table->foreignId('aspek_id')
                   ->constrained('aspek_penilaian', 'id_aspek')
                   ->onDelete('cascade');
-            $table->string('kode_indikator');
-            $table->string('nama_indikator');
-            $table->unsignedTinyInteger('min_umur');
-            $table->unsignedTinyInteger('max_umur');
+            $table->string('kode_sub_aspek', 10);
+            $table->string('nama_sub_aspek');
+            $table->text('deskripsi')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
 
-            $table->unique(['aspek_id', 'kode_indikator']);
+            $table->unique(['aspek_id', 'kode_sub_aspek']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('indikator_aspek');
+        Schema::dropIfExists('sub_aspek');
     }
 };

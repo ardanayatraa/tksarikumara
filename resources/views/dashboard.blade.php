@@ -1,7 +1,4 @@
 <x-app-layout>
-    @php
-        $id = Auth::guard('siswa')->user()->id_akunsiswa;
-    @endphp
     <div class="min-h-screen bg-gray-50">
         <div class="w-full mx-auto px-4 py-8 sm:px-6 lg:px-8">
             <!-- Header Section -->
@@ -67,55 +64,22 @@
                     </div>
                 </div>
 
-                <!-- Profil Siswa Card -->
-                <a href="{{ route('profil.siswa') }}"
-                    class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                    <div class="p-6">
-                        <div class="flex items-center mb-4">
-                            <div class="p-3 bg-blue-500 rounded-lg">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-                                    </path>
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-semibold text-gray-800">Profil Siswa</h3>
-                                <p class="text-gray-600 text-sm">Lihat dan edit profil</p>
-                            </div>
-                        </div>
-                        <div
-                            class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
-                            <span class="flex items-center justify-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                </svg>
-                                Lihat Profil
-                            </span>
-                        </div>
-                    </div>
-                </a>
-
             </div>
 
             <!-- Main Content Area -->
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
-                <a href="{{ route('dashboard.siswa') }}" class="block">
-                    <div class="bg-slate-800 px-8 py-6 hover:bg-slate-700 transition-colors duration-300">
-                        <h2 class="text-2xl font-bold text-white flex items-center">
-                            <svg class="w-7 h-7 mr-3 text-blue-400" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
-                                </path>
-                            </svg>
-                            Detail Penilaian Siswa
-                        </h2>
-                        <p class="text-slate-300 mt-2">Data lengkap perkembangan akademik dan non-akademik</p>
-                    </div>
-                </a>
+                <div class="bg-slate-800 px-8 py-6">
+                    <h2 class="text-2xl font-bold text-white flex items-center">
+                        <svg class="w-7 h-7 mr-3 text-blue-400" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                            </path>
+                        </svg>
+                        Detail Penilaian Siswa
+                    </h2>
+                    <p class="text-slate-300 mt-2">Data lengkap perkembangan akademik dan non-akademik</p>
+                </div>
 
                 <div class="p-8">
                     @livewire('detail-penilaian-siswa', ['siswaId' => $id, 'viewOnly' => true])
@@ -124,16 +88,17 @@
         </div>
     </div>
 
-    <!-- Enhanced Modal with Glassmorphism Effect -->
-    <div id="chartModal" class="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 sm:px-0 hidden">
+    <!-- Enhanced Modal with Scrollable Content -->
+    <div id="chartModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
         <!-- Enhanced Backdrop with Blur -->
-        <div id="chartModalBackdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div id="chartModalBackdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm"></div>
 
-        <!-- Modal Box with Glassmorphism -->
+        <!-- Modal Box with Glassmorphism - Now Scrollable -->
         <div
-            class="relative bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden transform transition-all sm:max-w-4xl w-full border border-white/20">
-            <!-- Enhanced Header -->
-            <div class="bg-blue-600 px-8 py-6">
+            class="relative bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden transform transition-all w-full max-w-6xl border border-white/20 my-8 max-h-[calc(100vh-2rem)]">
+
+            <!-- Enhanced Header - Sticky -->
+            <div class="sticky top-0 bg-blue-600 px-8 py-6 z-10 border-b border-blue-500/20">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-2xl font-bold text-white flex items-center">
@@ -157,38 +122,42 @@
                 </div>
             </div>
 
-            <!-- Enhanced Tab System -->
-            <div class="px-8 py-6">
-                <!-- Modern Tab Buttons -->
-                <div class="mb-8">
-                    <div class="flex space-x-2 bg-gray-100 p-1 rounded-xl">
-                        <button id="tabBtnWeekly"
-                            class="flex-1 py-3 px-6 text-sm font-semibold rounded-lg transition-all duration-300 bg-blue-600 text-white shadow-lg">
-                            <span class="flex items-center justify-center">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                Perkembangan Mingguan
-                            </span>
-                        </button>
-                        <button id="tabBtnTopAspect"
-                            class="flex-1 py-3 px-6 text-sm font-semibold rounded-lg transition-all duration-300 text-gray-600 hover:text-gray-800 hover:bg-gray-200">
-                            <span class="flex items-center justify-center">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z">
-                                    </path>
-                                </svg>
-                                Top Aspect Minggu Ini
-                            </span>
-                        </button>
+            <!-- Scrollable Content Area -->
+            <div class="overflow-y-auto max-h-[calc(100vh-12rem)]">
+                <!-- Enhanced Tab System - Sticky -->
+                <div class="sticky top-0 bg-white/95 backdrop-blur-md px-8 py-6 border-b border-gray-200/50 z-10">
+                    <!-- Modern Tab Buttons -->
+                    <div class="mb-2">
+                        <div class="flex space-x-2 bg-gray-100 p-1 rounded-xl">
+                            <button id="tabBtnWeekly"
+                                class="flex-1 py-3 px-6 text-sm font-semibold rounded-lg transition-all duration-300 bg-blue-600 text-white shadow-lg">
+                                <span class="flex items-center justify-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    Perkembangan Mingguan Semester Ini
+                                </span>
+                            </button>
+                            <button id="tabBtnTopAspect"
+                                class="flex-1 py-3 px-6 text-sm font-semibold rounded-lg transition-all duration-300 text-gray-600 hover:text-gray-800 hover:bg-gray-200">
+                                <span class="flex items-center justify-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z">
+                                        </path>
+                                    </svg>
+                                    Top Aspect Minggu Ini
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Tab Content Areas -->
-                <div class="min-h-[400px]">
+                <!-- Tab Content Areas - Now with proper spacing -->
+                <div class="px-8 pb-8">
                     <!-- Tab Content: Weekly Progress -->
                     <div id="tabContentWeekly" class="animate-fadeIn">
                         <div class="bg-blue-50 rounded-2xl p-6 border border-blue-200">
@@ -202,6 +171,17 @@
                             @livewire('top-aspect-this-week', ['id_akunsiswa' => $id])
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Optional: Scroll indicator -->
+            <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-gray-400 text-xs opacity-50">
+                <div class="flex items-center space-x-1">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                    <span>Scroll untuk melihat lebih banyak</span>
                 </div>
             </div>
         </div>
@@ -293,7 +273,7 @@
         });
     </script>
 
-    <!-- Additional CSS for animations -->
+    <!-- Enhanced CSS for animations and scrolling -->
     <style>
         @keyframes fadeIn {
             from {
@@ -311,7 +291,72 @@
             animation: fadeIn 0.3s ease-out;
         }
 
-        /* Custom scrollbar for webkit browsers */
+        /* Modal specific scrolling styles */
+        .modal-open {
+            overflow: hidden;
+        }
+
+        /* Custom scrollbar untuk modal */
+        #chartModal .overflow-y-auto::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chartModal .overflow-y-auto::-webkit-scrollbar-track {
+            background: rgba(241, 245, 249, 0.5);
+            border-radius: 4px;
+        }
+
+        #chartModal .overflow-y-auto::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #3b82f6, #6366f1);
+            border-radius: 4px;
+        }
+
+        #chartModal .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #2563eb, #4f46e5);
+        }
+
+        /* Firefox scrollbar */
+        #chartModal .overflow-y-auto {
+            scrollbar-width: thin;
+            scrollbar-color: #3b82f6 rgba(241, 245, 249, 0.5);
+        }
+
+        /* Glassmorphism effect for sticky elements */
+        .sticky {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Smooth transitions for all modal elements */
+        #chartModal * {
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* Scroll indicator animation */
+        .scroll-indicator {
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0) translateX(-50%);
+            }
+
+            40% {
+                transform: translateY(-5px) translateX(-50%);
+            }
+
+            60% {
+                transform: translateY(-3px) translateX(-50%);
+            }
+        }
+
+        /* Custom scrollbar for webkit browsers (general) */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -328,6 +373,18 @@
 
         ::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(45deg, #2563eb, #4f46e5);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            #chartModal .max-w-6xl {
+                max-width: calc(100vw - 1rem);
+            }
+
+            #chartModal .px-8 {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
         }
     </style>
 </x-app-layout>

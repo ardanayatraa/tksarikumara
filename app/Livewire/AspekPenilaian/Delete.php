@@ -3,7 +3,7 @@
 namespace App\Livewire\AspekPenilaian;
 
 use Livewire\Component;
-use App\Models\IndikatorAspek;
+use App\Models\Indikator;
 
 class Delete extends Component
 {
@@ -22,7 +22,7 @@ class Delete extends Component
 
     public function confirm()
     {
-        IndikatorAspek::destroy($this->id);
+        Indikator::destroy($this->id);
         $this->open = false;
         $this->dispatch('refreshDatatable');
     }
