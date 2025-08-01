@@ -34,7 +34,7 @@
                         @if ($kelasGuru)
                             <p class="mt-1 font-medium">{{ $kelasGuru->namaKelas }}</p>
                             <p class="text-sm opacity-90">Tahun Ajaran: {{ $kelasGuru->tahunAjaran }}</p>
-                            <p class="text-sm opacity-90">Total Siswa: {{ $jumlahSiswaDiKelas }}</p>
+                            {{-- <p class="text-sm opacity-90">Total Siswa: {{ $jumlahSiswaDiKelas }}</p> --}}
                         @else
                             <p class="text-sm opacity-90">Belum ada kelas</p>
                         @endif
@@ -52,7 +52,7 @@
             <div class="bg-gradient-to-r from-blue-500 to-blue-600 shadow-xl rounded-xl p-6 text-white">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold">Aspek Penilaian</h3>
+                        <h3 class="text-lg font-semibold">Jumlah Siswa</h3>
                         <p class="text-5xl font-bold mt-2">
                             {{ $jumlahSiswaDiKelas }}
                         </p>
