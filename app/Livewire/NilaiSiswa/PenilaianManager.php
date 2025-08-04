@@ -313,9 +313,9 @@ class PenilaianManager extends Component
 
         $completedAssessments = DB::table('nilai_siswa')
             ->join('penilaian', 'nilai_siswa.id_penilaian', '=', 'penilaian.id_penilaian')
-            ->join('indikator_aspek', 'nilai_siswa.indikator_aspek_id', '=', 'indikator_aspek.id')
+            ->join('indikator', 'nilai_siswa.indikator_id', '=', 'indikator.id_indikator')
             ->join('akun_siswa', 'penilaian.id_akunsiswa', '=', 'akun_siswa.id_akunsiswa')
-            ->where('indikator_aspek.aspek_id', $this->selectedAspekId)
+            ->where('indikator.aspek_id', $this->selectedAspekId)
             ->where('penilaian.tgl_penilaian', today()->toDateString())
             ->when($this->search, function($q) {
                 $q->where(function($subQ) {

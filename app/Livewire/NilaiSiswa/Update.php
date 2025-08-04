@@ -25,7 +25,7 @@ class Update extends Component
     public $tgl_penilaian;
 
     // detail NilaiSiswa
-    public $indikator_aspek_id;
+    public $indikator_id;
     public $nilai;
     public $skor;
     public $catatan;
@@ -69,8 +69,8 @@ class Update extends Component
         $this->id_akunsiswa       = $pen->id_akunsiswa;
         $this->tgl_penilaian      = $pen->tgl_penilaian;
 
-        $this->indikator_aspek_id = $detail->indikator_aspek_id;
-        $this->nilai              = $detail->nilai;
+        $this->indikator_id = $detail->indikator_id;
+        $this->nilai        = $detail->nilai;
         $this->skor               = $detail->skor;
         $this->catatan            = $detail->catatan;
 
@@ -110,7 +110,7 @@ class Update extends Component
 
     public function render()
     {
-        $indikator = IndikatorAspek::find($this->indikator_aspek_id);
+        $indikator = \App\Models\Indikator::find($this->indikator_id);
         return view('livewire.nilai-siswa.update', compact('indikator'));
     }
 }

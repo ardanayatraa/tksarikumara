@@ -9,7 +9,7 @@ use App\Models\Kelas;
 use App\Models\Penilaian;
 use App\Models\NilaiSiswa;
 use App\Models\AspekPenilaian;
-use App\Models\IndikatorAspek;
+use App\Models\Indikator;
 use Carbon\Carbon;
 
 class PenilaianNilaiSeeder extends Seeder
@@ -108,9 +108,10 @@ class PenilaianNilaiSeeder extends Seeder
 
                 // Generate grades for each aspect and indicator
                 foreach ($aspekPenilaian as $aspek) {
-                    // Get indicators appropriate for student's age
-                    $indicators = $aspek->indikator->filter(function ($indicator) use ($studentAge) {
-                        return $studentAge >= $indicator->min_umur && $studentAge <= $indicator->max_umur;
+                    // Get indicators appropriate for student's kelompok usia
+                    $kelompokUsia = $this->getKelompokUsia($studentAge);
+                    $indicators = $aspek->indikator->filter(function ($indicator) use ($kelompokUsia) {
+                        return $indicator->kelompok_usia === $kelompokUsia;
                     });
 
                     foreach ($indicators as $indicator) {
@@ -137,7 +138,7 @@ class PenilaianNilaiSeeder extends Seeder
 
                         NilaiSiswa::create([
                             'id_penilaian' => $penilaian->id_penilaian,
-                            'indikator_aspek_id' => $indicator->id,
+                            'indikator_id' => $indicator->id_indikator,
                             'nilai' => $scoreData['nilai'],
                             'skor' => $scoreData['skor'],
                             'catatan' => $catatan,
@@ -212,5 +213,23 @@ class PenilaianNilaiSeeder extends Seeder
         if ($score <= 2.5) return 'MB';
         if ($score <= 3.5) return 'BSH';
         return 'BSB';
+    }
+
+    /**
+     * Map student age to kelompok_usia
+     */
+    private function getKelompokUsia($age): string
+    {
+        if ($age >= 2 && $age < 3) {
+            return '2-3_tahun';
+        } elseif ($age >= 3 && $age < 4) {
+            return '3-4_tahun';
+        } elseif ($age >= 4 && $age < 5) {
+            return '4-5_tahun';
+        } elseif ($age >= 5 && $age <= 6) {
+            return '5-6_tahun';
+        } else {
+            return '5-6_tahun'; // default
+        }
     }
 }

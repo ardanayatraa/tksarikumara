@@ -15,7 +15,7 @@ class Add extends Component
 
     // Props dari parent (harus sesuai key saat @livewire dipanggil)
     public $id_akunsiswa;
-    public $indikator_aspek_id;
+    public $indikator_id;
 
     // Header penilaian
     public $id_guru;
@@ -40,10 +40,10 @@ class Add extends Component
         $this->skor = $this->nilaiOptions[$value] ?? null;
     }
 
-    public function mount($id_akunsiswa, $indikator_aspek_id)
+    public function mount($id_akunsiswa, $indikator_id)
     {
-        $this->id_akunsiswa       = $id_akunsiswa;
-        $this->indikator_aspek_id = $indikator_aspek_id;
+        $this->id_akunsiswa = $id_akunsiswa;
+        $this->indikator_id = $indikator_id;
         $this->id_guru            = optional(Auth::guard('guru')->user())->id_guru;
 
         $siswa = AkunSiswa::with('kelas')->findOrFail($id_akunsiswa);
@@ -66,9 +66,9 @@ class Add extends Component
         ]);
 
         NilaiSiswa::create([
-            'id_penilaian'       => $pen->id_penilaian,
-            'indikator_aspek_id' => $this->indikator_aspek_id,
-            'nilai'              => $this->nilai,
+            'id_penilaian' => $pen->id_penilaian,
+            'indikator_id' => $this->indikator_id,
+            'nilai'        => $this->nilai,
             'skor'               => $this->skor,
             'catatan'            => $this->catatan,
         ]);
@@ -80,7 +80,7 @@ class Add extends Component
     public function render()
     {
         // ambil nama indikator untuk ditampilkan di modal
-        $indikator = IndikatorAspek::find($this->indikator_aspek_id);
+        $indikator = \App\Models\Indikator::find($this->indikator_id);
 
         return view('livewire.nilai-siswa.add', compact('indikator'));
     }

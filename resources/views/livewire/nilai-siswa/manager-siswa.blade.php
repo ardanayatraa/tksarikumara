@@ -105,7 +105,7 @@
                                                 ->where('id_akunsiswa', $siswa->id_akunsiswa)
                                                 ->where('tgl_penilaian', today()->toDateString()),
                                         )
-                                            ->where('indikator_aspek_id', $indikator->id)
+                                            ->where('indikator_id', $indikator->id_indikator)
                                             ->value('nilai');
                                     @endphp
 
@@ -137,7 +137,7 @@
                                                     ->where('id_akunsiswa', $siswa->id_akunsiswa)
                                                     ->where('tgl_penilaian', today()->toDateString()),
                                             )
-                                                ->where('indikator_aspek_id', $indikator->id)
+                                                ->where('indikator_id', $indikator->id_indikator)
                                                 ->value('nilai');
                                         @endphp
 

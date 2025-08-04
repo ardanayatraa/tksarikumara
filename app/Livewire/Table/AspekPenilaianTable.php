@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Table;
 
-use App\Models\IndikatorAspek;
+use App\Models\Indikator;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
@@ -10,12 +10,12 @@ use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
 
 class AspekPenilaianTable extends DataTableComponent
 {
-    protected $model = IndikatorAspek::class;
+    protected $model = Indikator::class;
 
     public function configure(): void
     {
         // primary key sesuai migration: $table->id()
-        $this->setPrimaryKey('id');
+        $this->setPrimaryKey('id_indikator');
 
         // Enable filters
         $this->setFiltersStatus(true);
@@ -28,8 +28,8 @@ class AspekPenilaianTable extends DataTableComponent
     public function builder(): Builder
     {
         // eager-load relasi ke aspek utama
-        return IndikatorAspek::query()
-            ->with('aspek');
+        return Indikator::query()
+            ->with('aspekPenilaian');
     }
 
     public function filters(): array
@@ -74,44 +74,39 @@ class AspekPenilaianTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make('ID', 'id')
+            Column::make('ID', 'id_indikator')
                 ->sortable(),
 
-            Column::make('Kode Aspek', 'aspek.kode_aspek')
+            Column::make('Kode Aspek', 'aspekPenilaian.kode_aspek')
                 ->sortable(),
-            Column::make('Aspek Penilaian', 'aspek.nama_aspek')
+            Column::make('Aspek Penilaian', 'aspekPenilaian.nama_aspek')
                 ->sortable(),
 
             Column::make('Kode Indikator', 'kode_indikator')
                 ->sortable(),
 
-            Column::make('Nama Indikator', 'nama_indikator')
+            Column::make('Deskripsi Indikator', 'deskripsi_indikator')
                 ->sortable(),
 
-            Column::make('Min Umur (Tahun)', 'min_umur')
-                ->sortable(),
-            Column::make('Max Umur (Tahun)', 'max_umur')
-                ->sortable(),
-
-            Column::make('Rentang Umur', 'min_umur')
-                ->label(fn($row) => $row->min_umur . ' - ' . $row->max_umur . ' Tahun')
+            Column::make('Kelompok Usia', 'kelompok_usia')
+                ->format(fn($value) => str_replace('_', ' ', $value))
                 ->sortable(),
 
             Column::make('Actions')
                 ->label(fn($row) => view('components.table-action', [
-                    'id' => $row->id,
+                    'id' => $row->id_indikator,
                 ]))
                 ->html(),
         ];
     }
 
-    public function edit($id): void
+    public function edit($id_indikator): void
     {
-        $this->dispatch('editIndikatorAspek', $id);
+        $this->dispatch('editIndikator', $id_indikator);
     }
 
-    public function delete($id): void
+    public function delete($id_indikator): void
     {
-        $this->dispatch('deleteIndikatorAspek', $id);
+        $this->dispatch('deleteIndikator', $id_indikator);
     }
 }
