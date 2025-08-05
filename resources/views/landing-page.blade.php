@@ -168,7 +168,7 @@
                             Dashboard Kepsek
                         </a>
                     @elseif ($isSiswa)
-                        <a href="{{ route('siswa.dashboard') }}"
+                        <a href="{{ route('dashboard.siswa') }}"
                             class="bg-primary hover:bg-secondary text-white px-6 py-2 rounded-full transition-all duration-300 font-medium shadow-lg hover:shadow-xl">
                             Dashboard Siswa
                         </a>

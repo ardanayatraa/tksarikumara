@@ -59,7 +59,7 @@
                             </div>
                         </div>
                         <div class="mt-4">
-                            @livewire('send-student-report', ['id_akunsiswa' => $id])
+                            @livewire('send-student-report', ['id_akunsiswa' => auth()->guard('siswa')->user()->id_akunsiswa])
                         </div>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
                 </div>
 
                 <div class="p-8">
-                    @livewire('detail-penilaian-siswa', ['siswaId' => $id, 'viewOnly' => true])
+                    @livewire('detail-penilaian-siswa', ['siswaId' => auth()->guard('siswa')->user()->id_akunsiswa, 'viewOnly' => true])
                 </div>
             </div>
         </div>
@@ -161,14 +161,14 @@
                     <!-- Tab Content: Weekly Progress -->
                     <div id="tabContentWeekly" class="animate-fadeIn">
                         <div class="bg-blue-50 rounded-2xl p-6 border border-blue-200">
-                            @livewire('semester-progress', ['id_akunsiswa' => $id])
+                            @livewire('semester-progress', ['id_akunsiswa' => auth()->guard('siswa')->user()->id_akunsiswa])
                         </div>
                     </div>
 
                     <!-- Tab Content: Top Aspect -->
                     <div id="tabContentTopAspect" class="hidden animate-fadeIn">
                         <div class="bg-purple-50 rounded-2xl p-6 border border-purple-200">
-                            @livewire('top-aspect-this-week', ['id_akunsiswa' => $id])
+                            @livewire('top-aspect-this-week', ['id_akunsiswa' => auth()->guard('siswa')->user()->id_akunsiswa])
                         </div>
                     </div>
                 </div>

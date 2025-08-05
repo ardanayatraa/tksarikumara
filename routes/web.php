@@ -34,8 +34,21 @@ Route::middleware('guest')->group(function () {
     Route::post('register', [RegisterController::class, 'register']);
 });
 
+
+
+// Siswa
+Route::middleware(['auth', 'role:siswa'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard.siswa');
+    Route::get('/profil-siswa', function () {
+        return view('siswa.profil');
+    })->name('profil.siswa');
+
+});
+
 // Admin
-Route::middleware(['auth', 'role:admin'])->group(function () {
+Route::middleware([ 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
@@ -76,16 +89,6 @@ Route::middleware(['auth', 'role:guru'])->group(function () {
 
 });
 
-// Siswa
-Route::middleware(['auth', 'role:siswa'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard.siswa');
-    Route::get('/profil-siswa', function () {
-        return view('siswa.profil');
-    })->name('profil.siswa');
-
-});
 
 // Kepala Sekolah
 Route::middleware(['auth', 'role:kepsek'])->group(function () {

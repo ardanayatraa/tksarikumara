@@ -62,7 +62,7 @@
                     <td>{{ $r['nama_aspek'] }}</td>
                     <td>{{ $r['kode_indikator'] }}</td>
                     <td>{{ $r['nama_indikator'] }}</td>
-                    <td>{{ $r['kategori'] }}</td>
+                    <td>{{ $r['kategori'] ?? '' }}</td>
                     <td style="text-align:center;">{{ $r['nilai'] }}</td>
                     <td style="text-align:right;">{{ $r['skor'] }}</td>
                 </tr>
