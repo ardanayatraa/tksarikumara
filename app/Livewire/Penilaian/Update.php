@@ -10,6 +10,12 @@ class Add extends Component
     public $open = false;
     public $id_akunsiswa, $id_guru, $tgl_penilaian;
 
+    // Initialize with authenticated user's ID
+    public function mount()
+    {
+        $this->id_guru = auth()->user()->guru->id_guru;
+    }
+
     protected $rules = [
         'id_akunsiswa' => 'required',
         'id_guru' => 'required',
