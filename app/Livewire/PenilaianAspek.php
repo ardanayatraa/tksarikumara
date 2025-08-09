@@ -146,11 +146,40 @@ class PenilaianAspek extends Component
     public function toggleNilai($siswaId, $indikatorId, $minggu)
     {
         try {
+            // Validasi input terlebih dahulu
+            if (!$siswaId || !is_numeric($siswaId)) {
+                throw new \Exception('ID Siswa tidak valid');
+            }
+
+            if (!$indikatorId || !is_numeric($indikatorId)) {
+                throw new \Exception('ID Indikator tidak valid');
+            }
+
+            if (!$minggu || !is_numeric($minggu) || $minggu < 1 || $minggu > 20) {
+                throw new \Exception('Minggu tidak valid (harus 1-20)');
+            }
+
+            // Validasi data penting sudah dipilih
+            if (!$this->selectedKelas) {
+                throw new \Exception('Pilih kelas terlebih dahulu');
+            }
+
+            if (!$this->selectedAspek) {
+                throw new \Exception('Pilih aspek terlebih dahulu');
+            }
+
+            if (!$this->selectedKelompokUsia) {
+                throw new \Exception('Pilih kelompok usia terlebih dahulu');
+            }
+
             // Log untuk debugging
             Log::info('Toggle nilai called', [
                 'siswaId' => $siswaId,
                 'indikatorId' => $indikatorId,
-                'minggu' => $minggu
+                'minggu' => $minggu,
+                'selectedKelas' => $this->selectedKelas,
+                'selectedAspek' => $this->selectedAspek,
+                'selectedKelompokUsia' => $this->selectedKelompokUsia
             ]);
 
             // Pastikan array sudah diinisialisasi
@@ -165,14 +194,14 @@ class PenilaianAspek extends Component
             $currentValue = $this->nilaiData[$siswaId][$indikatorId][$minggu] ?? false;
             $newValue = !$currentValue;
 
-            // Update di array
-            $this->nilaiData[$siswaId][$indikatorId][$minggu] = $newValue;
-
             // Log perubahan
-            Log::info('Nilai changed', [
-                'from' => $currentValue,
-                'to' => $newValue
+            Log::info('Nilai akan diubah', [
+                'from' => $currentValue ? 'true' : 'false',
+                'to' => $newValue ? 'true' : 'false'
             ]);
+
+            // Update di array terlebih dahulu
+            $this->nilaiData[$siswaId][$indikatorId][$minggu] = $newValue;
 
             // Auto-save ke database
             $this->simpanNilaiIndividual($siswaId, $indikatorId, $minggu, $newValue);
@@ -182,10 +211,20 @@ class PenilaianAspek extends Component
                 'siswaId' => $siswaId,
                 'indikatorId' => $indikatorId,
                 'minggu' => $minggu,
+                'selectedKelas' => $this->selectedKelas,
+                'selectedAspek' => $this->selectedAspek,
+                'selectedKelompokUsia' => $this->selectedKelompokUsia,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
 
-            $this->showAlert('Gagal mengubah nilai: ' . $e->getMessage(), 'error');
+            // Revert perubahan di array jika terjadi error
+            if (isset($this->nilaiData[$siswaId][$indikatorId][$minggu])) {
+                $this->nilaiData[$siswaId][$indikatorId][$minggu] = !$this->nilaiData[$siswaId][$indikatorId][$minggu];
+            }
+
+            $this->showAlert('Gagal mengubah nilai minggu ke-' . $minggu . ': ' . $e->getMessage(), 'error');
         }
     }
 
@@ -200,36 +239,76 @@ class PenilaianAspek extends Component
                 'minggu' => $minggu,
                 'isChecked' => $isChecked,
                 'selectedKelas' => $this->selectedKelas,
-                'selectedKelompokUsia' => $this->selectedKelompokUsia
+                'selectedKelompokUsia' => $this->selectedKelompokUsia,
+                'tahunAjaran' => $this->tahunAjaran,
+                'semester' => $this->semester
             ]);
 
-            // Validasi data yang diperlukan
-            if (!$siswaId || !$indikatorId || !$minggu || !$this->selectedKelas) {
-                throw new \Exception('Data tidak lengkap untuk penyimpanan');
+            // Validasi data yang diperlukan dengan pesan error yang lebih spesifik
+            if (!$siswaId) {
+                throw new \Exception('ID Siswa tidak valid');
+            }
+            if (!$indikatorId) {
+                throw new \Exception('ID Indikator tidak valid');
+            }
+            if (!$minggu || $minggu < 1 || $minggu > 20) {
+                throw new \Exception('Minggu ke tidak valid (harus 1-20)');
+            }
+            if (!$this->selectedKelas) {
+                throw new \Exception('Kelas belum dipilih');
+            }
+            if (!$this->tahunAjaran) {
+                throw new \Exception('Tahun ajaran tidak valid');
+            }
+            if (!$this->semester) {
+                throw new \Exception('Semester tidak valid');
             }
 
             // Cari siswa untuk mendapatkan kelompok usia yang tepat
             $siswa = AkunSiswa::find($siswaId);
             if (!$siswa) {
-                throw new \Exception('Siswa tidak ditemukan');
+                throw new \Exception('Data siswa tidak ditemukan dengan ID: ' . $siswaId);
             }
 
-            // Tentukan kelompok usia berdasarkan umur siswa
-            $kelompokUsia = $this->selectedKelompokUsia;
+            // Tentukan kelompok usia berdasarkan umur siswa atau gunakan yang dipilih
+            $kelompokUsia = $this->selectedKelompokUsia ?? '4-5_tahun'; // default fallback
             if ($siswa->tgl_lahir) {
-                $usia = Carbon::parse($siswa->tgl_lahir)->age;
-                if ($usia >= 5) {
-                    $kelompokUsia = '5-6_tahun';
-                } elseif ($usia >= 4) {
-                    $kelompokUsia = '4-5_tahun';
-                } elseif ($usia >= 3) {
-                    $kelompokUsia = '3-4_tahun';
-                } else {
-                    $kelompokUsia = '2-3_tahun';
+                try {
+                    $usia = Carbon::parse($siswa->tgl_lahir)->age;
+                    if ($usia >= 5) {
+                        $kelompokUsia = '5-6_tahun';
+                    } elseif ($usia >= 4) {
+                        $kelompokUsia = '4-5_tahun';
+                    } elseif ($usia >= 3) {
+                        $kelompokUsia = '3-4_tahun';
+                    } else {
+                        $kelompokUsia = '2-3_tahun';
+                    }
+                } catch (\Exception $e) {
+                    Log::warning('Error parsing tanggal lahir siswa', [
+                        'siswa_id' => $siswaId,
+                        'tgl_lahir' => $siswa->tgl_lahir,
+                        'error' => $e->getMessage()
+                    ]);
                 }
             }
 
-            // Cari atau buat penilaian header
+            // Validasi kelompok usia
+            $validKelompokUsia = ['2-3_tahun', '3-4_tahun', '4-5_tahun', '5-6_tahun'];
+            if (!in_array($kelompokUsia, $validKelompokUsia)) {
+                $kelompokUsia = '4-5_tahun'; // default safe value
+            }
+
+            Log::info('Akan membuat/mencari penilaian dengan data:', [
+                'id_akunsiswa' => $siswaId,
+                'id_kelas' => $this->selectedKelas,
+                'minggu_ke' => $minggu,
+                'tahun_ajaran' => $this->tahunAjaran,
+                'semester' => $this->semester,
+                'kelompok_usia_siswa' => $kelompokUsia
+            ]);
+
+            // Cari atau buat penilaian header dengan handling error yang lebih baik
             $penilaian = Penilaian::firstOrCreate([
                 'id_akunsiswa' => $siswaId,
                 'id_kelas' => $this->selectedKelas,
@@ -244,11 +323,18 @@ class PenilaianAspek extends Component
                 'catatan_umum' => '',
             ]);
 
-            Log::info('Penilaian created/found', ['id' => $penilaian->id_penilaian]);
+            if (!$penilaian) {
+                throw new \Exception('Gagal membuat atau menemukan record penilaian');
+            }
+
+            Log::info('Penilaian created/found', [
+                'id' => $penilaian->id_penilaian,
+                'wasRecentlyCreated' => $penilaian->wasRecentlyCreated
+            ]);
 
             // Tentukan nilai berdasarkan checkbox
             $nilaiEnum = $isChecked ? 'BSH' : 'BB'; // Berkembang Sesuai Harapan atau Belum Berkembang
-            $skor = $isChecked ? 3 : 1; // Langsung set skor tanpa konversi
+            $skor = $isChecked ? 3 : 1;
 
             // Simpan atau update nilai siswa
             $nilaiSiswa = NilaiSiswa::updateOrCreate([
@@ -260,10 +346,17 @@ class PenilaianAspek extends Component
                 'catatan' => '',
             ]);
 
-            Log::info('NilaiSiswa saved', [
+            if (!$nilaiSiswa) {
+                throw new \Exception('Gagal menyimpan nilai siswa');
+            }
+
+            Log::info('NilaiSiswa saved successfully', [
                 'id' => $nilaiSiswa->id_nilai ?? 'new',
                 'nilai' => $nilaiEnum,
-                'skor' => $skor
+                'skor' => $skor,
+                'penilaian_id' => $penilaian->id_penilaian,
+                'indikator_id' => $indikatorId,
+                'wasRecentlyCreated' => $nilaiSiswa->wasRecentlyCreated
             ]);
 
             DB::commit();
@@ -273,7 +366,7 @@ class PenilaianAspek extends Component
 
             // Show success message
             $status = $isChecked ? 'Tercapai (BSH)' : 'Belum Berkembang (BB)';
-            $this->showAlert("Nilai berhasil disimpan: {$status}", 'success');
+            $this->showAlert("Nilai berhasil disimpan: {$status} - Minggu {$minggu}", 'success');
 
         } catch (\Exception $e) {
             DB::rollback();
@@ -283,15 +376,22 @@ class PenilaianAspek extends Component
                 'siswaId' => $siswaId,
                 'indikatorId' => $indikatorId,
                 'minggu' => $minggu,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
 
-            $this->showAlert('Gagal menyimpan nilai: ' . $e->getMessage(), 'error');
+            // Tampilkan pesan error yang lebih user-friendly
+            $errorMsg = 'Penyimpanan nilai minggu ke-' . $minggu . ' gagal: ' . $e->getMessage();
+            $this->showAlert($errorMsg, 'error');
 
             // Revert nilai di UI
             if (isset($this->nilaiData[$siswaId][$indikatorId][$minggu])) {
                 $this->nilaiData[$siswaId][$indikatorId][$minggu] = !$this->nilaiData[$siswaId][$indikatorId][$minggu];
             }
+
+            // Re-throw exception untuk debugging jika diperlukan
+            throw $e;
         }
     }
 

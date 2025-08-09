@@ -18,6 +18,9 @@ class Penilaian extends Model
         'id_guru',
         'id_kelas',
         'tgl_penilaian',
+        'minggu_ke',
+        'semester',
+        'tahun_ajaran',
         'kelompok_usia_siswa',
         'status',
         'catatan_umum'
