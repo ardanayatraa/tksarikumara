@@ -237,7 +237,7 @@ class PenilaianAspek extends Component
                 'tahun_ajaran' => $this->tahunAjaran,
                 'semester' => $this->semester,
             ], [
-                'id_guru' => auth()->id() ?? 1, // Gunakan auth()->id() yang lebih umum
+                'id_guru' => auth()->user()->id_guru ?? null,
                 'tgl_penilaian' => now(),
                 'kelompok_usia_siswa' => $kelompokUsia,
                 'status' => 'draft',
@@ -340,7 +340,7 @@ class PenilaianAspek extends Component
                                 'tahun_ajaran' => $this->tahunAjaran,
                                 'semester' => $this->semester,
                             ], [
-                                'id_guru' => auth()->id() ?? 1,
+                                'id_guru' => auth()->user()->id_guru ?? null,
                                 'tgl_penilaian' => now(),
                                 'kelompok_usia_siswa' => $kelompokUsia,
                                 'status' => 'draft',

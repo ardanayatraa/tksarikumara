@@ -121,7 +121,7 @@ class DetailPenilaianSiswa extends Component
                 'tahun_ajaran' => $this->tahunAjaran,
                 'semester' => $this->semester,
             ], [
-                'id_guru' => Auth::id(), // Sesuaikan dengan ID guru yang login
+                'id_guru' => auth()->guard('guru')->user()->id_guru ?? null,
                 'tgl_penilaian' => now(),
                 'kelompok_usia_siswa' => $this->getKelompokUsiaSiswa(),
                 'status' => 'draft',
@@ -171,7 +171,7 @@ class DetailPenilaianSiswa extends Component
                                 'tahun_ajaran' => $this->tahunAjaran,
                                 'semester' => $this->semester,
                             ], [
-                                'id_guru' => Auth::id(),
+                                'id_guru' => auth()->guard('guru')->user()->id_guru ?? null,
                                 'tgl_penilaian' => now(),
                                 'kelompok_usia_siswa' => $this->getKelompokUsiaSiswa(),
                                 'status' => 'draft',
