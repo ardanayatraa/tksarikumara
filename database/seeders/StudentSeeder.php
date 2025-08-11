@@ -13,7 +13,7 @@ class StudentSeeder extends Seeder
     public function run(): void
     {
         // Create classes first
-        $kelompokBermain = Kelas::firstOrCreate(
+        $tkA = Kelas::firstOrCreate(
             ['namaKelas' => 'TK-A'],
             [
                 'tahunAjaran' => '2025',
@@ -31,12 +31,12 @@ class StudentSeeder extends Seeder
 
         // Student data from the provided table
         $students = [
-            // Kelompok Bermain students
+            // TK-A students
             [
                 'namaSiswa' => 'I Wayan Arimbawa',
                 'jenis_kelamin' => 'L',
                 'tgl_lahir' => '2023-03-28',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Jl. Pelajar Pejuang, Karangasem',
                 'namaOrangTua' => 'Darmana Mandala',
                 'email' => 'rahayusurya@pt.mil'
@@ -45,7 +45,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'Ni Ketut Astiti',
                 'jenis_kelamin' => 'P',
                 'tgl_lahir' => '2022-10-21',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Jl. Suryakencana, Tabanan',
                 'namaOrangTua' => 'Puji Andriani, S.H.',
                 'email' => 'adinata26@yahoo.com'
@@ -54,7 +54,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'I Komang Wardani',
                 'jenis_kelamin' => 'L',
                 'tgl_lahir' => '2022-11-07',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Jl. Sadang Serang, Karangasem',
                 'namaOrangTua' => 'Bakiman Wibowo',
                 'email' => 'malik94@pd.int'
@@ -63,7 +63,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'Ni Gede Arya',
                 'jenis_kelamin' => 'P',
                 'tgl_lahir' => '2023-07-16',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Jalan M.H Thamrin, Kuta, Badung',
                 'namaOrangTua' => 'Yance Utami',
                 'email' => 'cahyonogunawan@hotmail.com'
@@ -72,7 +72,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'I Wayan Arya',
                 'jenis_kelamin' => 'L',
                 'tgl_lahir' => '2022-10-19',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Jalan Moch. Ramdan, Ubud, Gianyar',
                 'namaOrangTua' => 'Puti Kezia Setiawan, M.M.',
                 'email' => 'opungthamrin@gmail.com'
@@ -81,7 +81,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'Ni Luh Arya',
                 'jenis_kelamin' => 'P',
                 'tgl_lahir' => '2022-04-09',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Jalan Rungkut Industri, Kuta, Badung',
                 'namaOrangTua' => 'Cawisono Nasyidah, S.H.',
                 'email' => 'rwibowo@ud.org'
@@ -90,7 +90,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'I Gede Santika',
                 'jenis_kelamin' => 'L',
                 'tgl_lahir' => '2022-05-31',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Gang Pasteur, Bangli',
                 'namaOrangTua' => 'Danuja Purnawati',
                 'email' => 'taliamandasari@yahoo.com'
@@ -99,7 +99,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'I Gede Astiti',
                 'jenis_kelamin' => 'L',
                 'tgl_lahir' => '2022-07-01',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Jalan Pasirkoja, Klungkung',
                 'namaOrangTua' => 'Dirja Purwanti',
                 'email' => 'zpadmasari@yahoo.com'
@@ -108,7 +108,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'Ni Gede Wardani',
                 'jenis_kelamin' => 'P',
                 'tgl_lahir' => '2022-10-16',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Gg. Dipatiukur, Denpasar Selatan, Denpasar',
                 'namaOrangTua' => 'Dt. Satya Kusumo, S.E.I',
                 'email' => 'eriyanti@pd.ponpes.id'
@@ -117,7 +117,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'Ni Wayan Arya',
                 'jenis_kelamin' => 'P',
                 'tgl_lahir' => '2023-06-22',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Jl. Jayawijaya, Bangli',
                 'namaOrangTua' => 'T. Pranawa Yuniar, S.Psi',
                 'email' => 'tedi27@ud.gov'
@@ -126,7 +126,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'I Gede Arya',
                 'jenis_kelamin' => 'L',
                 'tgl_lahir' => '2022-02-05',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Gg. KH Amin Jasuta, Klungkung',
                 'namaOrangTua' => 'Drs. Dalimin Mangunsong',
                 'email' => 'ghaliyatinuraini@gmail.com'
@@ -135,7 +135,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'I Made Adnyana',
                 'jenis_kelamin' => 'L',
                 'tgl_lahir' => '2023-03-12',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Gang Asia Afrika, Klungkung',
                 'namaOrangTua' => 'Wisnu Tarihoran',
                 'email' => 'bambangpermadi@hotmail.com'
@@ -144,7 +144,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'I Nyoman Arimbawa',
                 'jenis_kelamin' => 'L',
                 'tgl_lahir' => '2021-08-22',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Gg. Cikutra Timur, Singaraja, Buleleng',
                 'namaOrangTua' => 'Dr. Pranata Mahendra, S.E.I',
                 'email' => 'kartanuraini@hotmail.com'
@@ -153,7 +153,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'I Desak Astiti',
                 'jenis_kelamin' => 'L',
                 'tgl_lahir' => '2023-01-03',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Jl. Rajawali Timur, Denpasar Selatan, Denpasar',
                 'namaOrangTua' => 'Salsabila Yulianti',
                 'email' => 'cmaryati@gmail.com'
@@ -162,7 +162,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'Ni Made Adnyana',
                 'jenis_kelamin' => 'P',
                 'tgl_lahir' => '2022-10-27',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Jl. Sadang Serang, Klungkung',
                 'namaOrangTua' => 'Lanjar Puspasari',
                 'email' => 'adityahidayanto@cv.org'
@@ -171,7 +171,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'Ni Putu Arimbawa',
                 'jenis_kelamin' => 'P',
                 'tgl_lahir' => '2023-06-21',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Jalan Monginsidi, Klungkung',
                 'namaOrangTua' => 'Estiawan Winarsih',
                 'email' => 'ghaliyatimustofa@hotmail.com'
@@ -180,7 +180,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'I Gede Wardani',
                 'jenis_kelamin' => 'L',
                 'tgl_lahir' => '2022-07-21',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Jalan Waringin, Karangasem',
                 'namaOrangTua' => 'dr. Dadap Kuswoyo, S.IP',
                 'email' => 'slamet67@hotmail.com'
@@ -189,7 +189,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'I Putu Astiti',
                 'jenis_kelamin' => 'L',
                 'tgl_lahir' => '2022-08-13',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Jl. Surapati, Kuta, Badung',
                 'namaOrangTua' => 'Jessica Kurniawan, S.H.',
                 'email' => 'gastihassanah@pd.my.id'
@@ -198,7 +198,7 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'Ni Made Jaya',
                 'jenis_kelamin' => 'P',
                 'tgl_lahir' => '2022-10-28',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Gg. M.H Thamrin, Kuta, Badung',
                 'namaOrangTua' => 'Asirwanda Yulianti',
                 'email' => 'prakasaganda@pd.org'
@@ -207,13 +207,13 @@ class StudentSeeder extends Seeder
                 'namaSiswa' => 'I Wayan Astiti',
                 'jenis_kelamin' => 'L',
                 'tgl_lahir' => '2022-09-24',
-                'kelas' => $kelompokBermain->id_kelas,
+                'kelas' => $tkA->id_kelas,
                 'alamat' => 'Jalan Sukajadi, Kuta, Badung',
                 'namaOrangTua' => 'Violet Hasanah',
                 'email' => 'qpuspita@hotmail.com'
             ],
 
-            // TK B students
+            // TK-B students
             [
                 'namaSiswa' => 'I Desak Astiti',
                 'jenis_kelamin' => 'L',

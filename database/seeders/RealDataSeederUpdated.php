@@ -15,62 +15,70 @@ class RealDataSeederUpdated extends Seeder
     public function run(): void
     {
         // Create Admin
-        Admin::create([
-            'username' => 'admin123',
-            'password' => Hash::make('password'),
-            'email' => 'admin@tkbali.edu',
-            'notlp' => '081234567890',
-        ]);
+        Admin::firstOrCreate(
+            ['username' => 'admin123'],
+            [
+                'password' => Hash::make('password'),
+                'email' => 'admin@tkbali.edu',
+                'notlp' => '081234567890',
+            ]
+        );
 
         // Create Principal (Kepala Sekolah)
-        KepalaSekolah::create([
-            'namaKepalaSekolah' => 'I Made Sutrisna, S.Pd',
-            'nip' => '196505151990031001',
-            'email' => 'kepsek@tkbali.edu',
-            'notlp' => '081234567892',
-            'username' => 'kepsek123',
-            'password' => Hash::make('password'),
-        ]);
+        KepalaSekolah::firstOrCreate(
+            ['username' => 'kepsek123'],
+            [
+                'namaKepalaSekolah' => 'I Made Sutrisna, S.Pd',
+                'nip' => '196505151990031001',
+                'email' => 'kepsek@tkbali.edu',
+                'notlp' => '081234567892',
+                'password' => Hash::make('password'),
+            ]
+        );
 
-        // Create Classes - UPDATED: Kelompok Bermain -> TK A, TK B -> TK B
+        // Create Classes - UPDATED: Kelompok Bermain -> TK-A, TK B -> TK-B
         $tkA = Kelas::create([
-            'namaKelas' => 'TK A',
+            'namaKelas' => 'TK-A',
             'tahunAjaran' => '2024/2025',
             'jumlahSiswa' => 20,
         ]);
 
         $tkB = Kelas::create([
-            'namaKelas' => 'TK B',
+            'namaKelas' => 'TK-B',
             'tahunAjaran' => '2024/2025',
             'jumlahSiswa' => 20,
         ]);
 
         // Create Teachers
-        $guruTKA = Guru::create([
-            'namaGuru' => 'Ni Luh Putu Sari, S.Pd',
-            'nip' => '198203151005022001',
-            'username' => 'guru_tka',
-            'password' => Hash::make('password'),
-            'email' => 'guru.tka@tkbali.edu',
-            'jenis_kelamin' => 'P',
-            'notlp' => '081234567893',
-            'id_kelas' => $tkA->id_kelas,
-        ]);
+        $guruTKA = Guru::firstOrCreate(
+            ['username' => 'guru_tka'],
+            [
+                'namaGuru' => 'Ni Luh Putu Sari, S.Pd',
+                'nip' => '198203151005022001',
+                'password' => Hash::make('password'),
+                'email' => 'guru.tka@tkbali.edu',
+                'jenis_kelamin' => 'P',
+                'notlp' => '081234567893',
+                'id_kelas' => $tkA->id_kelas,
+            ]
+        );
 
-        $guruTKB = Guru::create([
-            'namaGuru' => 'I Ketut Wirawan, S.Pd',
-            'nip' => '197908201003011002',
-            'username' => 'guru_tkb',
-            'password' => Hash::make('password'),
-            'email' => 'guru.tkb@tkbali.edu',
-            'jenis_kelamin' => 'L',
-            'notlp' => '081234567894',
-            'id_kelas' => $tkB->id_kelas,
-        ]);
+        $guruTKB = Guru::firstOrCreate(
+            ['username' => 'guru_tkb'],
+            [
+                'namaGuru' => 'I Ketut Wirawan, S.Pd',
+                'nip' => '197908201003011002',
+                'password' => Hash::make('password'),
+                'email' => 'guru.tkb@tkbali.edu',
+                'jenis_kelamin' => 'L',
+                'notlp' => '081234567894',
+                'id_kelas' => $tkB->id_kelas,
+            ]
+        );
 
         // Real student data - UPDATED: Kelompok Bermain -> TK A
         $studentsData = [
-            // TK A Students (Ages 2-3) - Previously Kelompok Bermain
+            // TK-A Students (Ages 2-3) - Previously Kelompok Bermain
             [
                 'nisn' => '2023032801',
                 'namaSiswa' => 'I Wayan Arimbawa',
@@ -79,7 +87,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Jl. Pelajar Pejuang, Karangasem',
                 'email' => 'rahayusurya@pt.mil',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2022102101',
@@ -89,7 +97,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Jl. Suryakencana, Tabanan',
                 'email' => 'adinata26@yahoo.com',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2022110701',
@@ -99,7 +107,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Jl. Sadang Serang, Karangasem',
                 'email' => 'malik94@pd.int',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2023071601',
@@ -109,7 +117,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Jalan M.H Thamrin, Kuta, Badung',
                 'email' => 'cahyonogunawan@hotmail.com',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2022101901',
@@ -119,7 +127,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Jalan Moch. Ramdan, Ubud, Gianyar',
                 'email' => 'opungthamrin@gmail.com',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2022040901',
@@ -129,7 +137,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Jalan Rungkut Industri, Kuta, Badung',
                 'email' => 'rwibowo@ud.org',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2022053101',
@@ -139,7 +147,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Gang Pasteur, Bangli',
                 'email' => 'taliamandasari@yahoo.com',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2022070101',
@@ -149,7 +157,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Jalan Pasirkoja, Klungkung',
                 'email' => 'zpadmasari@yahoo.com',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2022101601',
@@ -159,7 +167,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Gg. Dipatiukur, Denpasar Selatan, Denpasar',
                 'email' => 'eriyanti@pd.ponpes.id',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2023062201',
@@ -169,7 +177,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Jl. Jayawijaya, Bangli',
                 'email' => 'tedi27@ud.gov',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2022020501',
@@ -179,7 +187,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Gg. KH Amin Jasuta, Klungkung',
                 'email' => 'ghaliyatinuraini@gmail.com',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2023031201',
@@ -189,7 +197,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Gang Asia Afrika, Klungkung',
                 'email' => 'bambangpermadi@hotmail.com',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2021082201',
@@ -199,7 +207,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Gg. Cikutra Timur, Singaraja, Buleleng',
                 'email' => 'kartanuraini@hotmail.com',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2023010301',
@@ -209,7 +217,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Jl. Rajawali Timur, Denpasar Selatan, Denpasar',
                 'email' => 'cmaryati@gmail.com',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2022102701',
@@ -219,7 +227,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Jl. Sadang Serang, Klungkung',
                 'email' => 'adityahidayanto@cv.org',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2023062101',
@@ -229,7 +237,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Jalan Monginsidi, Klungkung',
                 'email' => 'ghaliyatimustofa@hotmail.com',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2022072101',
@@ -239,7 +247,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Jalan Waringin, Karangasem',
                 'email' => 'slamet67@hotmail.com',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2022081301',
@@ -249,7 +257,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Jl. Surapati, Kuta, Badung',
                 'email' => 'gastihassanah@pd.my.id',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2022102801',
@@ -259,7 +267,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Gg. M.H Thamrin, Kuta, Badung',
                 'email' => 'prakasaganda@pd.org',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
             [
                 'nisn' => '2022092401',
@@ -269,10 +277,10 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Jalan Sukajadi, Kuta, Badung',
                 'email' => 'qpuspita@hotmail.com',
-                'kelas' => 'TK A'
+                'kelas' => 'TK-A'
             ],
 
-            // TK B Students (Ages 5-6) - Remains TK B
+            // TK-B Students (Ages 5-6) - Remains TK-B
             [
                 'nisn' => '2019012801',
                 'namaSiswa' => 'I Desak Astiti',
@@ -281,7 +289,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Jl. PHH. Mustofa, Kuta, Badung',
                 'email' => 'balijan09@perum.or.id',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2019082301',
@@ -291,7 +299,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Jl. Kutisari Selatan, Tabanan',
                 'email' => 'purnawatijumadi@hotmail.com',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2020030901',
@@ -301,7 +309,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Jl. Veteran, Klungkung',
                 'email' => 'hasan53@yahoo.com',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2019122301',
@@ -311,7 +319,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Gg. Erlangga, Klungkung',
                 'email' => 'koktaviani@pt.mil',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2020020401',
@@ -321,7 +329,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Jalan Sentot Alibasa, Klungkung',
                 'email' => 'galih78@hotmail.com',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2019111701',
@@ -331,7 +339,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Gg. Kapten Muslihat, Singaraja, Buleleng',
                 'email' => 'kurniawanintan@gmail.com',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2018110501',
@@ -341,7 +349,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Jalan Sadang Serang, Denpasar Timur, Denpasar',
                 'email' => 'dramadan@gmail.com',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2020032501',
@@ -351,7 +359,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Gang Cihampelas, Ubud, Gianyar',
                 'email' => 'tasdikpuspasari@hotmail.com',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2019010501',
@@ -361,7 +369,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Jl. Ciumbuleuit, Denpasar Timur, Denpasar',
                 'email' => 'satyamahendra@gmail.com',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2019111901',
@@ -371,7 +379,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Jalan Setiabudhi, Ubud, Gianyar',
                 'email' => 'ira69@cv.mil.id',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2018080101',
@@ -381,7 +389,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Gg. Tubagus Ismail, Kuta, Badung',
                 'email' => 'wibowobahuwarna@cv.biz.id',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2019060601',
@@ -391,7 +399,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Jl. Astana Anyar, Klungkung',
                 'email' => 'setiawannardi@hotmail.com',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2019020501',
@@ -401,7 +409,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Gang Astana Anyar, Klungkung',
                 'email' => 'bahuwarna19@ud.go.id',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2020070601',
@@ -411,7 +419,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Gg. Cihampelas, Klungkung',
                 'email' => 'setya15@pt.mil.id',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2019112601',
@@ -421,7 +429,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Gang M.H Thamrin, Kuta, Badung',
                 'email' => 'patriciapurnawati@yahoo.com',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2018122701',
@@ -431,7 +439,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Gg. Peta, Denpasar Selatan, Denpasar',
                 'email' => 'chandayani@hotmail.com',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2018101301',
@@ -441,7 +449,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Jalan Kapten Muslihat, Ubud, Gianyar',
                 'email' => 'prakasavanya@yahoo.com',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2019101801',
@@ -451,7 +459,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Jl. Astana Anyar, Denpasar Timur, Denpasar',
                 'email' => 'oagustina@pd.id',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2018091801',
@@ -461,7 +469,7 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'L',
                 'alamat' => 'Jl. W.R. Supratman, Denpasar Barat, Denpasar',
                 'email' => 'puspitajamil@gmail.com',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
             [
                 'nisn' => '2019011601',
@@ -471,26 +479,28 @@ class RealDataSeederUpdated extends Seeder
                 'jenis_kelamin' => 'P',
                 'alamat' => 'Gg. Otto Iskandardinata, Ubud, Gianyar',
                 'email' => 'cpudjiastuti@gmail.com',
-                'kelas' => 'TK B'
+                'kelas' => 'TK-B'
             ],
         ];
 
         // Create students
         foreach ($studentsData as $index => $studentData) {
-            $kelasId = $studentData['kelas'] === 'TK A' ? $tkA->id_kelas : $tkB->id_kelas;
+            $kelasId = $studentData['kelas'] === 'TK-A' ? $tkA->id_kelas : $tkB->id_kelas;
 
-            AkunSiswa::create([
-                'id_kelas' => $kelasId,
-                'nisn' => $studentData['nisn'],
-                'namaSiswa' => $studentData['namaSiswa'],
-                'namaOrangTua' => $studentData['namaOrangTua'],
-                'tgl_lahir' => $studentData['tgl_lahir'],
-                'jenis_kelamin' => $studentData['jenis_kelamin'],
-                'alamat' => $studentData['alamat'],
-                'email' => $studentData['email'],
-                'username' => 'siswa' . str_pad($index + 1, 3, '0', STR_PAD_LEFT),
-                'password' => Hash::make('password123'),
-            ]);
+            AkunSiswa::firstOrCreate(
+                ['email' => $studentData['email']],
+                [
+                    'id_kelas' => $kelasId,
+                    'nisn' => $studentData['nisn'],
+                    'namaSiswa' => $studentData['namaSiswa'],
+                    'namaOrangTua' => $studentData['namaOrangTua'],
+                    'tgl_lahir' => $studentData['tgl_lahir'],
+                    'jenis_kelamin' => $studentData['jenis_kelamin'],
+                    'alamat' => $studentData['alamat'],
+                    'username' => 'siswa' . str_pad($index + 1, 3, '0', STR_PAD_LEFT),
+                    'password' => Hash::make('password123'),
+                ]
+            );
         }
 
         // Update class student counts

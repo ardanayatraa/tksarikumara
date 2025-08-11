@@ -14,147 +14,173 @@ class AspekSeeder extends Seeder
         // ========================================
         // 1. ASPEK PENILAIAN
         // ========================================
-        $aspek1 = AspekPenilaian::create([
-            'nama_aspek' => 'Nilai Agama dan Moral',
-            'has_sub_aspek' => false,
-            'deskripsi' => 'Penilaian terhadap nilai-nilai agama dan moral anak'
-        ]);
+        $aspek1 = AspekPenilaian::firstOrCreate(
+            ['nama_aspek' => 'Nilai Agama dan Moral'],
+            [
+                'has_sub_aspek' => false,
+                'deskripsi' => 'Penilaian terhadap nilai-nilai agama dan moral anak'
+            ]
+        );
 
-        $aspek2 = AspekPenilaian::create([
-            'nama_aspek' => 'Fisik - Motorik',
-            'has_sub_aspek' => true,
-            'deskripsi' => 'Penilaian terhadap perkembangan fisik dan motorik anak'
-        ]);
+        $aspek2 = AspekPenilaian::firstOrCreate(
+            ['nama_aspek' => 'Fisik - Motorik'],
+            [
+                'has_sub_aspek' => true,
+                'deskripsi' => 'Penilaian terhadap perkembangan fisik dan motorik anak'
+            ]
+        );
 
-        $aspek3 = AspekPenilaian::create([
-            'nama_aspek' => 'Kognitif',
-            'has_sub_aspek' => true,
-            'deskripsi' => 'Penilaian terhadap perkembangan kognitif anak'
-        ]);
+        $aspek3 = AspekPenilaian::firstOrCreate(
+            ['nama_aspek' => 'Kognitif'],
+            [
+                'has_sub_aspek' => true,
+                'deskripsi' => 'Penilaian terhadap perkembangan kognitif anak'
+            ]
+        );
 
-        $aspek4 = AspekPenilaian::create([
-            'nama_aspek' => 'Bahasa',
-            'has_sub_aspek' => true,
-            'deskripsi' => 'Penilaian terhadap perkembangan bahasa anak'
-        ]);
+        $aspek4 = AspekPenilaian::firstOrCreate(
+            ['nama_aspek' => 'Bahasa'],
+            [
+                'has_sub_aspek' => true,
+                'deskripsi' => 'Penilaian terhadap perkembangan bahasa anak'
+            ]
+        );
 
-        $aspek5 = AspekPenilaian::create([
-            'nama_aspek' => 'Sosial - Emosional',
-            'has_sub_aspek' => true,
-            'deskripsi' => 'Penilaian terhadap perkembangan sosial dan emosional anak'
-        ]);
+        $aspek5 = AspekPenilaian::firstOrCreate(
+            ['nama_aspek' => 'Sosial - Emosional'],
+            [
+                'has_sub_aspek' => true,
+                'deskripsi' => 'Penilaian terhadap perkembangan sosial dan emosional anak'
+            ]
+        );
 
-        $aspek6 = AspekPenilaian::create([
-            'nama_aspek' => 'Seni',
-            'has_sub_aspek' => true,
-            'deskripsi' => 'Penilaian terhadap perkembangan seni anak'
-        ]);
+        $aspek6 = AspekPenilaian::firstOrCreate(
+            ['nama_aspek' => 'Seni'],
+            [
+                'has_sub_aspek' => true,
+                'deskripsi' => 'Penilaian terhadap perkembangan seni anak'
+            ]
+        );
 
         // ========================================
         // 2. SUB ASPEK
         // ========================================
         // Sub Aspek untuk Fisik-Motorik
-        $subFisikA = SubAspek::create([
-            'aspek_id' => $aspek2->id_aspek,
-            'kode_sub_aspek' => 'A',
-            'nama_sub_aspek' => 'Motorik Kasar',
-            'deskripsi' => 'Kemampuan gerak tubuh yang menggunakan otot-otot besar'
-        ]);
+        $subFisikA = SubAspek::firstOrCreate(
+            ['aspek_id' => $aspek2->id_aspek, 'kode_sub_aspek' => 'A'],
+            [
+                'nama_sub_aspek' => 'Motorik Kasar',
+                'deskripsi' => 'Kemampuan gerak tubuh yang menggunakan otot-otot besar'
+            ]
+        );
 
-        $subFisikB = SubAspek::create([
-            'aspek_id' => $aspek2->id_aspek,
-            'kode_sub_aspek' => 'B',
-            'nama_sub_aspek' => 'Motorik Halus',
-            'deskripsi' => 'Kemampuan gerak tubuh yang menggunakan otot-otot kecil'
-        ]);
+        $subFisikB = SubAspek::firstOrCreate(
+            ['aspek_id' => $aspek2->id_aspek, 'kode_sub_aspek' => 'B'],
+            [
+                'nama_sub_aspek' => 'Motorik Halus',
+                'deskripsi' => 'Kemampuan gerak tubuh yang menggunakan otot-otot kecil'
+            ]
+        );
 
-        $subFisikC = SubAspek::create([
-            'aspek_id' => $aspek2->id_aspek,
-            'kode_sub_aspek' => 'C',
-            'nama_sub_aspek' => 'Kesehatan dan Perilaku Keselamatan',
-            'deskripsi' => 'Kemampuan menjaga kesehatan dan keselamatan diri'
-        ]);
+        $subFisikC = SubAspek::firstOrCreate(
+            ['aspek_id' => $aspek2->id_aspek, 'kode_sub_aspek' => 'C'],
+            [
+                'nama_sub_aspek' => 'Kesehatan dan Perilaku Keselamatan',
+                'deskripsi' => 'Kemampuan menjaga kesehatan dan keselamatan diri'
+            ]
+        );
 
         // Sub Aspek untuk Kognitif
-        $subKognitifA = SubAspek::create([
-            'aspek_id' => $aspek3->id_aspek,
-            'kode_sub_aspek' => 'A',
-            'nama_sub_aspek' => 'Belajar dan Memecahkan Masalah',
-            'deskripsi' => 'Kemampuan belajar dan memecahkan masalah'
-        ]);
+        $subKognitifA = SubAspek::firstOrCreate(
+            ['aspek_id' => $aspek3->id_aspek, 'kode_sub_aspek' => 'A'],
+            [
+                'nama_sub_aspek' => 'Belajar dan Memecahkan Masalah',
+                'deskripsi' => 'Kemampuan belajar dan memecahkan masalah'
+            ]
+        );
 
-        $subKognitifB = SubAspek::create([
-            'aspek_id' => $aspek3->id_aspek,
-            'kode_sub_aspek' => 'B',
-            'nama_sub_aspek' => 'Berfikir Logis',
-            'deskripsi' => 'Kemampuan berfikir secara logis'
-        ]);
+        $subKognitifB = SubAspek::firstOrCreate(
+            ['aspek_id' => $aspek3->id_aspek, 'kode_sub_aspek' => 'B'],
+            [
+                'nama_sub_aspek' => 'Berfikir Logis',
+                'deskripsi' => 'Kemampuan berfikir secara logis'
+            ]
+        );
 
-        $subKognitifC = SubAspek::create([
-            'aspek_id' => $aspek3->id_aspek,
-            'kode_sub_aspek' => 'C',
-            'nama_sub_aspek' => 'Berfikir Simbolik',
-            'deskripsi' => 'Kemampuan berfikir secara simbolik'
-        ]);
+        $subKognitifC = SubAspek::firstOrCreate(
+            ['aspek_id' => $aspek3->id_aspek, 'kode_sub_aspek' => 'C'],
+            [
+                'nama_sub_aspek' => 'Berfikir Simbolik',
+                'deskripsi' => 'Kemampuan berfikir secara simbolik'
+            ]
+        );
 
         // Sub Aspek untuk Bahasa
-        $subBahasaA = SubAspek::create([
-            'aspek_id' => $aspek4->id_aspek,
-            'kode_sub_aspek' => 'A',
-            'nama_sub_aspek' => 'Memahami Bahasa',
-            'deskripsi' => 'Kemampuan memahami bahasa'
-        ]);
+        $subBahasaA = SubAspek::firstOrCreate(
+            ['aspek_id' => $aspek4->id_aspek, 'kode_sub_aspek' => 'A'],
+            [
+                'nama_sub_aspek' => 'Memahami Bahasa',
+                'deskripsi' => 'Kemampuan memahami bahasa'
+            ]
+        );
 
-        $subBahasaB = SubAspek::create([
-            'aspek_id' => $aspek4->id_aspek,
-            'kode_sub_aspek' => 'B',
-            'nama_sub_aspek' => 'Mengungkapkan Bahasa',
-            'deskripsi' => 'Kemampuan mengungkapkan bahasa'
-        ]);
+        $subBahasaB = SubAspek::firstOrCreate(
+            ['aspek_id' => $aspek4->id_aspek, 'kode_sub_aspek' => 'B'],
+            [
+                'nama_sub_aspek' => 'Mengungkapkan Bahasa',
+                'deskripsi' => 'Kemampuan mengungkapkan bahasa'
+            ]
+        );
 
         // Sub Aspek untuk Sosial-Emosional
-        $subSosialA = SubAspek::create([
-            'aspek_id' => $aspek5->id_aspek,
-            'kode_sub_aspek' => 'A',
-            'nama_sub_aspek' => 'Kesadaran Diri',
-            'deskripsi' => 'Kemampuan kesadaran diri'
-        ]);
+        $subSosialA = SubAspek::firstOrCreate(
+            ['aspek_id' => $aspek5->id_aspek, 'kode_sub_aspek' => 'A'],
+            [
+                'nama_sub_aspek' => 'Kesadaran Diri',
+                'deskripsi' => 'Kemampuan kesadaran diri'
+            ]
+        );
 
-        $subSosialB = SubAspek::create([
-            'aspek_id' => $aspek5->id_aspek,
-            'kode_sub_aspek' => 'B',
-            'nama_sub_aspek' => 'Tanggung Jawab Diri dan Orang Lain',
-            'deskripsi' => 'Kemampuan bertanggung jawab terhadap diri dan orang lain'
-        ]);
+        $subSosialB = SubAspek::firstOrCreate(
+            ['aspek_id' => $aspek5->id_aspek, 'kode_sub_aspek' => 'B'],
+            [
+                'nama_sub_aspek' => 'Tanggung Jawab Diri dan Orang Lain',
+                'deskripsi' => 'Kemampuan bertanggung jawab terhadap diri dan orang lain'
+            ]
+        );
 
-        $subSosialC = SubAspek::create([
-            'aspek_id' => $aspek5->id_aspek,
-            'kode_sub_aspek' => 'C',
-            'nama_sub_aspek' => 'Perilaku Prososial',
-            'deskripsi' => 'Kemampuan berperilaku prososial'
-        ]);
+        $subSosialC = SubAspek::firstOrCreate(
+            ['aspek_id' => $aspek5->id_aspek, 'kode_sub_aspek' => 'C'],
+            [
+                'nama_sub_aspek' => 'Perilaku Prososial',
+                'deskripsi' => 'Kemampuan berperilaku prososial'
+            ]
+        );
 
         // Sub Aspek untuk Seni
-        $subSeniA = SubAspek::create([
-            'aspek_id' => $aspek6->id_aspek,
-            'kode_sub_aspek' => 'A',
-            'nama_sub_aspek' => 'Mampu Membedakan Bunyi dan Suara',
-            'deskripsi' => 'Kemampuan membedakan bunyi dan suara'
-        ]);
+        $subSeniA = SubAspek::firstOrCreate(
+            ['aspek_id' => $aspek6->id_aspek, 'kode_sub_aspek' => 'A'],
+            [
+                'nama_sub_aspek' => 'Mampu Membedakan Bunyi dan Suara',
+                'deskripsi' => 'Kemampuan membedakan bunyi dan suara'
+            ]
+        );
 
-        $subSeniB = SubAspek::create([
-            'aspek_id' => $aspek6->id_aspek,
-            'kode_sub_aspek' => 'B',
-            'nama_sub_aspek' => 'Ingin Mengikuti Kegiatan Musik, Orang dan Hewan',
-            'deskripsi' => 'Keinginan mengikuti kegiatan musik, orang dan hewan'
-        ]);
+        $subSeniB = SubAspek::firstOrCreate(
+            ['aspek_id' => $aspek6->id_aspek, 'kode_sub_aspek' => 'B'],
+            [
+                'nama_sub_aspek' => 'Ingin Mengikuti Kegiatan Musik, Orang dan Hewan',
+                'deskripsi' => 'Keinginan mengikuti kegiatan musik, orang dan hewan'
+            ]
+        );
 
-        $subSeniC = SubAspek::create([
-            'aspek_id' => $aspek6->id_aspek,
-            'kode_sub_aspek' => 'C',
-            'nama_sub_aspek' => 'Ingin Mengikuti Kegiatan Seni',
-            'deskripsi' => 'Keinginan mengikuti kegiatan seni'
-        ]);
+        $subSeniC = SubAspek::firstOrCreate(
+            ['aspek_id' => $aspek6->id_aspek, 'kode_sub_aspek' => 'C'],
+            [
+                'nama_sub_aspek' => 'Ingin Mengikuti Kegiatan Seni',
+                'deskripsi' => 'Keinginan mengikuti kegiatan seni'
+            ]
+        );
 
         // ========================================
         // 3. INDIKATOR UNTUK USIA 2-4 TAHUN
@@ -513,7 +539,17 @@ class AspekSeeder extends Seeder
 
         // Insert semua indikator untuk usia 2-4 tahun
         foreach ($indikators as $indikator) {
-            Indikator::create($indikator);
+            Indikator::firstOrCreate(
+                [
+                    'aspek_id' => $indikator['aspek_id'],
+                    'sub_aspek_id' => $indikator['sub_aspek_id'],
+                    'kode_indikator' => $indikator['kode_indikator'],
+                    'kelompok_usia' => $indikator['kelompok_usia']
+                ],
+                [
+                    'deskripsi_indikator' => $indikator['deskripsi_indikator']
+                ]
+            );
         }
 
         // ========================================
@@ -824,7 +860,17 @@ class AspekSeeder extends Seeder
 
         // Insert semua indikator untuk usia 4-6 tahun
         foreach ($indikators_4_6 as $indikator) {
-            Indikator::create($indikator);
+            Indikator::firstOrCreate(
+                [
+                    'aspek_id' => $indikator['aspek_id'],
+                    'sub_aspek_id' => $indikator['sub_aspek_id'],
+                    'kode_indikator' => $indikator['kode_indikator'],
+                    'kelompok_usia' => $indikator['kelompok_usia']
+                ],
+                [
+                    'deskripsi_indikator' => $indikator['deskripsi_indikator']
+                ]
+            );
         }
 
         echo "Seeder berhasil dijalankan!\n";
